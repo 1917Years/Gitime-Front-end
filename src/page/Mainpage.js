@@ -21,7 +21,7 @@ function Mainpage(props) {
               playsInline
               width="100%"
               height="80%"
-              class="이지원바보"
+              class=""
               src="/Book.mp4"
               type="video/mp4"
             ></video>
@@ -120,11 +120,9 @@ function Mainpage(props) {
                   없어요. 업무들을 한 눈에 보기 쉽게 제공하는 Gitime만의
                   대시보드를 통해, 통합된 업무 관리 서비스를 시작해보세요.
                 </p>
-                <p class="text-lg font-light leading-relaxed mt-0 mb-8 text-gray-700">
-                  The kit comes with three pre-built pages to help you get
-                  started faster. You can change the text and images and you're
-                  good to go. Just make sure you enable them first via
-                  JavaScript.
+                <p class="font-test text-lg font-light leading-relaxed mt-0 mb-8 text-gray-700">
+                  가입과 연동이라는 간단한 과정만으로도 모든 기능을 이용할 수
+                  있어요. 가입해 Gitime와 함께하세요!
                 </p>
                 <a
                   href="https://github.com/abhinavs/cookie"

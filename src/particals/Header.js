@@ -152,7 +152,7 @@ function Header(props) {
                               )}
                               onClick={() => {
                                 deleteCookie("token");
-                               props.history.push("/")
+                                props.history.push("/");
                               }}
                             >
                               로그아웃
