@@ -273,7 +273,13 @@ function Login(props) {
               <button class="bg-naver btn-social-login">
                 <i class="xi-2x xi-naver"></i>
               </button>
-              <button class="bg-kakao btn-social-login">
+              <button
+                class="bg-kakao btn-social-login"
+                onClick={() => {
+                  window.location.href =
+                    "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=d99c7a950fbb6caceb7739f996f3ca02&redirect_uri=http://localhost:3000/auth/kakao";
+                }}
+              >
                 <i class="xi-2x xi-kakaotalk text-dark"></i>
               </button>
             </div>

@@ -10,6 +10,9 @@ module.exports = {
         kakao: "#FFEB00",
         google: "#D93025",
         bg1: "#383430",
+        bg2: "#908D8E",
+        bg3: "#40382F",
+        bg4: "#DCDCDC",
       },
 
       transitionDelay: {

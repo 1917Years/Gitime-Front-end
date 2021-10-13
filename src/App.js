@@ -12,12 +12,20 @@ import Projects from "./page/Projects";
 import Oauth from "./page/Oauth";
 import Loading from "./page/Loading";
 import { getCookie } from "./utils/cookie";
-
+import Header from "./particals/Header";
 import "tailwindcss/tailwind.css";
+import KakaoOauth from "./utils/KakaoOauth";
+import OauthRegister from "./page/OauthRegister";
 
 function App() {
   return (
     <BrowserRouter>
+      <Route
+        path="*"
+        component={(props) => {
+          return <Header {...props} />;
+        }}
+      />
       <Switch>
         <Route
           path="/"
@@ -35,6 +43,14 @@ function App() {
         />
 
         <Route
+          path="/oauth/register"
+          exact={true}
+          component={(props) => {
+            return <OauthRegister {...props}></OauthRegister>;
+          }}
+        />
+
+        <Route
           path="/login"
           exact={true}
           component={(props) => {
@@ -47,6 +63,14 @@ function App() {
           exact={true}
           component={(props) => {
             return <Oauth {...props}></Oauth>;
+          }}
+        />
+
+        <Route
+          path="/auth/kakao"
+          exact={true}
+          component={(props) => {
+            return <KakaoOauth {...props}></KakaoOauth>;
           }}
         />
 
