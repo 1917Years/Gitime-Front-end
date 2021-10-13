@@ -57,5 +57,12 @@
   "main": "craco.config.js",
   "author": "",
   "license": "ISC",
-  "homepage": "./"
+  "homepage": "http://./",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1917Years/Gitime-Front-end.git"
+  },
+  "bugs": {
+    "url": "https://github.com/1917Years/Gitime-Front-end/issues"
+  }
 }
