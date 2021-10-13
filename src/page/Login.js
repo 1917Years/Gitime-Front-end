@@ -267,7 +267,13 @@ function Login(props) {
                 로그인
               </button>
 
-              <button class="bg-google btn-social-login">
+              <button
+                class="bg-google btn-social-login"
+                onClick={() => {
+                  window.location.href =
+                    "https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.email&access_type=offline&include_granted_scopes=true&response_type=code&redirect_uri=http://localhost:3000/auth/google&client_id=24431269995-frdl56nvoapdtd0o6g9e8cpej6ha91jq.apps.googleusercontent.com";
+                }}
+              >
                 <i class="xi-2x xi-google"></i>
               </button>
               <button class="bg-naver btn-social-login">

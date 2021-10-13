@@ -10,7 +10,6 @@ function postRegister({ data, props }) {
     .then((res) => {
       console.log(res);
       props.history.push("/login");
-      console.log(rerer);
     })
     .catch((err) => {
       console.log(err);

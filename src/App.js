@@ -16,6 +16,8 @@ import Header from "./particals/Header";
 import "tailwindcss/tailwind.css";
 import KakaoOauth from "./utils/KakaoOauth";
 import OauthRegister from "./page/OauthRegister";
+import MyPage from "./page/MyPage";
+import GoogleOauth from "./utils/GoogleOauth";
 
 function App() {
   return (
@@ -71,6 +73,21 @@ function App() {
           exact={true}
           component={(props) => {
             return <KakaoOauth {...props}></KakaoOauth>;
+          }}
+        />
+        <Route
+          path="/auth/google"
+          exact={true}
+          component={(props) => {
+            return <GoogleOauth {...props}></GoogleOauth>;
+          }}
+        />
+
+        <Route
+          path="/mypage"
+          exact={true}
+          component={(props) => {
+            return <MyPage {...props}></MyPage>;
           }}
         />
 
