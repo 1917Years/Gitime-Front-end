@@ -5,6 +5,7 @@ import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { getCookie, deleteCookie } from "../utils/cookie";
 import { getMemberInfo } from "../utils/ApiConfig";
 import Swal from "sweetalert2";
+import { SERVER_URL } from "../utils/SRC";
 
 const navigation = [{ name: "My Teams", href: "/dashboard", current: false }];
 
@@ -29,9 +30,10 @@ function classNames(...classes) {
 
 function Header(props) {
   const [memberName, setMemberName] = useState(null);
+  const [memberImg, setMemberImg] = useState(null);
 
   useEffect(() => {
-    getMemberInfo({ setMemberName });
+    getMemberInfo({ setMemberName, setMemberImg });
     console.log(memberName);
   });
   return (
@@ -182,7 +184,7 @@ function Header(props) {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          src={SERVER_URL + "/api/v1/files/images/" + memberImg}
                           alt=""
                         />
                       </Menu.Button>

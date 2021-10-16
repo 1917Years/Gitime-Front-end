@@ -1,19 +1,16 @@
-import React from 'react';
-import DoughnutChart from './DoughnutChart';
+import React from "react";
+import DoughnutChart from "./DoughnutChart";
 
 // Import utilities
-import { tailwindConfig } from '../utils/Utils';
+import { tailwindConfig } from "../utils/Utils";
 
 function DashboardPar01() {
-
   const chartData = {
-    labels: ['United States', 'Italy', 'Other'],
+    labels: ["United States", "Italy", "Other"],
     datasets: [
       {
-        label: 'Top Countries',
-        data: [
-          35, 30, 35,
-        ],
+        label: "Top Countries",
+        data: [35, 30, 35],
         backgroundColor: [
           tailwindConfig().theme.colors.indigo[500],
           tailwindConfig().theme.colors.blue[400],

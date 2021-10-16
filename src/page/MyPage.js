@@ -1,5 +1,33 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
+import { getCookie } from "../utils/cookie";
+import { SERVER_URL } from "../utils/SRC";
+import { getMemberInfo } from "../utils/ApiConfig";
+const onImgChange = async (event) => {
+  const formData = new FormData();
+  formData.append("imageFile", event.target.files[0]);
+  await axios
+    .post(SERVER_URL + "/api/v1/members/profile-img", formData, {
+      headers: {
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 function MyPage() {
+  const [memberImg, setMemberImg] = useState(null); //파일
+
+  useEffect(() => {
+    getMemberInfo({ setMemberImg });
+    console.log(memberImg);
+  });
+
   return (
     <section class="pt-10 pb-10 bg-white-100  bg-opacity-50">
       <div class="mx-auto container max-w-2xl md:w-3/4 shadow-md">
@@ -9,15 +37,21 @@ function MyPage() {
               <img
                 class="w-24 h-24 object-cover rounded-full mr-3"
                 alt="User avatar"
-                src="https://avatars3.githubusercontent.com/u/72724639?s=400&u=964a4803693899ad66a9229db55953a3dbaad5c6&v=4"
+                src={SERVER_URL + "/api/v1/files/images/" + memberImg}
               />
 
               <div class="flex flex-col w-full">
-                <button class="mb-3 pb-2 px-2 py-2 font-test text-sm text-gray-500 w-1/2 max-w-sm rounded-md text-center border border-gray-400 ">
-                  프로필 이미지 변경
-                </button>
+                <input
+                  class="mb-3 pb-2 px-2 py-2 font-test text-sm text-gray-500 w-1/2 max-w-sm rounded-md text-center border border-gray-400 "
+                  type="file"
+                  name="imageFile"
+                  accept="image/*"
+                  enctype="multipart/form-data"
+                  onChange={onImgChange}
+                ></input>
+
                 <div class="text-sm text-gray-600 font-ltest">
-                  추천 사이즈: 200x200, 파일 최대 크기: 5MB
+                  추천 사이즈: 200x200, 파일 최대 크기: 1MB
                 </div>
               </div>
             </div>
