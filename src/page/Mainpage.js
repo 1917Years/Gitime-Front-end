@@ -298,10 +298,10 @@ function Mainpage(props) {
                   <i class="fas fa-medal text-xl"></i>
                 </div>
                 <h6 class="font-test text-xl mt-5 font-semibold text-white">
-                  상호님 멘트1
+                  소통과 관리의 통합
                 </h6>
                 <p class="font-ltest mt-2 mb-4 text-gray-500">
-                  Gitime 컴파일 개쩐다
+                  귀찮게 개발 환경을 각 로컬마다 구축하지 마세요.
                 </p>
               </div>
               <div class="w-full lg:w-3/12 px-4 text-center">
@@ -309,10 +309,11 @@ function Mainpage(props) {
                   <i class="fas fa-poll text-xl"></i>
                 </div>
                 <h5 class="font-test text-xl mt-5 font-semibold text-white">
-                  상호님 멘트2
+                  적은 메모리 샤용량
                 </h5>
                 <p class="font-ltest mt-2 mb-4 text-gray-500">
-                  API End point였나 어쩌고?
+                  사용자 수가 많고 팀이 많아도 걱정하지 마세요. <br />
+                  도커를 이용해 자원 할당량을 최소화 시켰어요.
                 </p>
               </div>
               <div class="w-full lg:w-3/12 px-4 text-center">
@@ -320,10 +321,11 @@ function Mainpage(props) {
                   <i class="fas fa-lightbulb text-xl"></i>
                 </div>
                 <h5 class="font-test text-xl mt-5 font-semibold text-white">
-                  상호님 멘트3
+                  유료? 아니 무료예요.
                 </h5>
                 <p class="font-ltest mt-2 mb-4 text-gray-500">
-                  막 서버를 배급해준다 어쩌고
+                  어디가서 돈 내고 사용하지 마세요. <br />
+                  저희는 무료예요.
                 </p>
               </div>
             </div>

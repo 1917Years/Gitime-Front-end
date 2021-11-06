@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import "./Dashboard.css";
+import * as Calendar from "../particals/Calendar.js";
 
 class CircularProgressBar extends React.Component {
   constructor(props) {
@@ -84,20 +85,6 @@ CircularProgressBar.defaultProps = {
 };
 
 function Dashboard(props) {
-  const Calendar = new Calendar("#calendar", {
-    defaultView: "month",
-    taskView: true,
-    template: {
-      monthDayname: function (dayname) {
-        return (
-          '<span class="calendar-week-dayname-name">' +
-          dayname.label +
-          "</span>"
-        );
-      },
-    },
-  });
-
   return (
     <div class="font-test" className="header">
       <div className="Dashboard" class="grid grid-cols-5">
@@ -110,9 +97,6 @@ function Dashboard(props) {
             <div class="flex-grow pl-5 text-3xl font-sbtest text-2xl">
               Team1 DashBoard Today
             </div>
-            <button class="bg-red-300 hover:bg-red-400 text-white py-2 px-2 rounded shadow-lg hover:shadow-xl transition duration-200">
-              Browse Code From Git
-            </button>
           </div>
 
           <div class="grid grid-rows-2 grid-cols-1 md:grid-cols-3 gap-4 mt-5">
@@ -170,7 +154,7 @@ function Dashboard(props) {
               className="Reference"
               class="row-span-2 grid font-ttest w-full h-full relative bg-white mx-auto pl-10 md:p-12 my-auto rounded-lg shadow-xl"
             >
-              3
+              {Calendar.Calendar()}
             </div>
 
             <div
@@ -184,7 +168,7 @@ function Dashboard(props) {
               className="Calendar"
               class="grid font-ttest w-full h-full relative bg-white mx-auto pl-10 md:p-12 my-auto rounded-lg shadow-xl"
             >
-              <div id="calendar" style="height: 800px;"></div>
+              5
             </div>
             <div
               className="Console"
