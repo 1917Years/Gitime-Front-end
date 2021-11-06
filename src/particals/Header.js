@@ -6,6 +6,7 @@ import { getCookie, deleteCookie } from "../utils/cookie";
 import { getMemberInfo } from "../utils/ApiConfig";
 import Swal from "sweetalert2";
 import { SERVER_URL } from "../utils/SRC";
+import logo from "../assets/img/logo-white.png";
 
 const navigation = [{ name: "My Teams", href: "/dashboard", current: false }];
 
@@ -61,7 +62,7 @@ function Header(props) {
                     }}
                     class=" font-extrabold text-2xl font-bltest "
                   >
-                    Gitime
+                    <img src={logo} width={"115px"} />
                   </button>
                 </div>
 
