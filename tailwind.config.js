@@ -14,6 +14,8 @@ module.exports = {
         bg3: "#40382F",
         bg4: "#DCDCDC",
         date: "#5755C3",
+        scroll: "#A2B0C0",
+        sscroll: "#49596B",
       },
 
       transitionDelay: {

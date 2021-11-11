@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import axios from "axios";
-import "./Register.css";
+import "../assets/styles/Register.css";
 import { SERVER_URL } from "../utils/SRC";
 import Swal from "sweetalert2";
 import { getCookie } from "../utils/cookie";

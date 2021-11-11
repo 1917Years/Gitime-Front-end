@@ -1,0 +1,521 @@
+import React, { useEffect, useState } from "react";
+
+export const AddingToDo = (props) => {
+  const {
+    setShowModal,
+    endCheck,
+    checkedItemHandler,
+    checkedList,
+    changeComplete,
+  } = props;
+  return (
+    <>
+      <div class="justify-center w-full items-center flex flex-col overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+        <div class="relative w-1/3 my-5 mx-auto max-w-3xl">
+          {/*content*/}
+          <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            {/*header*/}
+            <div class="flex items-start justify-between px-6 py-5 border-b border-solid border-blueGray-200 rounded-t">
+              <h3 class="text-2xl font-sbtest py-1">목표 관리하기</h3>
+              <button
+                className="ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                onClick={() => setShowModal(false)}
+              >
+                <span className="bg-transparen text-black text-opacity-50 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                  x
+                </span>
+              </button>
+            </div>
+            {/*body*/}
+            <div class="relative w-full mx-auto max-w-3xl">
+              <div class="font-test flex items-center px-6 space-x-2 lg:space-x-4 py-2 text-blueGray-500 leading-relaxed">
+                <input
+                  placeholder="추가할 목표를 입력해주세요!"
+                  class="block text-base w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
+                ></input>
+                <button class="font-test w-1/3 float-right block text-white text-base bg-gray-400 h-10 lg:h-12 mt-2 lg:mt-4 px-4 lg:px-7 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500">
+                  추가
+                </button>
+              </div>
+              {endCheck.map((list) => {
+                return (
+                  <div class="flex items-center justify-between w-full h-auto sm:h-16 px-4 lg:px-8 rounded-lg shadow bg-white">
+                    <div
+                      class="flex items-center space-x-2 lg:space-x-4 w-full h-auto"
+                      key={list.id}
+                    >
+                      <input
+                        type="checkbox"
+                        onChange={(e) =>
+                          checkedItemHandler(list, e.target.checked)
+                        }
+                        checked={checkedList.includes(list) ? true : false}
+                      ></input>
+                      <div class="col-span-3 rounded-lg w-12 h-8 bg-develbg font-sbtest">
+                        <div class="pt-2 m-auto w-6 h-6 text-center text-xs">
+                          {list.kinds}
+                        </div>
+                      </div>
+                      <h3 class="flex-grow lg:text-base font-test text-fontColor-900 ">
+                        {list.data}
+                      </h3>
+                      <div class="float-right my-auto pl-10 text-right col-span-4 text-sm font-ltest text-date">
+                        {list.date}
+                      </div>
+                      <div>
+                        {list.end ? (
+                          <button onClick={(e) => changeComplete(list)}>
+                            <svg
+                              class="h-8 w-8 text-purple-500 text-opacity-70 font-ltest text-date"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              {" "}
+                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />{" "}
+                              <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                          </button>
+                        ) : (
+                          <button onClick={(e) => changeComplete(list)}>
+                            <svg
+                              class="h-8 w-8 text-purple-500 text-opacity-20 font-ltest text-date"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              {" "}
+                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />{" "}
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/*footer*/}
+              <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                <button
+                  className="text-gray-500 background-transparent font-test uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                >
+                  삭제하기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+    </>
+  );
+};
+
+export const ChatRoom = (props) => {
+  const {
+    setShowModal2,
+    dataLists2,
+    addChat,
+    setCtext,
+    onChangeInput,
+    onReset,
+    inputText,
+  } = props;
+  const [chat, setChat] = useState(null);
+
+  useEffect(() => {
+    setChat(document.getElementById("#chat"));
+  }, []);
+
+  return (
+    <>
+      <div class="justify-center w-full items-center flex flex-col overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none shadow-2xl">
+        <div class="relative w-1/3 bg-white max-w-lg mx-auto p-8 md:p-12 my-10 rounded-lg shadow-2xl">
+          <div className="grid pb-10 ">
+            <div class="font-sbtest text-xl">
+              TeamName 채팅방
+              <button
+                className="ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                onClick={() => setShowModal2(false)}
+              >
+                <span className="bg-transparen text-black text-opacity-50 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                  x
+                </span>
+              </button>
+            </div>
+          </div>
+          <div id="chat" className="grid max-h-72 overflow-y-auto">
+            {dataLists2.map((list) => {
+              return (
+                <div class="pb-3 flex space-x-2 px-3">
+                  <div class="relative w-12 h-12">
+                    <img
+                      class="rounded-full border border-gray-100 shadow-sm"
+                      src={list.userprofile}
+                      alt="user image"
+                    />
+                    {list.online ? (
+                      <>
+                        <div class="absolute top-0 right-0 h-3 w-3 my-1 border-2 border-white rounded-full bg-green-400 z-2"></div>
+                      </>
+                    ) : (
+                      <>
+                        <div class="absolute top-0 right-0 h-3 w-3 my-1 border-2 border-white rounded-full bg-gray-400 z-2"></div>
+                      </>
+                    )}
+                  </div>
+                  <div class="font-test flex-grow text-sm text-sscroll pl-2">
+                    {list.username}
+                    <div class="font-ltest text-xs mt-1 text-gray-400 pl-2">
+                      {list.data}
+                    </div>
+                  </div>
+                  <div class="font-ltest float-right text-right text-xs mt-1 text-gray-300">
+                    {list.time}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="grid">
+            <input
+              type="text"
+              placeholder="메세지 입력..."
+              class="font-test border rounded border-opacity-50 w-full lg:px-4 py-2 text-gray-700 border-scroll transition duration-500 px-1 mt-6 shadow"
+              onChange={(e) => setCtext(e.target.value)}
+            />
+            <button
+              class="font-test bg-scroll mt-3 hover:bg-gray-500 w-full text-white font-medium py-2 rounded shadow-lg hover:shadow-xl transition duration-200"
+              type="submit"
+              onClick={(e) => {
+                addChat(null);
+                console.log(chat);
+              }}
+            >
+              보내기
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+    </>
+  );
+};
+
+export const VideoChatRoom = (props) => {
+  const {
+    setShowModal3,
+    setShowVideoList,
+    setMemberList,
+    videoList,
+    videoConference,
+    memberList,
+    memList,
+  } = props;
+  return (
+    <>
+      <div class="justify-center w-full items-center flex flex-col overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+        <div class="relative w-1/3 my-5 mx-auto max-w-3xl">
+          {/*content*/}
+          <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            {/*header*/}
+            <div class="flex items-start justify-between px-6 py-5 border-b border-solid border-blueGray-200 rounded-t">
+              <h3 class="text-2xl font-sbtest py-1">화상회의 시작하기</h3>
+              <button
+                className="ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                onClick={() => setShowModal3(false)}
+              >
+                <span className="bg-transparent text-black text-opacity-50 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                  x
+                </span>
+              </button>
+            </div>
+            {/*body*/}
+            <div class="relative w-full mx-auto max-w-3xl">
+              <div class={"h-10 font-test grid grid-cols-2"}>
+                <button
+                  onClick={() => {
+                    setShowVideoList(true);
+                    setMemberList(false);
+                  }}
+                >
+                  <p className={videoList ? "text-date font-bold" : null}>
+                    목록
+                  </p>
+                </button>
+                <button
+                  onClick={() => {
+                    setMemberList(true);
+                    setShowVideoList(false);
+                  }}
+                >
+                  <p className={memberList ? "text-date font-bold" : null}>
+                    팀원
+                  </p>
+                </button>
+              </div>
+              <hr></hr>
+              {videoList
+                ? videoConference.map((list) => {
+                    return (
+                      <div>
+                        <div class="flex items-center justify-between w-full h-auto sm:h-16 px-4 lg:px-8 rounded-lg shadow bg-white">
+                          <div
+                            class="items-center space-x-2 lg:space-x-4 w-full h-auto"
+                            key={list.id}
+                          >
+                            <button class="flex-grow lg:text-base font-test text-fontColor-900">
+                              💻 {list.name}
+                            </button>
+
+                            <div class="float-right my-auto pl-10 text-right col-span-4 text-sm font-ltest text-date">
+                              {list.person} 명 진행 중
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                : null}
+
+              {memberList ? (
+                <div>
+                  <div class="flex items-center px-6 space-x-2 lg:space-x-4 py-2 text-blueGray-500 leading-relaxed">
+                    <input
+                      placeholder="🔎 팀원 찾기"
+                      class="font-test block text-base w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
+                    ></input>
+                    <button class="font-test w-1/3 float-right block text-white text-base bg-gray-400 h-10 lg:h-12 mt-2 lg:mt-4 px-4 lg:px-7 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500">
+                      확인
+                    </button>
+                  </div>
+
+                  {memList.map((list) => {
+                    return (
+                      <div>
+                        <div class="flex items-center justify-between w-full h-auto sm:h-16 px-4 lg:px-8 rounded-lg shadow bg-white">
+                          <div
+                            class="items-center space-x-2 lg:space-x-4 w-full h-auto"
+                            key={list.id}
+                          >
+                            <div class="pb-2 flex">
+                              <div class="relative w-10 h-10">
+                                <img
+                                  class="rounded-full border border-gray-100 shadow-sm"
+                                  src={list.profile}
+                                  alt="user image"
+                                />
+                                {list.online ? (
+                                  <>
+                                    <div class="absolute top-0 right-0 h-3 w-3 my-1 border-2 border-white rounded-full bg-green-400 z-2"></div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div class="absolute top-0 right-0 h-3 w-3 my-1 border-2 border-white rounded-full bg-gray-400 z-2"></div>
+                                  </>
+                                )}
+                              </div>
+
+                              <div class="text-left font-test flex-grow text-sm text-black mt-3 pl-2">
+                                {list.name}
+                              </div>
+
+                              {list.online ? (
+                                <button
+                                  class="float-right font-test text-gray-500 px-5 py-1 rounded-md bg-gray-200 hover:bg-gray-400 hover:text-gray-50"
+                                  onClick={() => {}}
+                                >
+                                  초대
+                                </button>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+    </>
+  );
+};
+
+export const CreateTeam = (props) => {
+  return (
+    <div>
+      <div
+        id="popup"
+        class="z-50 fixed w-full flex justify-center inset-0 bg-opacity-20 bg-gray-600"
+      >
+        <div
+          onClick={() => {
+            props.setShowCreateTeamForm(false);
+          }}
+          class="w-full h-full z-0 absolute inset-0"
+        ></div>
+        <div class="mx-auto container">
+          <div class="flex items-center justify-center h-full w-full">
+            <div class="bg-white rounded-md shadow fixed overflow-y-auto sm:h-auto w-10/12 md:w-8/12 lg:w-1/2 2xl:w-2/5">
+              <div class="bg-gray-100 rounded-tl-md rounded-tr-md px-4 md:px-8 md:py-4 py-7 flex items-center justify-between">
+                <p class="text-base font-semibold">새로운 팀 생성</p>
+                <button
+                  role="button"
+                  aria-label="close label"
+                  onClick={() => {
+                    props.setShowCreateTeamForm(false);
+                  }}
+                  class="focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 focus:outline-none"
+                >
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 28 28"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M21 7L7 21"
+                      stroke="#A1A1AA"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                    <path
+                      d="M7 7L21 21"
+                      stroke="#A1A1AA"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="px-4 md:px-10 pt-6 md:pt-12 md:pb-4 pb-7">
+                <div class="flex items-center justify-center">
+                  <div
+                    tabindex="0"
+                    aria-label="img"
+                    role="img"
+                    class="focus:outline-none w-40 h-40 p-16 bg-gray-100 rounded-md flex items-center justify-center"
+                  >
+                    <svg
+                      width="36"
+                      height="36"
+                      viewBox="0 0 36 36"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M22.5 12H22.515"
+                        stroke="#94A3B8"
+                        stroke-width="2.25"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                      <path
+                        d="M25.5 6H10.5C8.01472 6 6 8.01472 6 10.5V25.5C6 27.9853 8.01472 30 10.5 30H25.5C27.9853 30 30 27.9853 30 25.5V10.5C30 8.01472 27.9853 6 25.5 6Z"
+                        stroke="#94A3B8"
+                        stroke-width="2.25"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                      <path
+                        d="M6 22.4999L12 16.4999C12.6841 15.8417 13.4601 15.4951 14.25 15.4951C15.0399 15.4951 15.8159 15.8417 16.5 16.4999L24 23.9999"
+                        stroke="#94A3B8"
+                        stroke-width="2.25"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                      <path
+                        d="M21 20.9999L22.5 19.4999C23.1841 18.8417 23.9601 18.4951 24.75 18.4951C25.5399 18.4951 26.3159 18.8417 27 19.4999L30 22.4999"
+                        stroke="#94A3B8"
+                        stroke-width="2.25"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <form class="mt-11">
+                  <div class="flex items-center space-x-9">
+                    <input
+                      placeholder="Full Name"
+                      class="focus:ring-2 focus:ring-gray-400 w-1/2 focus:outline-none placeholder-gray-500 py-3 px-3 text-sm leading-none text-gray-800 bg-white border rounded border-gray-200"
+                    />
+                    <input
+                      placeholder="Age"
+                      type="number"
+                      min="0"
+                      class="focus:ring-2 focus:ring-gray-400 w-1/2 focus:outline-none placeholder-gray-500 py-3 px-3 text-sm leading-none text-gray-800 bg-white border rounded border-gray-200"
+                    />
+                  </div>
+                  <div class="flex items-center space-x-9 mt-8">
+                    <input
+                      placeholder="Email"
+                      type="email"
+                      class="focus:ring-2 focus:ring-gray-400 w-1/2 focus:outline-none placeholder-gray-500 py-3 px-3 text-sm leading-none text-gray-800 bg-white border rounded border-gray-200"
+                    />
+                    <div
+                      tabindex="0"
+                      class="focus:outline-none focus:ring-2 focus:ring-gray-400 w-1/2 bg-white border rounded border-gray-200 py-2.5 px-3"
+                    >
+                      <select
+                        aria-label="select an option"
+                        class="text-sm text-gray-500 w-full focus:outline-none"
+                      >
+                        <option selected="" disabled="" value="">
+                          Category
+                        </option>
+                        <option>Designer</option>
+                        <option>Developer</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="mt-8">
+                    <textarea
+                      placeholder="Description"
+                      class="focus:outline-none focus:ring-2 focus:ring-gray-400 py-3 pl-3 overflow-y-auto h-24 border placeholder-gray-500 rounded border-gray-200 w-full resize-none focus:outline-none"
+                    ></textarea>
+                  </div>
+                </form>
+                <div class="flex items-center justify-between mt-9">
+                  <button
+                    role="button"
+                    aria-label="close button"
+                    onClick={() => {
+                      props.setShowCreateTeamForm(false);
+                    }}
+                    class="focus:ring-2 focus:ring-offset-2 focus:bg-gray-600 focus:ring-gray-600 focus:outline-none px-6 py-3 bg-gray-600 hover:bg-gray-500 shadow rounded text-sm text-white"
+                  >
+                    취소
+                  </button>
+                  <button
+                    aria-label="add user"
+                    role="button"
+                    class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-800 focus:outline-none px-6 py-3 bg-indigo-700 hover:bg-opacity-80 shadow rounded text-sm text-white"
+                  >
+                    팀 생성
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

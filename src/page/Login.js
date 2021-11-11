@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import "./Login.css";
+import "../assets/styles/Login.css";
 import axios from "axios";
 import { SERVER_URL } from "../utils/SRC";
 import { setCookie, getCookie } from "../utils/cookie";

@@ -1,5 +1,6 @@
 import React from "react";
 import "animate.css";
+import Footer from "../particals/Footer";
 import { getCookie } from "../utils/cookie";
 
 function Mainpage(props) {
@@ -332,20 +333,6 @@ function Mainpage(props) {
           </div>
         </section>
       </main>
-      <footer>
-        <div class="bg-gray-100">
-          <div class="container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row">
-            <p class="text-gray-500 text-sm text-center sm:text-left">
-              © 2021 Gitime
-            </p>
-            <span class="inline-flex sm:ml-auto sm:mt-0 mt-2 justify-center sm:justify-start">
-              <div class="text-gray-500 text-sm text-center sm:text-left">
-                @ Soongsil Univ. Software Capstone Project - Delimanju
-              </div>
-            </span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
