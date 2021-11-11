@@ -13,6 +13,7 @@ module.exports = {
         bg2: "#908D8E",
         bg3: "#40382F",
         bg4: "#DCDCDC",
+        date: "#5755C3",
       },
 
       transitionDelay: {
@@ -56,5 +57,10 @@ module.exports = {
       extend: {},
     },
     plugins: [],
+  },
+  variants: {
+    extend: {
+      overflow: ["hover", "focus"],
+    },
   },
 };
