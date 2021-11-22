@@ -18,7 +18,7 @@ export const Upcoming = (props) => {
                     />
                   </div>
                 </div>
-                <div class="col-span-4">
+                <div class="col-span-4 text-sm">
                   <p>{item.title}</p>
                   <p class="text-xs font-ltest">
                     {item.date} {item.time}
@@ -53,7 +53,7 @@ export const RecentActivity = (props) => {
                         />
                       </div>
                     </div>
-                    <div class="col-span-4">
+                    <div class="col-span-4 text-sm">
                       <p>{item.username}님이 코드를 수정했습니다.</p>
                       <p class="text-sm font-ltest">
                         {item.date} {item.time}
@@ -73,7 +73,7 @@ export const RecentActivity = (props) => {
                         />
                       </div>
                     </div>
-                    <div class="col-span-4">
+                    <div class="col-span-4 text-sm">
                       <p>{item.username}님이 새로운 계획을 업로드 했습니다.</p>
                       <p class="text-sm font-ltest">
                         {item.date} {item.time}
@@ -93,7 +93,7 @@ export const RecentActivity = (props) => {
                         />
                       </div>
                     </div>
-                    <div class="col-span-4">
+                    <div class="col-span-4 text-sm">
                       <p>{item.username}님이 화상회의를 녹화했습니다.</p>
                       <p class="text-sm font-ltest">
                         {item.date} {item.time}
@@ -113,7 +113,7 @@ export const RecentActivity = (props) => {
                         />
                       </div>
                     </div>
-                    <div class="col-span-4">
+                    <div class="col-span-4 text-sm">
                       <p>{item.username}님이 파일을 업로드 했습니다.</p>
                       <p class="text-sm font-ltest">
                         {item.date} {item.time}
@@ -251,7 +251,7 @@ export const NavFooterMenu = (props) => {
       <div className="grid justify-items-center">
         <button onClick={() => setShowModal3(true)}>
           <img
-            class="w-12 h-12"
+            class="w-10 h-12"
             src="https://svgsilh.com/svg/651704.svg"
             alt="call"
           />

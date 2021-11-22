@@ -244,7 +244,6 @@ function Dashboard(props) {
   const [endCheck, setEndCheck] = useState(dataLists);
   const [videoList, setShowVideoList] = useState(true);
   const [memberList, setMemberList] = useState(false);
-  const [writing, setWriting] = useState(false);
 
   const onChangeInput = (e) => {
     setInputText(e.target.value);
@@ -322,11 +321,7 @@ function Dashboard(props) {
         />
       ) : null}
       {showModal4 ? (
-        <Board
-          setShowModal4={setShowModal4}
-          dataLists3={dataLists3}
-          setWriting={setWriting}
-        />
+        <Board setShowModal4={setShowModal4} dataLists3={dataLists3} />
       ) : null}
       <div className="Dashboard" class="grid grid-cols-5">
         <div className="LeftSide" class="col-span-4 ml-10 mb-10">
@@ -354,7 +349,7 @@ function Dashboard(props) {
         </div>
 
         <div className="RightSide" class="col-span-1 bg-rightbar ml-10">
-          <div className="grid grid-rows-4 ml-5 mr-5">
+          <div className="grid  ml-5 mr-5">
             <Upcoming dataLists={sample_upcoming} />
             <RecentActivity dataLists={sample_activity} />
             <Members />
