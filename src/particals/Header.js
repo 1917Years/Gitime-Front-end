@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { SERVER_URL } from "../utils/SRC";
 import logo from "../assets/img/logo-white.png";
 
-const navigation = [{ name: "My Teams", href: "/dashboard", current: false }];
+const navigation = [{ name: "My Teams", href: "/team", current: false }];
 
 const logOut = () => {
   Swal.fire({
@@ -73,7 +73,7 @@ function Header(props) {
                         <button
                           key={item.name}
                           onClick={() => {
-                            props.history.push("/dashboard");
+                            props.history.push("/team");
                           }}
                           className={classNames(
                             item.current

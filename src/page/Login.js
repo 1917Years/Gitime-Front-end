@@ -62,7 +62,7 @@ const getMembers = async ({ props, setSync }) => {
       console.log(res.data.data[0].sync); // 연동되었는지 확인
 
       if (res.data.data[0].sync) {
-        props.history.push("/dashboard");
+        props.history.push("/team");
       } else {
         setSync(true);
         // 연동이 안되어있따면

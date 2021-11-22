@@ -1,9 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format, getDay } from "date-fns";
 import { enGB, ko } from "date-fns/locale";
 import { DatePickerCalendar } from "react-nice-dates";
 import "react-nice-dates/build/style.css";
+import "../assets/styles/Progressbar.css";
 
+export var ProgressBar = ({ width, percent, color }) => {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    setValue(percent * width);
+  });
+
+  return (
+    <div>
+      <div className="progress-div" style={{ width: width }}>
+        <div
+          style={{ width: `${value}px`, backgroundColor: color }}
+          className="progress"
+        />
+      </div>
+    </div>
+  );
+};
 export const WeeklyWidget = (props) => {
   return (
     <div
@@ -48,18 +67,7 @@ export const DevelopeWidget = (props) => {
             </div>
           </div>
           <div class="overflow-hidden h-3 mb-4 text-xs flex rounded bg-purple-200 transition">
-            <div
-              style={{ width: "10%", transition: "width 2s" }}
-              class="
-            shadow-none
-            flex flex-col
-            text-center
-            whitespace-nowrap
-            text-white
-            justify-center
-            bg-purple-500
-          "
-            ></div>
+            <ProgressBar width={10} percent={1} color={"blue"} />
           </div>
         </div>
 
@@ -81,18 +89,7 @@ export const DevelopeWidget = (props) => {
             </div>
           </div>
           <div class="overflow-hidden h-3 mb-4 text-xs flex rounded bg-red-200">
-            <div
-              style={{ width: "50%" }}
-              class="
-            shadow-none
-            flex flex-col
-            text-center
-            whitespace-nowrap
-            text-white
-            justify-center
-            bg-red-500
-          "
-            ></div>
+            <ProgressBar width={10} percent={5} color={"red"} />
           </div>
         </div>
 
@@ -117,18 +114,7 @@ export const DevelopeWidget = (props) => {
             </div>
           </div>
           <div class="overflow-hidden h-3 mb-4 text-xs flex rounded bg-green-200">
-            <div
-              style={{ width: "70%" }}
-              class="
-            shadow-none
-            flex flex-col
-            text-center
-            whitespace-nowrap
-            text-white
-            justify-center
-            bg-green-500
-          "
-            ></div>
+            <ProgressBar width={10} percent={7} color={"green"} />
           </div>
         </div>
       </div>
@@ -222,104 +208,73 @@ export const CalendarWidget = (props) => {
 };
 
 export const BoardWidget = (props) => {
+  const { setShowModal4, dataLists3 } = props;
   return (
     <div
       className="Board"
       class="grid sm:col-span-3 md:col-span-1 row-span-2 font-ttest w-full h-full relative bg-white mx-auto pl-10 md:p-5 my-auto rounded-lg shadow-xl"
     >
-      <div class="font-sbtest">자료실</div>
-      <div>
-        <div className="grid grid-cols-2 py-2 px-1">
-          <div className="h-44">
-            <div className="h-2/3">
-              <img src="/logo192.png" className="h-full w-full"></img>
+      <div class="grid grid-cols-2">
+        <div class="font-sbtest text-left h-auto">자료실</div>
+
+        <button
+          class="pt-2 text-right font-test text-xs h-auto"
+          onClick={() => {
+            setShowModal4(true);
+          }}
+        >
+          더보기 {">"}
+        </button>
+      </div>
+      <div className="py-2 px-1">
+        {dataLists3.map((list) => {
+          return (
+            <div class="grid grid-cols-2 grid-rows-2 mt-5 font-sbtest">
+              <div class="col-span-2 my-auto text-sm font-ltest">
+                {list.title}
+              </div>
+              <div class="text-gray-500 my-auto text-xs font-ltest">
+                {list.date} {list.time}{" "}
+              </div>
+              <div class="my-auto text-sm font-ltest text-right">
+                {list.username}
+              </div>
             </div>
-            <div className="h-1/3">
-              <strong>제목</strong>
-              <p>부제목 및 요약 설명</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 h-44">
-            <div className="grid col-span-1">
-              <img src="/logo192.png" className="h-14 w-full"></img>
-            </div>
-            <div className="grid col-span-2">
-              <strong>제목</strong>
-              <p>부제목 및 요약 설명</p>
-            </div>
-            <div className="grid col-span-1">
-              <img src="/logo192.png" className="h-14 w-full"></img>
-            </div>
-            <div className="grid col-span-2">
-              <strong>제목</strong>
-              <p>부제목 및 요약 설명</p>
-            </div>
-            <div className="grid col-span-1">
-              <img src="/logo192.png" className="h-14 w-full"></img>
-            </div>
-            <div className="grid col-span-2">
-              <strong>제목</strong>
-              <p>부제목 및 요약 설명</p>
-            </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 export const TodoWidget = (props) => {
-  const { setShowModal } = props;
+  const { setShowModal, dataLists } = props;
   return (
     <div
       className="Todo"
       class="grid sm:col-span-3 md:col-span-1 row-span-2 font-ttest w-full h-full relative bg-white mx-auto pl-10 md:p-5 my-auto rounded-lg shadow-xl"
     >
       <div class="font-sbtest">To-Do List</div>
-      <div class="mt-5 font-sbtest overflow-y-auto h-3/4 w-full ">
-        <div class="gap-3 grid grid-rows-3">
-          <div class="grid grid-cols-12 h-1/4 w-full">
-            <div class="col-span-3 rounded-lg w-12 h-8 bg-develbg font-sbtest">
-              <div class="pt-2 m-auto w-6 h-6 text-center text-xs">U</div>
+      <div class="font-sbtest overflow-y-auto h-3/4 w-full ">
+        {dataLists.map((list) => {
+          return (
+            <div class="">
+              <div class="mb-3 mt-3 grid grid-cols-12 w-full">
+                <div class="col-span-3 rounded-lg w-12 h-8 bg-develbg font-sbtest">
+                  <div class="pt-2 m-auto w-6 h-6 text-center text-xs">
+                    {list.kinds}
+                  </div>
+                </div>
+                <div class="my-auto col-span-5 text-sm font-ltest">
+                  {list.data}
+                </div>
+                <div class="my-auto pr-5 text-right col-span-4 text-sm font-ltest text-date">
+                  {list.date}
+                </div>
+              </div>
             </div>
-            <div class="my-auto col-span-5 text-sm font-ltest">
-              프론트 디자인 완성하기
-            </div>
-            <div class="my-auto pr-5 text-right col-span-4 text-sm font-ltest text-date">
-              2021.09.14
-            </div>
-          </div>
-
-          <div class="grid grid-cols-12 h-1/4 w-full">
-            <div class="col-span-3 rounded-lg w-12 h-8 bg-develbg font-sbtest">
-              <div class="pt-2 m-auto w-6 h-6 text-center text-xs">F</div>
-            </div>
-            <div class="my-auto col-span-5 text-sm font-ltest">
-              프론트 코드 쓰기
-            </div>
-            <div class="my-auto pr-5 text-right col-span-4 text-sm font-ltest text-date">
-              2021.09.25
-            </div>
-          </div>
-
-          <div class="grid grid-cols-12 h-1/4 w-full">
-            <div class="col-span-3 rounded-lg w-12 h-8 bg-develbg font-sbtest">
-              <div class="pt-2 m-auto w-6 h-6 text-center text-xs">B</div>
-            </div>
-            <div class="my-auto col-span-5 text-sm font-ltest">
-              백엔드 코드 짜기
-            </div>
-            <div class="my-auto pr-5 text-right col-span-4 text-sm font-ltest text-date">
-              2021.09.30
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 h-1/4">
-            <div>13</div>
-            <div>14</div>
-            <div>15</div>
-          </div>
-        </div>
+          );
+        })}
       </div>
       <button
         class="font-test"

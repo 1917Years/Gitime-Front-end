@@ -3,7 +3,7 @@ import "../assets/styles/Dashboard.css";
 import "../assets/styles/Scroll.css";
 import "../assets/styles/alert_banner.css";
 import { AlertNotice } from "../component/Alert";
-import { AddingToDo, ChatRoom, VideoChatRoom } from "../component/Modal";
+import { Board, AddingToDo, ChatRoom, VideoChatRoom } from "../component/Modal";
 import {
   BoardWidget,
   CalendarWidget,
@@ -19,6 +19,10 @@ import {
   NavFooterMenu,
 } from "../component/SideNav";
 
+import {
+  sample_activity,
+  sample_upcoming,
+} from "../component/test/sample_data";
 const testdata = [
   // 샘플 데이터
   {
@@ -122,6 +126,13 @@ var dataLists = [
     date: "2021.09.30",
     end: true,
   },
+  {
+    id: 4,
+    data: "백엔드 채팅방 만들기",
+    kinds: "B",
+    date: "2021.11.22",
+    end: true,
+  },
 ];
 
 var dataLists2 = [
@@ -173,10 +184,59 @@ var dataLists2 = [
   },
 ];
 
+var dataLists3 = [
+  // 자료실 샘플 데이터
+  {
+    id: 1,
+    username: "팀원1",
+    title: "오늘 프론트 결과 캡쳐해서 올려요",
+    data: "오늘은 꽤 많이 한듯ㅋㅋ",
+    file: "PNG",
+    date: "2021.11.11",
+    time: "17:04",
+    like: "2",
+    comment: "3",
+  },
+  {
+    id: 2,
+    username: "팀원2",
+    title: "오늘 백 결과입니다",
+    data: "다들 수고하셨어요~",
+    file: "HWP",
+    date: "2021.11.11",
+    time: "17:07",
+    like: "3",
+    comment: "2",
+  },
+  {
+    id: 3,
+    username: "팀원3",
+    title: "중간보고서 임시",
+    data: "결과부분 내용 보충해주세요",
+    file: "HWP",
+    date: "2021.11.13",
+    time: "11:56",
+    like: "4",
+    comment: "1",
+  },
+  {
+    id: 4,
+    username: "팀원4",
+    title: "발표자료입니다",
+    data: "피드백해주세요~",
+    file: "PDF",
+    date: "2021.11.25",
+    time: "21:38",
+    like: "5",
+    comment: "5",
+  },
+];
+
 function Dashboard(props) {
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
+  const [showModal4, setShowModal4] = useState(false);
   const [ctext, setCtext] = useState("");
   const [inputText, setInputText] = useState("");
   const [checkedList, setCheckedItems] = useState([]);
@@ -184,6 +244,7 @@ function Dashboard(props) {
   const [endCheck, setEndCheck] = useState(dataLists);
   const [videoList, setShowVideoList] = useState(true);
   const [memberList, setMemberList] = useState(false);
+  const [writing, setWriting] = useState(false);
 
   const onChangeInput = (e) => {
     setInputText(e.target.value);
@@ -260,7 +321,13 @@ function Dashboard(props) {
           memList={memList}
         />
       ) : null}
-
+      {showModal4 ? (
+        <Board
+          setShowModal4={setShowModal4}
+          dataLists3={dataLists3}
+          setWriting={setWriting}
+        />
+      ) : null}
       <div className="Dashboard" class="grid grid-cols-5">
         <div className="LeftSide" class="col-span-4 ml-10 mb-10">
           <div class="pt-5 pl-5 font-ltest text-gray-400">
@@ -277,16 +344,19 @@ function Dashboard(props) {
             <WeeklyWidget />
             <DevelopeWidget />
             <CalendarWidget />
-            <BoardWidget />
-            <TodoWidget setShowModal={setShowModal} />
+            <BoardWidget
+              setShowModal4={setShowModal4}
+              dataLists3={dataLists3}
+            />
+            <TodoWidget setShowModal={setShowModal} dataLists={dataLists} />
             <ConsoleWidget />
           </div>
         </div>
 
         <div className="RightSide" class="col-span-1 bg-rightbar ml-10">
-          <div className="grid grid-rows-4 ml-10">
-            <Upcoming dataLists={dataLists} />
-            <RecentActivity />
+          <div className="grid grid-rows-4 ml-5 mr-5">
+            <Upcoming dataLists={sample_upcoming} />
+            <RecentActivity dataLists={sample_activity} />
             <Members />
             <NavFooterMenu
               setShowModal2={setShowModal2}

@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { CreateTeam } from "../component/Modal";
+import { GetTeamList } from "../utils/api/team/TeamApi";
 
 const numbers = [1, 2, 3, 4, 5];
 
 const DropDownEditDelete = (props) => {
-  const { idx } = props;
-  console.log(props);
+  const { item } = props;
   const [showDropDownMenu, setShowDropDownMenu] = useState(false);
+  console.log(props);
   return (
     <tr
       tabindex="0"
@@ -28,8 +29,10 @@ const DropDownEditDelete = (props) => {
             />
           </div>
           <div class="pl-4">
-            <p class="font-medium">UX Design &amp; Visual Strategy</p>
-            <p class="text-xs leading-3 text-gray-600 pt-2">Herman Group</p>
+            <p class="font-medium">{item.teamName}</p>
+            <p class="text-xs leading-3 text-gray-600 pt-2">
+              {item.teamDescription}
+            </p>
           </div>
         </div>
       </td>
@@ -44,11 +47,10 @@ const DropDownEditDelete = (props) => {
         <p class="text-xs leading-3 text-gray-600 mt-2">5 tasks pending</p>
       </td>
       <td class="pl-20">
-        <p class="font-medium">$13,000</p>
-        <p class="text-xs leading-3 text-gray-600 mt-2">$4,200 left</p>
-      </td>
-      <td class="pl-20">
-        <p class="font-medium">22.12.21</p>
+        <p class="font-medium">
+          {item.teamCreatedAt[0]}.{item.teamCreatedAt[1]}.
+          {item.teamCreatedAt[2]}
+        </p>
         <p class="text-xs leading-3 text-gray-600 mt-2">34 days</p>
       </td>
       <td class="pl-16">
@@ -115,7 +117,6 @@ const DropDownEditDelete = (props) => {
           </svg>
         </button>
         <div
-          id={idx}
           className={
             "dropdown-content bg-white shadow w-24 absolute z-30 right-0 mr-6 " +
             (showDropDownMenu ? null : "hidden")
@@ -142,7 +143,12 @@ const DropDownEditDelete = (props) => {
 function TeamForm(props) {
   const [showCreateTeamForm, setShowCreateTeamForm] = useState(false);
   const [showDropDownMenu, setShowDropDownMenu] = useState(new Map());
-  console.log(showDropDownMenu);
+  const [teamList, setTeamList] = useState(null);
+
+  useEffect(() => {
+    GetTeamList({ setTeamList });
+  }, []);
+  console.log(teamList);
   return (
     <div class="w-full sm:px-6 pt-6">
       {showCreateTeamForm ? (
@@ -179,27 +185,43 @@ function TeamForm(props) {
               tabindex="0"
               class="focus:outline-none h-16 w-full text-sm leading-none text-gray-800"
             >
-              <th class="font-normal text-left pl-4">Project</th>
-              <th class="font-normal text-left pl-12">Progress</th>
-              <th class="font-normal text-left pl-12">Tasks</th>
-              <th class="font-normal text-left pl-20">Budget</th>
-              <th class="font-normal text-left pl-20">Deadline</th>
-              <th class="font-normal text-left pl-16">Members</th>
+              <th class="font-normal text-left pl-4">팀명</th>
+              <th class="font-normal text-left pl-12">진행도</th>
+              <th class="font-normal text-left pl-12">작업률</th>
+              <th class="font-normal text-left pl-20">생성일</th>
+              <th class="font-normal text-left pl-16">구성 멤버</th>
             </tr>
           </thead>
           <tbody class="w-full">
-            {numbers.map((idx, item) => {
-              return <DropDownEditDelete props={props} />;
-            })}
+            {teamList == null
+              ? "불러오는중..."
+              : teamList.content.map((item) => {
+                  return <DropDownEditDelete item={item} props={props} />;
+                })}
           </tbody>
         </table>
         <div className="flex justify-center mt-10">
           <div class="flex flex-col items-center">
-            <span class="text-sm text-gray-700">
-              Showing <span class="font-semibold text-gray-900">1</span> to{" "}
-              <span class="font-semibold text-gray-900">10</span> of{" "}
-              <span class="font-semibold text-gray-900">100</span> Entries
-            </span>
+            {teamList == null ? (
+              <span class="text-sm text-gray-700">
+                Showing <span class="font-semibold text-gray-900">1</span> to
+                <span class="font-semibold text-gray-900">?</span> of{" "}
+                <span class="font-semibold text-gray-900">?</span> Entries
+              </span>
+            ) : (
+              <span class="text-sm text-gray-700">
+                Showing <span class="font-semibold text-gray-900">1</span> to
+                <span class="font-semibold text-gray-900">
+                  {teamList.numberOfElements}
+                </span>{" "}
+                of{" "}
+                <span class="font-semibold text-gray-900">
+                  {teamList.totalElements}
+                </span>{" "}
+                Entries
+              </span>
+            )}
+
             <div class="inline-flex mt-2 xs:mt-0">
               <button class="bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-l py-2 px-4">
                 Prev

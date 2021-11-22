@@ -1,4 +1,86 @@
 import React, { useEffect, useState } from "react";
+import { GetGitRepoList, PostCreateTeam } from "../utils/api/team/TeamApi";
+
+export const Board = (props) => {
+  const { setShowModal4, dataLists3 } = props;
+  const [writing, setWriting] = useState(false);
+  return (
+    <div class="justify-center w-full items-center flex flex-col overflow-x-hidden overflow-y-auto fixed  bg-black bg-opacity-25  inset-0 z-50 outline-none focus:outline-none">
+      <div class="relative w-1/2 h-2/3 my-5 mx-auto max-w-3xl">
+        <div
+          class="border-0 h-full rounded-lg relative flex flex-col w-full bg-white outline-none focus:outline-none
+        "
+        >
+          <div class="flex items-start justify-between px-6 py-5 border-b border-solid border-blueGray-200 rounded-t">
+            <h3 class="text-2xl font-sbtest py-1">자료실</h3>
+            <button
+              className="ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+              onClick={() => setShowModal4(false)}
+            >
+              <span className="bg-transparen text-black text-opacity-50 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                x
+              </span>
+            </button>
+          </div>
+          {writing ? (
+            <div class="mx-5 mb-5">
+              <input
+                placeholder="제목"
+                class="block text-base w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 outline-none transition border border-dashed hover:border-primary-500 border-gray-400 bg-white focus:border-primary-500"
+              ></input>
+              <input
+                placeholder="내용 입력"
+                class="block text-base w-full h-full px-1 lg:px-6 outline-none transition border-b border-l border-r border-dashed hover:border-primary-500 border-gray-400 bg-gray-50 focus:border-primary-500"
+              ></input>
+            </div>
+          ) : (
+            <>
+              <div class="mx-5 mb-5">
+                <button
+                  class="block text-base w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none transition border border-dashed hover:border-primary-500 border-gray-400 bg-gray-50 focus:border-primary-500"
+                  onClick={() => setWriting(true)}
+                >
+                  글 작성하기
+                </button>
+              </div>
+              <div class="mx-2 overflow-y-scroll">
+                {dataLists3.map((list) => {
+                  return (
+                    <div class="justify-between border-b border-dashed border-blueGray-200 py-4 mx-5 grid grid-cols-8 grid-rows-2 gap-4">
+                      <div class="col-start-1 row-start-1 col-span-1 row-span-2 rounded-lg bg-black font-sbtest">
+                        <div class="my-6 font-sbtest text-center text-develbg">
+                          {list.file}
+                        </div>
+                      </div>
+                      <h3 class="col-span-6  row-start-1 lg:text-lg font-ltest text-fontColor-900 ">
+                        {list.title}
+                      </h3>
+
+                      <h3 class="col-span-4 col-start-2 row-start-2 lg:text-sm font-ltest text-gray-500 text-fontColor-900 ">
+                        {list.data}
+                      </h3>
+                      <div class="place-content-end my-0 float-right justify-self-end col-span-2 col-start-6 row-start-2 row-end-2 flex pl-12 text-right text-sm font-ltest text-date">
+                        <div class="">{list.date}</div>
+                        <div class="pl-2">{list.time}</div>
+                      </div>
+
+                      <div class="col-span-1 col-start-8 text-gray-600 row-start-1 row-end-1 text-right font-ltest text-base">
+                        {list.username}
+                      </div>
+                      <div class="place-content-end my-0 col-span-1 col-start-8 text-gray-500 row-start-2 row-end-2 text-right font-ltest text-sm text-date">
+                        👍{list.like} 💬{list.comment}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const AddingToDo = (props) => {
   const {
@@ -355,6 +437,32 @@ export const VideoChatRoom = (props) => {
 };
 
 export const CreateTeam = (props) => {
+  const [gitRepos, setGitRepos] = useState([]);
+  const [teamName, setTeamName] = useState(null);
+  const [teamDevelopType, setTeamDevelopType] = useState(null);
+  const [teamGitRepo, setTeamGitRepo] = useState(null);
+  const [teamDescription, setTeamDescription] = useState(null);
+
+  useEffect(() => {
+    GetGitRepoList({ setGitRepos });
+    console.log(gitRepos);
+  }, []);
+
+  const onTeamNameHandler = (event) => {
+    setTeamName(event.currentTarget.value);
+  };
+
+  const onTeamDevelopTypeHandler = (event) => {
+    setTeamDevelopType(event.currentTarget.value);
+  };
+
+  const onTeamGitRepoHandler = (event) => {
+    setTeamGitRepo(event.currentTarget.value);
+  };
+
+  const onTeamDescriptionHandler = (event) => {
+    setTeamDescription(event.currentTarget.value);
+  };
   return (
     <div>
       <div
@@ -453,21 +561,9 @@ export const CreateTeam = (props) => {
                 <form class="mt-11">
                   <div class="flex items-center space-x-9">
                     <input
-                      placeholder="Full Name"
+                      placeholder="팀 이름"
                       class="focus:ring-2 focus:ring-gray-400 w-1/2 focus:outline-none placeholder-gray-500 py-3 px-3 text-sm leading-none text-gray-800 bg-white border rounded border-gray-200"
-                    />
-                    <input
-                      placeholder="Age"
-                      type="number"
-                      min="0"
-                      class="focus:ring-2 focus:ring-gray-400 w-1/2 focus:outline-none placeholder-gray-500 py-3 px-3 text-sm leading-none text-gray-800 bg-white border rounded border-gray-200"
-                    />
-                  </div>
-                  <div class="flex items-center space-x-9 mt-8">
-                    <input
-                      placeholder="Email"
-                      type="email"
-                      class="focus:ring-2 focus:ring-gray-400 w-1/2 focus:outline-none placeholder-gray-500 py-3 px-3 text-sm leading-none text-gray-800 bg-white border rounded border-gray-200"
+                      onChange={onTeamNameHandler}
                     />
                     <div
                       tabindex="0"
@@ -476,19 +572,44 @@ export const CreateTeam = (props) => {
                       <select
                         aria-label="select an option"
                         class="text-sm text-gray-500 w-full focus:outline-none"
+                        onChange={onTeamDevelopTypeHandler}
                       >
                         <option selected="" disabled="" value="">
-                          Category
+                          개발 언어 선택
                         </option>
-                        <option>Designer</option>
-                        <option>Developer</option>
+                        <option>JAVA</option>
+                        <option>C</option>
+                        <option>C++</option>
+                        <option>Python</option>
+                        <option>Spring</option>
+                        <option>React</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="flex items-center mt-8">
+                    <div
+                      tabindex="0"
+                      class="focus:outline-none focus:ring-2 focus:ring-gray-400 w-full bg-white border rounded border-gray-200 py-2.5 px-3"
+                    >
+                      <select
+                        aria-label="select an option"
+                        class="text-sm text-gray-500 w-full focus:outline-none"
+                        onChange={onTeamGitRepoHandler}
+                      >
+                        <option selected="" disabled="" value="">
+                          Github Repository 선택
+                        </option>
+                        {gitRepos.map((item) => {
+                          return <option>{item.gitRepoUrl}</option>;
+                        })}
                       </select>
                     </div>
                   </div>
                   <div class="mt-8">
                     <textarea
-                      placeholder="Description"
+                      placeholder="팀 설명"
                       class="focus:outline-none focus:ring-2 focus:ring-gray-400 py-3 pl-3 overflow-y-auto h-24 border placeholder-gray-500 rounded border-gray-200 w-full resize-none focus:outline-none"
+                      onChange={onTeamDescriptionHandler}
                     ></textarea>
                   </div>
                 </form>
@@ -507,6 +628,15 @@ export const CreateTeam = (props) => {
                     aria-label="add user"
                     role="button"
                     class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-800 focus:outline-none px-6 py-3 bg-indigo-700 hover:bg-opacity-80 shadow rounded text-sm text-white"
+                    onClick={() => {
+                      const data = {
+                        teamName: teamName,
+                        teamDescription: teamDescription,
+                        gitRepoUrl: teamGitRepo,
+                        developType: teamDevelopType,
+                      };
+                      PostCreateTeam({ data });
+                    }}
                   >
                     팀 생성
                   </button>
