@@ -1,103 +1,218 @@
-function TeamForm(props)
-{
-    return(
-        <div className="header">
-            <div class="font-ttest relative w-4/5 h-1 bg-white mx-auto pl-10 md:p-12 my-10 rounded-lg shadow-xl">
-                <div class="mx-auto font-semibold text-gray-500 flex flex-row">
-                    <div class="pr-10">Team1</div>
-                    <div class="pr-10">Team2</div> 
-                    <div class="pr-10">Team3</div> 
-                </div>
-                <div class="mr-5 w-12 h-2 border-4 border-opacity-100 border-purple-300"></div> 
-            </div>
-            
-            <div class="font-ltest relative w-4/5 h-4/5 bg-white mx-auto p-5 md:p-7 my-10 rounded-lg shadow-2xl">
-                <div class="absolute left-3/4 pl-8">
-                    <div class="flex space-x-1">
-                        <div class="relative mt-5 mb-2 ml-5 w-6 h-6">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/men/40.jpg" alt="user image" />
-                        </div>
-                        <div class="relative mt-5 mb-2 ml-5 w-6 h-6">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/women/12.jpg" alt="user image" />
-                        </div>
-                        <div class="relative mt-5 mb-2 ml-5 w-6 h-6">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/men/3.jpg" alt="user image" />
-                        </div>
-                        <div class="relative mt-5 mb-2 ml-5 w-6 h-6">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/women/5.jpg" alt="user image" />
-                        </div>
-                        <div class="relative mt-5 mb-2 ml-5 w-6 h-6">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/men/44.jpg" alt="user image" />
-                        </div>
-                        <div class="font-thin pl-3 mt-5 text-gray-400 text-xs"> 5 members </div>
-                    </div>
-                </div>
+import React from "react";
+import { useState } from "react";
+import { CreateTeam } from "../component/Modal";
 
-                <div class="font-btest font-bold text-black text-2xl"> 델리만쥬 </div>
-                <div class="font-thin mt-2 text-gray-400 text-base"> Participants List </div>
+const numbers = [1, 2, 3, 4, 5];
 
-                <div class="flex space-x-2">
-                    <div class="font-thin mt-5 ml-5 text-gray-300 text-sm"> Profile </div>
-                    <div class="font-thin mt-5 pl-10 text-gray-300 text-sm"> Role </div>
-                </div>
-    
-                <div class="pb-3 flex space-x-2">
-                    <div class="flex space-x-8">
-                        <div class="relative mt-5 mb-2 ml-5 w-12 h-12">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/men/40.jpg" alt="user image" />
-                            <div class="pt-1 text-sm text-purple-400 pl-2">박상호</div>
-                        </div>
-                        <div class="pt-1 mt-7 mx-auto text-sm text-gray-500 pl-2">서버 관리 및 백앤드 기능 구현</div>
-                        <div class="font-thin mt-8 text-xs text-purple-300">Leader</div>
-                    </div>
-                </div>
-
-                <div class="pb-3 flex space-x-2">
-                    <div class="flex space-x-8">
-                        <div class="relative mt-5 mb-2 ml-5 w-12 h-12">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/women/12.jpg" alt="user image" />
-                            <div class="pt-1 text-sm text-gray-400 pl-2">이지원</div>
-                        </div>
-                        <div class="pt-1 mt-7 mx-auto text-sm text-gray-500 pl-2">프론트 디자인 및 기능 구현</div>
-                    </div>
-                </div>
-
-                <div class="pb-3 flex space-x-2">
-                    <div class="flex space-x-8">
-                        <div class="relative mt-5 mb-2 ml-5 w-12 h-12">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/men/3.jpg" alt="user image" />
-                            <div class="pt-1 text-sm text-gray-400 pl-2">최영찬</div>
-                        </div>
-                        <div class="pt-1 mt-7 mx-auto text-sm text-gray-500 pl-2">서버 관리 및 백앤드 기능 구현</div>
-                    </div>
-                </div>
-
-                <div class="pb-3 flex space-x-2">
-                    <div class="flex space-x-8">
-                        <div class="relative mt-5 mb-2 ml-5 w-12 h-12">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/women/5.jpg" alt="user image" />
-                            <div class="pt-1 text-sm text-gray-400 pl-2">신유진</div>
-                        </div>
-                        <div class="pt-1 mt-7 mx-auto text-sm text-gray-500 pl-2">프론트 디자인 및 기능 구현</div>  
-                    </div>               
-                </div>
-            
-                <div class="pb-3 flex space-x-2">
-                    <div class="flex space-x-8">
-                        <div class="relative mt-5 mb-2 ml-5 w-12 h-12">
-                            <img class="rounded-full border border-gray-100 shadow-sm" src="https://randomuser.me/portraits/men/44.jpg" alt="user image" />
-                            <div class="pt-1 text-sm text-gray-400 pl-2">김혁준</div>
-                        </div>
-                        <div class="pt-1 mt-7 mx-auto text-sm text-gray-500 pl-2">프론트 디자인 및 기능 구현</div>  
-                    </div>
-                </div>
-
-                <div class="p-4 w-full md:w-1/3 mx-auto">
-                    <button class="bg-purple-300 mt-3 hover:bg-purple-400 w-full left-1/2 text-white font-medium py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="submit">Edit Team Form</button>
-                </div>
-            </div>
+const DropDownEditDelete = (props) => {
+  const { idx } = props;
+  console.log(props);
+  const [showDropDownMenu, setShowDropDownMenu] = useState(false);
+  return (
+    <tr
+      tabindex="0"
+      class="focus:outline-none h-20 text-sm leading-none text-gray-800 bg-white hover:bg-gray-100 border-b border-t border-gray-100"
+    >
+      <td
+        class="pl-4 cursor-pointer"
+        onClick={() => {
+          props.props.history.push("/dashboard");
+        }}
+      >
+        <div class="flex items-center">
+          <div class="w-10 h-10">
+            <img
+              class="w-full h-full"
+              src="https://cdn.tuk.dev/assets/templates/olympus/projects.png"
+              alt="UX Design and Visual Strategy"
+            />
+          </div>
+          <div class="pl-4">
+            <p class="font-medium">UX Design &amp; Visual Strategy</p>
+            <p class="text-xs leading-3 text-gray-600 pt-2">Herman Group</p>
+          </div>
         </div>
-    );
+      </td>
+      <td class="pl-12">
+        <p class="text-sm font-medium leading-none text-gray-800">72%</p>
+        <div class="w-24 h-3 bg-gray-100 rounded-full mt-2">
+          <div class="w-20 h-3 bg-green-progress rounded-full"></div>
+        </div>
+      </td>
+      <td class="pl-12">
+        <p class="font-medium">32/47</p>
+        <p class="text-xs leading-3 text-gray-600 mt-2">5 tasks pending</p>
+      </td>
+      <td class="pl-20">
+        <p class="font-medium">$13,000</p>
+        <p class="text-xs leading-3 text-gray-600 mt-2">$4,200 left</p>
+      </td>
+      <td class="pl-20">
+        <p class="font-medium">22.12.21</p>
+        <p class="text-xs leading-3 text-gray-600 mt-2">34 days</p>
+      </td>
+      <td class="pl-16">
+        <div class="flex items-center">
+          <img
+            class="shadow-md w-8 h-8 rounded-full"
+            src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
+            alt="collaborator 1"
+          />
+          <img
+            class="shadow-md w-8 h-8 rounded-full -ml-2"
+            src="https://cdn.tuk.dev/assets/templates/olympus/projects(9).png"
+            alt="collaborator 2"
+          />
+          <img
+            class="shadow-md w-8 h-8 rounded-full -ml-2"
+            src="https://cdn.tuk.dev/assets/templates/olympus/projects(10).png"
+            alt="collaborator 3"
+          />
+          <img
+            class="shadow-md w-8 h-8 rounded-full -ml-2"
+            src="https://cdn.tuk.dev/assets/templates/olympus/projects(11).png"
+            alt="collaborator 4"
+          />
+        </div>
+      </td>
+      <td class="px-7 2xl:px-0">
+        <button
+          onClick={() => {
+            setShowDropDownMenu(!showDropDownMenu);
+          }}
+          class="focus:ring-2 rounded-md focus:outline-none ml-7"
+          role="button"
+          aria-label="options"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <path
+              d="M4.16667 10.8334C4.62691 10.8334 5 10.4603 5 10.0001C5 9.53984 4.62691 9.16675 4.16667 9.16675C3.70643 9.16675 3.33334 9.53984 3.33334 10.0001C3.33334 10.4603 3.70643 10.8334 4.16667 10.8334Z"
+              stroke="#A1A1AA"
+              stroke-width="1.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+            <path
+              d="M10 10.8334C10.4602 10.8334 10.8333 10.4603 10.8333 10.0001C10.8333 9.53984 10.4602 9.16675 10 9.16675C9.53976 9.16675 9.16666 9.53984 9.16666 10.0001C9.16666 10.4603 9.53976 10.8334 10 10.8334Z"
+              stroke="#A1A1AA"
+              stroke-width="1.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+            <path
+              d="M15.8333 10.8334C16.2936 10.8334 16.6667 10.4603 16.6667 10.0001C16.6667 9.53984 16.2936 9.16675 15.8333 9.16675C15.3731 9.16675 15 9.53984 15 10.0001C15 10.4603 15.3731 10.8334 15.8333 10.8334Z"
+              stroke="#A1A1AA"
+              stroke-width="1.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </button>
+        <div
+          id={idx}
+          className={
+            "dropdown-content bg-white shadow w-24 absolute z-30 right-0 mr-6 " +
+            (showDropDownMenu ? null : "hidden")
+          }
+        >
+          <div
+            tabindex="0"
+            class="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+          >
+            <p>Edit</p>
+          </div>
+          <div
+            tabindex="0"
+            class="focus:outline-none focus:text-indigo-600 text-xs w-full hover:bg-indigo-700 py-4 px-4 cursor-pointer hover:text-white"
+          >
+            <p>Delete</p>
+          </div>
+        </div>
+      </td>
+    </tr>
+  );
+};
+
+function TeamForm(props) {
+  const [showCreateTeamForm, setShowCreateTeamForm] = useState(false);
+  const [showDropDownMenu, setShowDropDownMenu] = useState(new Map());
+  console.log(showDropDownMenu);
+  return (
+    <div class="w-full sm:px-6 pt-6">
+      {showCreateTeamForm ? (
+        <CreateTeam
+          setShowCreateTeamForm={setShowCreateTeamForm}
+          props={props}
+        />
+      ) : null}
+      <div class="px-4 md:px-10 py-4 md:py-7 border rounded-tl-lg rounded-tr-lg">
+        <div class="sm:flex items-center justify-between">
+          <p
+            tabindex="0"
+            class="focus:outline-none text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800"
+          >
+            팀 목록
+          </p>
+
+          <div>
+            <button
+              class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 inline-flex sm:ml-3 mt-4 sm:mt-0 items-start justify-start px-6 py-3 bg-gray-800 hover:bg-gray-900 focus:outline-none rounded"
+              onClick={() => {
+                setShowCreateTeamForm(true);
+              }}
+            >
+              <p class="text-sm font-medium leading-none text-white">팀 생성</p>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white shadow px-4 md:px-10 pt-4 md:pt-7 pb-5 overflow-y-auto">
+        <table class="w-full whitespace-nowrap">
+          <thead>
+            <tr
+              tabindex="0"
+              class="focus:outline-none h-16 w-full text-sm leading-none text-gray-800"
+            >
+              <th class="font-normal text-left pl-4">Project</th>
+              <th class="font-normal text-left pl-12">Progress</th>
+              <th class="font-normal text-left pl-12">Tasks</th>
+              <th class="font-normal text-left pl-20">Budget</th>
+              <th class="font-normal text-left pl-20">Deadline</th>
+              <th class="font-normal text-left pl-16">Members</th>
+            </tr>
+          </thead>
+          <tbody class="w-full">
+            {numbers.map((idx, item) => {
+              return <DropDownEditDelete props={props} />;
+            })}
+          </tbody>
+        </table>
+        <div className="flex justify-center mt-10">
+          <div class="flex flex-col items-center">
+            <span class="text-sm text-gray-700">
+              Showing <span class="font-semibold text-gray-900">1</span> to{" "}
+              <span class="font-semibold text-gray-900">10</span> of{" "}
+              <span class="font-semibold text-gray-900">100</span> Entries
+            </span>
+            <div class="inline-flex mt-2 xs:mt-0">
+              <button class="bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-l py-2 px-4">
+                Prev
+              </button>
+              <button class="bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-r border-0 border-l border-gray-700 py-2 px-4">
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default TeamForm;

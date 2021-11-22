@@ -1,9 +1,10 @@
-import { react, useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import queryString from "query-string";
 import axios from "axios";
 import { Redirect } from "react-router";
-import { SERVER_URL } from "../utils/SRC";
-import { getCookie } from "../utils/cookie";
+import { SERVER_URL } from "../SRC";
+import { getCookie } from "../cookie";
 
 function Oauth(props) {
   const queryObj = queryString.parse(props.location.search);

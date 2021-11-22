@@ -1,3 +1,4 @@
+import React from "react";
 import { ReactComponent as Nuser } from "./New_user_icon.svg";
 
 function TeamEdit(props) {
