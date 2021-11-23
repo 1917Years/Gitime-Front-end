@@ -1,169 +1,367 @@
-import React, { useEffect, useRef } from 'react';
-import "./Dashboard.css";
+import React, { useEffect, useRef, useState } from "react";
+import "../assets/styles/Dashboard.css";
+import "../assets/styles/Scroll.css";
+import "../assets/styles/alert_banner.css";
+import { AlertNotice } from "../component/Alert";
+import { Board, AddingToDo, ChatRoom, VideoChatRoom } from "../component/Modal";
+import {
+  BoardWidget,
+  CalendarWidget,
+  ConsoleWidget,
+  DevelopeWidget,
+  TodoWidget,
+  WeeklyWidget,
+} from "../component/Widget";
+import {
+  Members,
+  RecentActivity,
+  Upcoming,
+  NavFooterMenu,
+} from "../component/SideNav";
 
-class CircularProgressBar extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {};
+import {
+  sample_activity,
+  sample_upcoming,
+} from "../component/test/sample_data";
+const testdata = [
+  // 샘플 데이터
+  {
+    id: 1,
+    title: "avcd",
+    tag: "front",
+    date: "2021-10-23",
+  },
+  {
+    id: 2,
+    title: "pop",
+    tag: "front",
+    date: "2021-10-23",
+  },
+  {
+    id: 3,
+    title: "avcd",
+    tag: "back",
+    date: "2021-10-23",
+  },
+  {
+    id: 4,
+    title: "noting to report",
+    tag: "report",
+    date: "2021-10-23",
+  },
+  {
+    id: 5,
+    title: "noting to report",
+    tag: "report",
+    date: "2021-10-23",
+  },
+  {
+    id: 6,
+    title: "noting to report",
+    tag: "report",
+    date: "2021-10-23",
+  },
+];
+
+var videoConference = [
+  // 화상회의 목록 리스트
+  { id: 1, name: "프론트 회의방", person: "3" },
+  { id: 2, name: "백 회의방", person: "2" },
+];
+
+var memList = [
+  // 멤버 리스트
+  {
+    id: 1,
+    name: "박상호",
+    profile: "https://randomuser.me/portraits/men/40.jpg",
+    online: true,
+  },
+  {
+    id: 2,
+    name: "김혁준",
+    profile: "https://randomuser.me/portraits/men/40.jpg",
+    online: false,
+  },
+  {
+    id: 3,
+    name: "최영찬",
+    profile: "https://randomuser.me/portraits/men/40.jpg",
+    online: false,
+  },
+  {
+    id: 4,
+    name: "신유진",
+    profile: "https://randomuser.me/portraits/men/40.jpg",
+    online: true,
+  },
+  {
+    id: 5,
+    name: "이지원",
+    profile: "https://randomuser.me/portraits/men/40.jpg",
+    online: true,
+  },
+];
+
+var dataLists = [
+  // 투두리스트 샘플 데이터
+  {
+    id: 1,
+    data: "프론트 디자인 완성하기",
+    kinds: "F",
+    date: "2021.09.14",
+    end: false,
+  },
+  {
+    id: 2,
+    data: "프론트 코드 쓰기",
+    kinds: "F",
+    date: "2021.09.25",
+    end: false,
+  },
+  {
+    id: 3,
+    data: "백엔드 코드 짜기",
+    kinds: "B",
+    date: "2021.09.30",
+    end: true,
+  },
+  {
+    id: 4,
+    data: "백엔드 채팅방 만들기",
+    kinds: "B",
+    date: "2021.11.22",
+    end: true,
+  },
+];
+
+var dataLists2 = [
+  // 채팅 샘플 데이터
+  {
+    id: 1,
+    username: "팀원1",
+    userprofile: "https://randomuser.me/portraits/men/40.jpg",
+    data: "여러분 이거 어떤가요??",
+    date: "2021.11.11",
+    time: "17:04",
+    online: false,
+  },
+  {
+    id: 2,
+    data: "오 괜찮은데요?!",
+    username: "팀원2",
+    userprofile: "https://randomuser.me/portraits/men/40.jpg",
+    date: "2021.11.11",
+    time: "17:15",
+    online: true,
+  },
+  {
+    id: 3,
+    data: "오 좋아요!",
+    username: "팀원3",
+    userprofile: "https://randomuser.me/portraits/men/40.jpg",
+    date: "2021.11.11",
+    time: "17:15",
+    online: false,
+  },
+  {
+    id: 4,
+    data: "그럼 이걸로 할까요?",
+    username: "팀원4",
+    userprofile: "https://randomuser.me/portraits/men/40.jpg",
+    date: "2021.11.11",
+    time: "17:26",
+    online: false,
+  },
+  {
+    id: 5,
+    data: "좋아요ㅋㅋ",
+    username: "팀원5",
+    userprofile: "https://randomuser.me/portraits/men/40.jpg",
+    date: "2021.11.11",
+    time: "17:37",
+    online: true,
+  },
+];
+
+var dataLists3 = [
+  // 자료실 샘플 데이터
+  {
+    id: 1,
+    username: "팀원1",
+    title: "오늘 프론트 결과 캡쳐해서 올려요",
+    data: "오늘은 꽤 많이 한듯ㅋㅋ",
+    file: "PNG",
+    date: "2021.11.11",
+    time: "17:04",
+    like: "2",
+    comment: "3",
+  },
+  {
+    id: 2,
+    username: "팀원2",
+    title: "오늘 백 결과입니다",
+    data: "다들 수고하셨어요~",
+    file: "HWP",
+    date: "2021.11.11",
+    time: "17:07",
+    like: "3",
+    comment: "2",
+  },
+  {
+    id: 3,
+    username: "팀원3",
+    title: "중간보고서 임시",
+    data: "결과부분 내용 보충해주세요",
+    file: "HWP",
+    date: "2021.11.13",
+    time: "11:56",
+    like: "4",
+    comment: "1",
+  },
+  {
+    id: 4,
+    username: "팀원4",
+    title: "발표자료입니다",
+    data: "피드백해주세요~",
+    file: "PDF",
+    date: "2021.11.25",
+    time: "21:38",
+    like: "5",
+    comment: "5",
+  },
+];
+
+function Dashboard(props) {
+  const [showModal, setShowModal] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
+  const [showModal4, setShowModal4] = useState(false);
+  const [ctext, setCtext] = useState("");
+  const [inputText, setInputText] = useState("");
+  const [checkedList, setCheckedItems] = useState([]);
+  const [temp, setTemp] = useState(false);
+  const [endCheck, setEndCheck] = useState(dataLists);
+  const [videoList, setShowVideoList] = useState(true);
+  const [memberList, setMemberList] = useState(false);
+
+  const onChangeInput = (e) => {
+    setInputText(e.target.value);
+  };
+  const onReset = () => {
+    setInputText("");
+  };
+  const addChat = (list) => {
+    var tmp = {
+      id: 6,
+      data: ctext,
+      username: "나",
+      userprofile: "https://randomuser.me/portraits/men/40.jpg",
+      date: "2021.11.11",
+      time: "18:33",
+      online: true,
+    };
+    dataLists2.push(tmp);
+    setTemp(!temp);
+  };
+  const checkedItemHandler = (list, isChecked) => {
+    if (isChecked) {
+      setCheckedItems([...checkedList, list]);
+    } else if (!isChecked && checkedList.includes(list)) {
+      setCheckedItems(checkedList.filter((el) => el !== list));
     }
-  
-    render() {
-      // Size of the enclosing square
-      const sqSize = this.props.sqSize;
-      // SVG centers the stroke width on the radius, subtract out so circle fits in square
-      const radius = (this.props.sqSize - this.props.strokeWidth) / 2;
-      
-      // Enclose cicle in a circumscribing square
-      const viewBox = '0 0 ${sqSize} ${sqSize}';
-
-      // Arc length at 100% coverage is the circle circumference
-      const dashArray = radius * Math.PI * 2;
-      // Scale 100% coverage overlay with the actual percent
-      const dashOffset = dashArray - dashArray * this.props.percentage / 100;
-  
-      return (
-        <div class="grid justify-items-center">
-            <svg
-                width={this.props.sqSize}
-                height={this.props.sqSize}
-                viewBox={viewBox}
-                >
-                
-                <circle 
-                className="circle-background"
-                cx={this.props.sqSize / 2}
-                cy={this.props.sqSize / 2}
-                r={radius}
-                strokeWidth={'${this.props.strokeWidth}px'} />
-
-                <circle
-                className="circle-progress"
-                cx={this.props.sqSize / 2}
-                cy={this.props.sqSize / 2}
-                r={radius}
-                strokeWidth={'${this.props.strokeWidth}px'}
-                // Start progress marker at 12 O'Clock
-                transform={'rotate(-90 ${this.props.sqSize / 2} ${this.props.sqSize / 2})'}
-                style={{
-                    strokeDasharray: dashArray,
-                    strokeDashoffset: dashOffset
-                }} />
-                
-                <text
-                className="circle-text"
-                x="50%"
-                y="50%"
-                dy=".3em"
-                textAnchor="middle">
-                {`${this.props.percentage}%`}
-                </text>
-
-                <text
-                className="circle-text2"
-                x="50%"
-                y="70%"
-                dy=".3em"
-                textAnchor="middle">
-                {'Tasks completed'}
-                </text>    
-                </svg>
-            </div>
-      );
+  };
+  const eraseElement = (list) => {
+    for (let i = 0; i < dataLists.length; i++) {
+      if (dataLists[i].id == list.id) {
+        dataLists.splice(i, 1);
+        i--;
+      }
     }
-  }
-  
-  CircularProgressBar.defaultProps = {
-    sqSize: 100,
-    percentage: 80,
-    strokeWidth: 15
+  };
+  const changeComplete = (list) => {
+    list.end = !list.end;
+    setTemp(!temp);
   };
 
+  return (
+    <div class="font-test" className="header">
+      <AlertNotice />
+      {showModal ? (
+        <AddingToDo
+          setShowModal={setShowModal}
+          endCheck={endCheck}
+          checkedItemHandler={checkedItemHandler}
+          checkedList={checkedList}
+          changeComplete={changeComplete}
+        />
+      ) : null}
 
+      {showModal2 ? (
+        <ChatRoom
+          setShowModal2={setShowModal2}
+          dataLists2={dataLists2}
+          addChat={addChat}
+          setCtext={setCtext}
+          onChangeInput={onChangeInput}
+          onReset={onReset}
+          inputText={inputText}
+        />
+      ) : null}
 
-function Dashboard(props)
-{
+      {showModal3 ? (
+        <VideoChatRoom
+          setShowModal3={setShowModal3}
+          setShowVideoList={setShowVideoList}
+          setMemberList={setMemberList}
+          memberList={memberList}
+          videoList={videoList}
+          videoConference={videoConference}
+          memList={memList}
+        />
+      ) : null}
+      {showModal4 ? (
+        <Board setShowModal4={setShowModal4} dataLists3={dataLists3} />
+      ) : null}
+      <div className="Dashboard" class="grid grid-cols-5">
+        <div className="LeftSide" class="col-span-4 ml-10 mb-10">
+          <div class="pt-5 pl-5 font-ltest text-gray-400">
+            유진님 반가워요, 다시 돌아오신 걸 환영해요! 👋
+          </div>
 
-    return(
-        
-        <div class="font-test" className="header">
-            <div className="Dashboard" class="grid grid-cols-5">
-                <div className="LeftSide" class="col-span-4 ml-10  mb-10">
-                    <div class="pt-5 pl-5 font-ltest text-gray-400">유진님 반가워요, 다시 돌아오신 걸 환영해요! 👋</div>
-                    
-                    <div class="flex">
-                        <div class="flex-grow pl-5 text-3xl font-sbtest text-2xl">Team1 DashBoard Today</div>
-                        <button class="bg-red-300 hover:bg-red-400 text-white py-2 px-2 rounded shadow-lg hover:shadow-xl transition duration-200">Browse Code From Git</button>
-                    </div>
-
-                    <div class="grid grid-rows-2 grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-                            <div className="Weekly" class="grid font-ttest w-full h-full bg-white mx-auto pl-10 md:p-12 my-auto rounded-lg shadow-xl ">
-                                <div class="font-sbtest">Weekly Progress</div>
-                                <div>Start from Nov 7-14, 2020</div>                                 
-                                <div class="mt-10">
-                                    <CircularProgressBar
-                                    strokeWidth="10"
-                                    sqSize="200"/>
-                                </div>                           
-                            </div>
-                            
-                            <div className="Develop" class="grid font-ttest w-full h-full bg-white mx-auto pl-10 md:p-12 my-auto rounded-lg shadow-xl">
-                                <div class="font-sbtest">Develop Progress</div>
-                                
-                                <div> 
-                                    <div class= "mt-4 grid grid-rows-3 grid-flow-col">
-                                        <div class="row-span-3 rounded-lg w-16 h-14 bg-develbg font-sbtest">
-                                            <div class="mt-2 pt-2 w-16 h-14 text-center">UI</div>
-                                        </div>
-                                        <div class="mb-2 col-span-2 text-sm font-test">Web Design</div>
-                                        <div class="text-sm font-ltest">Last Update : 2021.09.27</div>
-                                    </div>                                 
-                                    
-                                    <div class= "mt-1 grid grid-rows-3 grid-flow-col">
-                                        <div class="row-span-3 rounded-lg w-16 h-14 bg-develbg font-sbtest">
-                                            <div class="mt-2 pt-2 w-16 h-14 text-center">Front</div>
-                                        </div>
-                                        <div class="mb-2 col-span-2 text-sm font-test">Front Server</div>
-                                        <div class="text-sm font-ltest">Last Update : 2021.09.27</div>
-                                    </div> 
-                                    
-                                    <div class= "mt-1 grid grid-rows-3 grid-flow-col">
-                                        <div class="row-span-3 rounded-lg w-16 h-14 bg-develbg font-sbtest">
-                                            <div class="mt-2 pt-2 w-16 h-14 text-center">Back</div>
-                                        </div>
-                                        <div class="mb-2 col-span-2 text-sm font-test">Back Server</div>
-                                        <div class="text-sm font-ltest">Last Update : 2021.09.27</div>
-                                    </div>                                   
-                                </div> 
-
-                            </div>
-                            
-                            <div className="Reference" class="row-span-2 grid font-ttest w-full h-full relative bg-white mx-auto pl-10 md:p-12 my-auto rounded-lg shadow-xl">
-                                3
-                            </div>
-
-                            <div className="Todo" class="grid font-ttest w-full h-full relative bg-white mx-auto pl-10 md:p-12 my-auto rounded-lg shadow-xl">
-                                4
-                            </div>
-
-                        
-                        <div className="Calendar" class="grid font-ttest w-full h-full relative bg-white mx-auto pl-10 md:p-12 my-auto rounded-lg shadow-xl">
-                                5
-                        </div>
-                        <div className="Console" class="col-span-3 grid font-ttest w-full relative bg-white mx-auto pl-10 md:p-12 my-auto rounded-lg shadow-xl">
-                        Console
-                        </div>
-                    </div>
+          <div class="flex">
+            <div class="flex-grow pl-5 text-3xl font-sbtest text-2xl">
+              Team1 DashBoard Today
             </div>
+          </div>
 
-                <div className="RightSide" class="col-span-1 bg-rightbar ml-10">
-                    <div class="font-sbtest">Upcoming</div>
-                </div>
-                
-
-            </div>
+          <div className="grid grid-cols-3 grid-rows-7 gap-4 ">
+            <WeeklyWidget />
+            <DevelopeWidget />
+            <CalendarWidget />
+            <BoardWidget
+              setShowModal4={setShowModal4}
+              dataLists3={dataLists3}
+            />
+            <TodoWidget setShowModal={setShowModal} dataLists={dataLists} />
+            <ConsoleWidget />
+          </div>
         </div>
-    );
 
+        <div className="RightSide" class="col-span-1 bg-rightbar ml-10">
+          <div className="grid  ml-5 mr-5">
+            <Upcoming dataLists={sample_upcoming} />
+            <RecentActivity dataLists={sample_activity} />
+            <Members />
+            <NavFooterMenu
+              setShowModal2={setShowModal2}
+              setShowModal3={setShowModal3}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Dashboard;

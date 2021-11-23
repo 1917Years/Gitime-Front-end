@@ -1,9 +1,10 @@
-import { react, useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import queryString from "query-string";
 import axios from "axios";
-import { SERVER_URL } from "./SRC";
-import { setCookie } from "./cookie";
-import { getMemberInfoOauth } from "./ApiConfig";
+import { SERVER_URL } from "../SRC";
+import { setCookie } from "../cookie";
+import { getMemberInfoOauth } from "../ApiConfig";
 
 function GoogleOauth(props) {
   const queryObj = queryString.parse(props.location.search);

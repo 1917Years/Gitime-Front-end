@@ -1,9 +1,9 @@
-import { react, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import queryString from "query-string";
 import axios from "axios";
-import { SERVER_URL } from "../utils/SRC";
-import { setCookie } from "../utils/cookie";
-import { getMemberInfoOauth } from "../utils/ApiConfig";
+import { SERVER_URL } from "../SRC";
+import { setCookie } from "../cookie";
+import { getMemberInfoOauth } from "../ApiConfig";
 
 function KakaoOauth(props) {
   const queryObj = queryString.parse(props.location.search);
@@ -21,7 +21,7 @@ function KakaoOauth(props) {
           sameSite: "none",
         });
 
-        getMemberInfoOauth({ setReg,props });
+        getMemberInfoOauth({ setReg, props });
       })
       .catch((err) => {
         console.error(err);
