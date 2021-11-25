@@ -1,6 +1,8 @@
 import React from "react";
 
 export const AlertNotice = (props) => {
+  const { notice } = props;
+  console.log(notice);
   return (
     <div class="alert-banner w-full fixed top-100 z-50">
       <input type="checkbox" class="hidden" id="banneralert" />
@@ -10,7 +12,7 @@ export const AlertNotice = (props) => {
         title="close"
         for="banneralert"
       >
-        🔊 각 팀마다의 공지사항
+        🔊 {notice}
         <svg
           class="fill-current text-white"
           xmlns="http://www.w3.org/2000/svg"

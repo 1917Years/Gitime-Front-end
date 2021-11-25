@@ -17,6 +17,7 @@ import OauthRegister from "./page/OauthRegister";
 import MyPage from "./page/MyPage";
 import GoogleOauth from "./utils/oauth/GoogleOauth";
 import Footer from "./particals/Footer";
+import ManageTeam from "./page/ManageTeam";
 
 function App() {
   return (
@@ -114,10 +115,19 @@ function App() {
         />
 
         <Route
-          path="/dashboard"
+          path="/dashboard/:teamName"
           exact={true}
           component={(props) => {
             return <Dashboard {...props}></Dashboard>;
+          }}
+        />
+
+        {/* /dashboard/test/manageteam */}
+        <Route
+          path="/dashboard/:teamName/manageteam"
+          exact={true}
+          component={(props) => {
+            return <ManageTeam {...props}></ManageTeam>;
           }}
         />
       </Switch>

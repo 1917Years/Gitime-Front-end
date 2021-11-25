@@ -17,7 +17,7 @@ const DropDownEditDelete = (props) => {
       <td
         class="pl-4 cursor-pointer"
         onClick={() => {
-          props.props.history.push("/dashboard");
+          props.props.history.push("/dashboard/" + item.teamName);
         }}
       >
         <div class="flex items-center">

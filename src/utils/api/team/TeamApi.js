@@ -59,3 +59,23 @@ export const PostCreateTeam = async ({ data }) => {
       }
     });
 };
+
+export const GetTeamNotice = async ({ setNotice, teamName }) => {
+  await axios
+    .get(SERVER_URL + "/api/v1/teams/" + teamName + "/notice", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      console.log(res);
+      setNotice(res.data.data[0].notice);
+      console.log(res.data.data[0].notice);
+    })
+    .catch((err) => {
+      if (err.response) {
+        console.log(err.response.data); // => the response payload 오 굿굿
+      }
+    });
+};

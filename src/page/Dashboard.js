@@ -23,6 +23,7 @@ import {
   sample_activity,
   sample_upcoming,
 } from "../component/test/sample_data";
+import { GetTeamNotice } from "../utils/api/team/TeamApi";
 const testdata = [
   // 샘플 데이터
   {
@@ -244,6 +245,15 @@ function Dashboard(props) {
   const [endCheck, setEndCheck] = useState(dataLists);
   const [videoList, setShowVideoList] = useState(true);
   const [memberList, setMemberList] = useState(false);
+  const [notice, setNotice] = useState("불러오는중..");
+  console.log();
+
+  useEffect(() => {
+    GetTeamNotice({
+      setNotice: setNotice,
+      teamName: props.match.params.teamName,
+    });
+  }, []);
 
   const onChangeInput = (e) => {
     setInputText(e.target.value);
@@ -286,7 +296,7 @@ function Dashboard(props) {
 
   return (
     <div class="font-test" className="header">
-      <AlertNotice />
+      <AlertNotice notice={notice} />
       {showModal ? (
         <AddingToDo
           setShowModal={setShowModal}
@@ -333,6 +343,18 @@ function Dashboard(props) {
             <div class="flex-grow pl-5 text-3xl font-sbtest text-2xl">
               Team1 DashBoard Today
             </div>
+            <button
+              class="text-3xl font-sbtest"
+              onClick={() => {
+                // window.location.href =
+                props.history.push("/manageteam");
+              }}
+            >
+              <img
+                src="https://cdn.discordapp.com/attachments/874658668434583655/913307164058218506/iconmonstr-gear-1-32.png"
+                alt="alert"
+              />
+            </button>
           </div>
 
           <div className="grid grid-cols-3 grid-rows-7 gap-4 ">
