@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export const Upcoming = (props) => {
   const { dataLists } = props;
@@ -233,18 +233,90 @@ export const Members = (props) => {
   );
 };
 
+let webSocket;
+
+const onOpen = () => {};
+
+const onClose = () => {
+  disconnect();
+};
+
+const onMessage = () => {
+  // data = e.data;
+  // chatroom = document.getElementById("chatroom");
+  // chatroom.innerHTML = chatroom.innerHTML + "<br>" + data;
+};
+
+const disconnect = () => {
+  //webSocket.send(JSON.stringify({chatRoomId : roomId,type:'LEAVE',writer:nickname}));
+  webSocket.close();
+  //location.href=endLink;
+};
+
+const send = () => {
+  //msg = document.getElementById("message").value;
+  //webSocket.send(JSON.stringify({chatRoomId : roomId,type:'CHAT',writer:nickname,message : msg}));
+  //document.getElementById("message").value = "";
+};
+
+const connect = () => {
+  var aa = "test";
+  webSocket = new WebSocket("ws://localhost:8080/chat/" + aa);
+  webSocket.onopen = function (e) {};
+  webSocket.onclose = function (e) {};
+  webSocket.onmessage = function (e) {};
+};
+
+/*
+  function connect(){
+        webSocket = new WebSocket("ws://localhost:8080/chat/team1");
+        webSocket.onopen = onOpen;
+        webSocket.onclose = onClose;
+        webSocket.onmessage = onMessage;
+    }
+    function disconnect(){
+        webSocket.send(JSON.stringify({chatRoomId : roomId,type:'LEAVE',writer:nickname}));
+        webSocket.close();
+        location.href=endLink;
+    }
+    function send(){
+        msg = document.getElementById("message").value;
+        webSocket.send(JSON.stringify({chatRoomId : roomId,type:'CHAT',writer:nickname,message : msg}));
+        document.getElementById("message").value = "";
+    }
+    function onOpen(){
+        webSocket.send(JSON.stringify({chatRoomId : roomId,type:'ENTER',writer:nickname}));
+    }
+    function onMessage(e){
+        data = e.data;
+        chatroom = document.getElementById("chatroom");
+        chatroom.innerHTML = chatroom.innerHTML + "<br>" + data;
+    }
+    function onClose(){
+        disconnect();
+    }
+  */
+
 export const NavFooterMenu = (props) => {
   const { setShowModal2, setShowModal3 } = props;
+  const [linkSocket, setLinkSocket] = useState(false);
+
   return (
     <div className="grid grid-cols-3 justify-items-stretch mt-10 h-10">
       <div className="grid justify-items-center">
-        <button onClick={() => setShowModal2(true)}>
+        <button
+          onClick={() => {
+            setShowModal2(true);
+            setLinkSocket(true);
+          }}
+        >
           <img
             class="w-12 h-12"
             src="https://svgsilh.com/svg/310399.svg"
             alt="chat"
           />
         </button>
+        {linkSocket ? null : null}
       </div>
       <div></div>
 

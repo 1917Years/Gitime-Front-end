@@ -52,8 +52,10 @@ export const PostCreateTeam = async ({ data }) => {
     })
     .then((res) => {
       console.log(res);
+      // 성공
     })
     .catch((err) => {
+      // 실패
       if (err.response) {
         console.log(err.response.data); // => the response payload 오 굿굿
       }

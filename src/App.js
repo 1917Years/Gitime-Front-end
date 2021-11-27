@@ -124,7 +124,7 @@ function App() {
 
         {/* /dashboard/test/manageteam */}
         <Route
-          path="/dashboard/:teamName/manageteam"
+          path="/dashboard/:teamName/setting"
           exact={true}
           component={(props) => {
             return <ManageTeam {...props}></ManageTeam>;

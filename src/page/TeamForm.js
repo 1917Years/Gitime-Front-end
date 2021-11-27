@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { CreateTeam } from "../component/Modal";
 import { GetTeamList } from "../utils/api/team/TeamApi";
+import axios from "axios";
 
 const numbers = [1, 2, 3, 4, 5];
 
@@ -150,11 +151,11 @@ function TeamForm(props) {
   }, []);
   console.log(teamList);
   return (
-    <div class="w-full sm:px-6 pt-6">
+    <div class="w-full sm:px-6 pt-6 h-full">
       {showCreateTeamForm ? (
         <CreateTeam
           setShowCreateTeamForm={setShowCreateTeamForm}
-          props={props}
+          props={props} // 1
         />
       ) : null}
       <div class="px-4 md:px-10 py-4 md:py-7 border rounded-tl-lg rounded-tr-lg">
@@ -178,7 +179,7 @@ function TeamForm(props) {
           </div>
         </div>
       </div>
-      <div class="bg-white shadow px-4 md:px-10 pt-4 md:pt-7 pb-5 overflow-y-auto">
+      <div class="bg-white shadow px-4 md:px-10 pt-4 md:pt-7 pb-5 overflow-y-auto h-full">
         <table class="w-full whitespace-nowrap">
           <thead>
             <tr

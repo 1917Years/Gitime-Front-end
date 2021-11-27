@@ -347,7 +347,9 @@ function Dashboard(props) {
               class="text-3xl font-sbtest"
               onClick={() => {
                 // window.location.href =
-                props.history.push("/manageteam");
+                props.history.push(
+                  "/dashboard/" + props.match.params.teamName + "/setting"
+                );
               }}
             >
               <img
