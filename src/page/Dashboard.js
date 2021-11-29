@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../assets/styles/Dashboard.css";
 import "../assets/styles/Scroll.css";
 import "../assets/styles/alert_banner.css";
@@ -17,6 +17,7 @@ import {
   RecentActivity,
   Upcoming,
   NavFooterMenu,
+  SocketConnect,
 } from "../component/SideNav";
 
 import {
@@ -24,45 +25,9 @@ import {
   sample_upcoming,
 } from "../component/test/sample_data";
 import { GetTeamNotice } from "../utils/api/team/TeamApi";
-const testdata = [
-  // 샘플 데이터
-  {
-    id: 1,
-    title: "avcd",
-    tag: "front",
-    date: "2021-10-23",
-  },
-  {
-    id: 2,
-    title: "pop",
-    tag: "front",
-    date: "2021-10-23",
-  },
-  {
-    id: 3,
-    title: "avcd",
-    tag: "back",
-    date: "2021-10-23",
-  },
-  {
-    id: 4,
-    title: "noting to report",
-    tag: "report",
-    date: "2021-10-23",
-  },
-  {
-    id: 5,
-    title: "noting to report",
-    tag: "report",
-    date: "2021-10-23",
-  },
-  {
-    id: 6,
-    title: "noting to report",
-    tag: "report",
-    date: "2021-10-23",
-  },
-];
+
+var teamName = "델리만쥬";
+var nickName = "신유진";
 
 var videoConference = [
   // 화상회의 목록 리스트
@@ -283,7 +248,7 @@ function Dashboard(props) {
   };
   const eraseElement = (list) => {
     for (let i = 0; i < dataLists.length; i++) {
-      if (dataLists[i].id == list.id) {
+      if (dataLists[i].id === list.id) {
         dataLists.splice(i, 1);
         i--;
       }
@@ -336,12 +301,12 @@ function Dashboard(props) {
       <div className="Dashboard" class="grid grid-cols-5">
         <div className="LeftSide" class="col-span-4 ml-10 mb-10">
           <div class="pt-5 pl-5 font-ltest text-gray-400">
-            유진님 반가워요, 다시 돌아오신 걸 환영해요! 👋
+            {nickName}님 반가워요, 다시 돌아오신 걸 환영해요! 👋
           </div>
 
           <div class="flex">
             <div class="flex-grow pl-5 text-3xl font-sbtest text-2xl">
-              Team1 DashBoard Today
+              {teamName} DashBoard Today
             </div>
             <button
               class="text-3xl font-sbtest"
@@ -380,6 +345,11 @@ function Dashboard(props) {
             <NavFooterMenu
               setShowModal2={setShowModal2}
               setShowModal3={setShowModal3}
+            />
+            <SocketConnect
+              teamName={teamName}
+              dataLists2={dataLists2}
+              nickName={nickName}
             />
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import "../assets/styles/Login.css";
 import axios from "axios";
 import { SERVER_URL } from "../utils/SRC";
@@ -250,12 +250,12 @@ function Login(props) {
                     email: email,
                     password: password,
                   };
-                  if (email.length == 0) {
+                  if (email.length === 0) {
                     setEmailError(true);
                   } else {
                     setEmailError(false);
                   }
-                  if (password.length == 0) {
+                  if (password.length === 0) {
                     setPwdError(true);
                   } else {
                     setPwdError(false);

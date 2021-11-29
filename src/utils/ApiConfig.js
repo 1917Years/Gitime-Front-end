@@ -1,4 +1,3 @@
-import react from "react";
 import axios from "axios";
 import { getCookie } from "./cookie";
 import { SERVER_URL } from "./SRC";
@@ -12,12 +11,8 @@ export const getMemberInfo = async ({ setMemberName, setMemberImg }) => {
       },
     })
     .then((res) => {
-      console.log("hi");
-      console.log(res);
       setMemberImg(res.data.data[0].profileImg);
-
       setMemberName(res.data.data[0].nickName);
-      console.log("end");
     })
     .catch((err) => {
       if (err.response) {
@@ -26,7 +21,7 @@ export const getMemberInfo = async ({ setMemberName, setMemberImg }) => {
     });
 };
 
-export const getMemberInfoOauth = async ({ setReg, props }) => {
+export const getMemberInfoOauth = async ({ props }) => {
   await axios
     .get(SERVER_URL + "/api/v1/members", {
       headers: {
@@ -35,8 +30,6 @@ export const getMemberInfoOauth = async ({ setReg, props }) => {
       },
     })
     .then((res) => {
-      console.log(res.data.data[0].phoneNumber);
-      //res.data.data[0].nickName
       if (res.data.data[0].phoneNumber != null) {
         props.history.push("/");
       } else {

@@ -1,15 +1,13 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import React, { useEffect } from "react";
+import React from "react";
 import "./App.css";
 import Mainpage from "./page/Mainpage";
 import Register from "./page/Register";
 import Login from "./page/Login";
-import TeamEdit from "./page/TeamEdit";
 import TeamForm from "./page/TeamForm";
 import Dashboard from "./page/Dashboard";
 import Oauth from "./utils/oauth/Oauth";
 import Loading from "./page/Loading";
-import { getCookie } from "./utils/cookie";
 import Header from "./particals/Header";
 import "tailwindcss/tailwind.css";
 import KakaoOauth from "./utils/oauth/KakaoOauth";
@@ -103,14 +101,6 @@ function App() {
           exact={true}
           component={(props) => {
             return <TeamForm {...props}></TeamForm>;
-          }}
-        />
-
-        <Route
-          path="/teamEdit"
-          exact={true}
-          component={(props) => {
-            return <TeamEdit {...props}></TeamEdit>;
           }}
         />
 

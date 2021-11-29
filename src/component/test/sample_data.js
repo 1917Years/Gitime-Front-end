@@ -58,3 +58,62 @@ export const sample_activity = [
     time: "03:00",
   },
 ];
+
+export const sample_member = [
+  // 샘플 데이터
+  {
+    id: 1,
+    username: "박상호",
+    email: "abcd@gmail.com",
+    role: "back",
+    state: 0,
+    state_accept: "waiting",
+    is_leader: true,
+  },
+  {
+    id: 2,
+    username: "김혁준",
+    email: "accd@gmail.com",
+    role: "front",
+    state: 1,
+    state_accept: "accept",
+    is_leader: false,
+  },
+  {
+    id: 3,
+    username: "최영찬",
+    email: "ab23cd@gmail.com",
+    role: "back",
+    state: 2,
+    state_accept: "denied",
+    is_leader: false,
+  },
+
+  {
+    id: 3,
+    username: "최영찬",
+    email: "ab23cd@gmail.com",
+    role: "back",
+    state: 2,
+    state_accept: "denied",
+    is_leader: false,
+  },
+  {
+    id: 3,
+    username: "최영찬",
+    email: "ab23cd@gmail.com",
+    role: "back",
+    state: 2,
+    state_accept: "denied",
+    is_leader: false,
+  },
+  {
+    id: 3,
+    username: "최영찬",
+    email: "ab23cd@gmail.com",
+    role: "back",
+    state: 2,
+    state_accept: "denied",
+    is_leader: false,
+  },
+];

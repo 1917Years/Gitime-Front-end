@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { getCookie, deleteCookie } from "../utils/cookie";
 import { getMemberInfo } from "../utils/ApiConfig";
 import Swal from "sweetalert2";
@@ -35,8 +35,7 @@ function Header(props) {
 
   useEffect(() => {
     getMemberInfo({ setMemberName, setMemberImg });
-    console.log(memberName);
-  });
+  }, [memberName]);
   return (
     <Disclosure as="nav" className="bg-black sticky top-0 z-50">
       {({ open }) => (

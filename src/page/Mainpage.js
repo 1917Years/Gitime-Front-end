@@ -1,12 +1,8 @@
 import React from "react";
 import "animate.css";
-import Footer from "../particals/Footer";
 import { getCookie } from "../utils/cookie";
 
 function Mainpage(props) {
-  console.log(props);
-  console.log(getCookie("token"));
-
   return (
     <div class="text-gray-800 antialiased z-1">
       <main>

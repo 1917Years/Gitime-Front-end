@@ -1,8 +1,7 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import axios from "axios";
 import "../assets/styles/Register.css";
 import { SERVER_URL } from "../utils/SRC";
-import Swal from "sweetalert2";
 import { getCookie } from "../utils/cookie";
 
 function postRegister({ data, props }) {
@@ -72,7 +71,7 @@ function OauthRegister(props) {
   const checkCerti = () => {
     console.log("ranNum = " + ranNum);
     console.log("certi = " + certi);
-    if (ranNum != "" && ranNum == certi) {
+    if (ranNum !== "" && ranNum === certi) {
       setSmsCheck(true);
       Swal.fire({
         title: "O",
@@ -361,13 +360,9 @@ function OauthRegister(props) {
         </p>
       </div>
       <div class="max-w-lg mx-auto flex justify-center text-black">
-        <a href="#" class="hover:underline">
-          Contact
-        </a>
+        <p class="hover:underline">Contact</p>
         <span class="mx-3">•</span>
-        <a href="#" class="hover:underline">
-          Privacy
-        </a>
+        <p class="hover:underline">Privacy</p>
       </div>
     </div>
   );

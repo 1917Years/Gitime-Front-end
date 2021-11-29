@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 
 export const Upcoming = (props) => {
   const { dataLists } = props;
@@ -61,7 +61,6 @@ export const RecentActivity = (props) => {
                     </div>
                   </div>
                 );
-                break;
               case 2:
                 return (
                   <div className="grid grid-cols-5 my-2 gap-2">
@@ -81,7 +80,6 @@ export const RecentActivity = (props) => {
                     </div>
                   </div>
                 );
-                break;
               case 3:
                 return (
                   <div className="grid grid-cols-5 my-2 gap-2">
@@ -101,7 +99,6 @@ export const RecentActivity = (props) => {
                     </div>
                   </div>
                 );
-                break;
               case 4:
                 return (
                   <div className="grid grid-cols-5 my-2 gap-2">
@@ -121,10 +118,8 @@ export const RecentActivity = (props) => {
                     </div>
                   </div>
                 );
-                break;
               default:
                 return null;
-                break;
             }
           })}
         </div>
@@ -134,7 +129,6 @@ export const RecentActivity = (props) => {
 };
 
 export const Members = (props) => {
-  const { dataLists } = props;
   return (
     <div className="mt-10 grid font-sbtest">
       <div>
@@ -233,7 +227,7 @@ export const Members = (props) => {
   );
 };
 
-let webSocket;
+var webSocket;
 
 const onOpen = () => {};
 
@@ -249,24 +243,60 @@ const onMessage = () => {
 
 const disconnect = () => {
   //webSocket.send(JSON.stringify({chatRoomId : roomId,type:'LEAVE',writer:nickname}));
+  webSocket.send();
   webSocket.close();
   //location.href=endLink;
 };
 
-const send = () => {
+const first_send = (e) => {
   //msg = document.getElementById("message").value;
   //webSocket.send(JSON.stringify({chatRoomId : roomId,type:'CHAT',writer:nickname,message : msg}));
   //document.getElementById("message").value = "";
 };
 
-const connect = () => {
-  var aa = "test";
-  webSocket = new WebSocket("ws://localhost:8080/chat/" + aa);
-  webSocket.onopen = function (e) {};
+export const SocketConnect = (props) => {
+  const { teamName, dataLists2, nickName } = props;
+  // console.log(teamName);
+  // console.log(nickName);
+  return <div></div>;
+  webSocket = new WebSocket("ws://localhost:8080/chat/" + teamName);
+  webSocket.onopen = function () {
+    webSocket.send(
+      JSON.stringify({
+        type: "ENTER",
+        writer: nickName,
+        message: "",
+      })
+    );
+  };
   webSocket.onclose = function (e) {};
   webSocket.onmessage = function (e) {};
 };
 
+// socket.onopen = function () {
+//   console.log("connection server");
+// };
+
+// socket.onmessage = function (e) {
+//     const data = JSON.parse(e.data);
+//     console.log("data >>", e);
+//   };
+
+//   const sendMsg = () => {
+//     socket.send(
+//       JSON.stringify({
+//         message: "zz",
+//       })
+//     );
+//   };
+
+// socket.onclose = function (event) {
+//   if (event.wasClean) {
+//     console.log("[close] 커넥션 종료됨");
+//   } else {
+//     console.log("[close] 커넥션 error");
+//   }
+// };
 /*
   function connect(){
         webSocket = new WebSocket("ws://localhost:8080/chat/team1");

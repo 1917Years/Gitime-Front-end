@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import queryString from "query-string";
 import axios from "axios";
 import { SERVER_URL } from "../SRC";
@@ -9,7 +9,6 @@ import { getMemberInfoOauth } from "../ApiConfig";
 function GoogleOauth(props) {
   const queryObj = queryString.parse(props.location.search);
   const { code } = queryObj;
-  const [reg, setReg] = useState(true);
 
   useEffect(() => {
     axios
@@ -22,7 +21,7 @@ function GoogleOauth(props) {
           sameSite: "none",
         });
 
-        getMemberInfoOauth({ setReg, props });
+        getMemberInfoOauth({ props });
       })
       .catch((err) => {
         console.error(err);

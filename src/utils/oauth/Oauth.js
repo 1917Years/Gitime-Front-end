@@ -1,8 +1,7 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import queryString from "query-string";
 import axios from "axios";
-import { Redirect } from "react-router";
 import { SERVER_URL } from "../SRC";
 import { getCookie } from "../cookie";
 

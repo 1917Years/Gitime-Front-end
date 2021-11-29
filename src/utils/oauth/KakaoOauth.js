@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import queryString from "query-string";
 import axios from "axios";
 import { SERVER_URL } from "../SRC";
@@ -8,7 +8,6 @@ import { getMemberInfoOauth } from "../ApiConfig";
 function KakaoOauth(props) {
   const queryObj = queryString.parse(props.location.search);
   const { code } = queryObj;
-  const [reg, setReg] = useState(true);
 
   useEffect(() => {
     axios
@@ -21,7 +20,7 @@ function KakaoOauth(props) {
           sameSite: "none",
         });
 
-        getMemberInfoOauth({ setReg, props });
+        getMemberInfoOauth({ props });
       })
       .catch((err) => {
         console.error(err);

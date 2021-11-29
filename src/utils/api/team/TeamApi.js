@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import axios from "axios";
 import { getCookie } from "../../cookie";
 import { SERVER_URL } from "../../SRC";

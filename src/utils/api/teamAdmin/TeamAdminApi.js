@@ -1,8 +1,45 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getCookie } from "../../cookie";
 import { SERVER_URL } from "../../SRC";
 import Swal from "sweetalert2";
+
+export const DeleteDevelope = async ({ input, teamName, props }) => {
+  const data = {
+    developField: input,
+  };
+
+  console.log(props);
+  await axios
+    .post(
+      SERVER_URL + "/api/v1/teams/admin/" + teamName + "/developfield/delete",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: getCookie("token"),
+        },
+      }
+    )
+    .then((res) => {
+      Swal.fire({
+        title: "O",
+        text: "개발 분야 삭제가 완료되었어요!",
+        confirmButtonText: "👍",
+        confirmButtonColor: "#171717",
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+    })
+    .catch((err) => {
+      if (err.response) {
+        console.log(err.response.data); // => the response payload 오 굿굿
+      }
+    });
+};
 
 export const AddDevelope = async ({ input, teamName, props }) => {
   const data = {
