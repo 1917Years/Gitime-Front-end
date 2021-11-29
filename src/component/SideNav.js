@@ -257,7 +257,7 @@ const first_send = (e) => {
 export const SocketConnect = (props) => {
   const { teamName, dataLists2, nickName } = props;
   // console.log(teamName);
-  // console.log(nickName);
+  console.log(nickName);
   return <div></div>;
   webSocket = new WebSocket("ws://localhost:8080/chat/" + teamName);
   webSocket.onopen = function () {
