@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 import {
@@ -7,6 +7,7 @@ import {
   AddTeamNotice,
   getAllDevelop,
   getTeamNoticeList,
+  deleteTeam,
 } from "../utils/api/teamAdmin/TeamAdminApi";
 
 import { sample_member } from "../component/test/sample_data"; // 나중에 지울 것
@@ -31,11 +32,23 @@ function ManageTeam(props) {
   ]);
   const [devinput, setDevinput] = useState("");
   const [email, setEmail] = useState("");
+  const [update, setUpdate] = useState(false);
+
+  useEffect(() => {
+    if (update) {
+      getAllDevelop({
+        setDevelopLists: setDevelopLists,
+        setUpdate: setUpdate,
+        teamName: props.match.params.teamName,
+      });
+    }
+  });
 
   const onDevdeleteHandler = (field) => {
     console.log(field);
     DeleteDevelope({
       input: field,
+      setUpdate: setUpdate,
       teamName: props.match.params.teamName,
     });
   };
@@ -70,8 +83,10 @@ function ManageTeam(props) {
   const addDevinput = () => {
     AddDevelope({
       input: devinput,
+      setUpdate: setUpdate,
       teamName: props.match.params.teamName,
     });
+    console.log(developLists);
   };
 
   const onNoticeTextHandler = (event) => {
@@ -478,7 +493,17 @@ function ManageTeam(props) {
                       </div>
                     </div>
                     <div class="font-test w-full p-6 text-right text-gray-500">
-                      <button class="text-red-400">팀 삭제하기</button>
+                      <button
+                        class="text-red-400"
+                        onClick={() => {
+                          deleteTeam({
+                            props,
+                            teamName: props.match.params.teamName,
+                          });
+                        }}
+                      >
+                        팀 삭제하기
+                      </button>
                     </div>
                   </div>
                 </div>

@@ -2,9 +2,9 @@ import axios from "axios";
 import { getCookie } from "../../cookie";
 import { SERVER_URL } from "../../SRC";
 
-export const GetTeamList = async ({ setTeamList }) => {
+export const GetTeamList = async ({ setTeamList, page }) => {
   await axios
-    .get(SERVER_URL + "/api/v1/teams?page=0", {
+    .get(SERVER_URL + "/api/v1/teams?page=" + page, {
       headers: {
         "Content-Type": "application/json",
         Authorization: getCookie("token"),
@@ -12,7 +12,6 @@ export const GetTeamList = async ({ setTeamList }) => {
     })
     .then((res) => {
       setTeamList(res.data);
-      console.log(res.data);
     })
     .catch((err) => {
       if (err.response) {
@@ -39,7 +38,7 @@ export const GetGitRepoList = async ({ setGitRepos }) => {
     });
 };
 
-export const PostCreateTeam = async ({ data }) => {
+export const PostCreateTeam = async ({ data, props }) => {
   console.log(data);
 
   await axios
@@ -51,6 +50,8 @@ export const PostCreateTeam = async ({ data }) => {
     })
     .then((res) => {
       console.log(res);
+      props.setShowCreateTeamForm(false);
+      window.location.href = "http://localhost:3000/team";
       // 성공
     })
     .catch((err) => {

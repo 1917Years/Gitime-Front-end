@@ -63,6 +63,7 @@ module.exports = {
   variants: {
     extend: {
       overflow: ["hover", "focus"],
+      opacity: ["disabled"],
     },
   },
 };

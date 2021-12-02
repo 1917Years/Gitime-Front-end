@@ -24,7 +24,6 @@ var ProgressBar = ({ width, percent, color }) => {
 };
 const DropDownEditDelete = (props) => {
   const { item } = props;
-  console.log(props);
   return (
     <tr
       tabindex="0"
@@ -101,12 +100,16 @@ const DropDownEditDelete = (props) => {
 function TeamForm(props) {
   const [showCreateTeamForm, setShowCreateTeamForm] = useState(false);
   const [teamList, setTeamList] = useState(null);
+  const [update, setUpdate] = useState(true);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
-    GetTeamList({ setTeamList });
-  }, []);
+    if (update) {
+      GetTeamList({ setTeamList, page });
+      setUpdate(false);
+    }
+  });
 
-  console.log(teamList);
   return (
     <div class="w-full sm:px-6 pt-6 h-full">
       {showCreateTeamForm ? (
@@ -161,12 +164,45 @@ function TeamForm(props) {
         <div className="flex justify-center mt-10">
           <div class="flex flex-col items-center">
             <div class="inline-flex mt-2 xs:mt-0">
-              <button class="bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-l py-2 px-4">
+              <button
+                class="bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-l py-2 px-4"
+                onClick={() => {
+                  if (page > 0) {
+                    setPage(page - 1);
+                    setUpdate(true);
+                  }
+                }}
+              >
                 이전
               </button>
-              <button class="bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-r border-0 border-l border-gray-700 py-2 px-4">
-                다음
-              </button>
+              {teamList == null ? null : teamList.last == false ? (
+                <button
+                  class="disabled:opacity-60 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-r border-0 border-l border-gray-700 py-2 px-4"
+                  onClick={() => {
+                    if (teamList.last == false) {
+                      setPage(page + 1);
+                      setUpdate(true);
+                    }
+                  }}
+                >
+                  {" "}
+                  다음
+                </button>
+              ) : (
+                <button
+                  disabled
+                  class="disabled:opacity-60 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-r border-0 border-l border-gray-700 py-2 px-4"
+                  onClick={() => {
+                    if (teamList.last == false) {
+                      setPage(page + 1);
+                      setUpdate(true);
+                    }
+                  }}
+                >
+                  {" "}
+                  다음
+                </button>
+              )}
             </div>
           </div>
         </div>

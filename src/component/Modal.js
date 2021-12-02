@@ -428,7 +428,7 @@ export const VideoChatRoom = (props) => {
   );
 };
 
-export const CreateTeam = (props) => {
+export const CreateTeam = ({ props, setShowCreateTeamForm }) => {
   const [gitRepos, setGitRepos] = useState([]);
   const [teamName, setTeamName] = useState(null);
   const [teamDevelopType, setTeamDevelopType] = useState(null);
@@ -462,7 +462,7 @@ export const CreateTeam = (props) => {
       >
         <div
           onClick={() => {
-            props.setShowCreateTeamForm(false);
+            setShowCreateTeamForm(false);
           }}
           class="w-full h-full z-0 absolute inset-0"
         ></div>
@@ -475,7 +475,7 @@ export const CreateTeam = (props) => {
                   role="button"
                   aria-label="close label"
                   onClick={() => {
-                    props.setShowCreateTeamForm(false);
+                    setShowCreateTeamForm(false);
                   }}
                   class="focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 focus:outline-none"
                 >
@@ -564,7 +564,7 @@ export const CreateTeam = (props) => {
                     role="button"
                     aria-label="close button"
                     onClick={() => {
-                      props.setShowCreateTeamForm(false);
+                      setShowCreateTeamForm(false);
                     }}
                     class="focus:ring-2 focus:ring-offset-2 focus:bg-gray-600 focus:ring-gray-600 focus:outline-none px-6 py-3 bg-gray-600 hover:bg-gray-500 shadow rounded text-sm text-white"
                   >
@@ -581,7 +581,8 @@ export const CreateTeam = (props) => {
                         gitRepoUrl: teamGitRepo,
                         developType: teamDevelopType,
                       };
-                      PostCreateTeam({ data });
+                      PostCreateTeam({ data, props });
+                      setShowCreateTeamForm(false);
                     }}
                   >
                     팀 생성

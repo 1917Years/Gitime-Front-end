@@ -75,7 +75,7 @@ function Register(props) {
   const checkCerti = () => {
     console.log("ranNum = " + ranNum);
     console.log("certi = " + certi);
-    if (ranNum !== "" && ranNum === certi) {
+    if (ranNum != "" && ranNum == certi) {
       setSmsCheck(true);
       Swal.fire({
         title: "O",

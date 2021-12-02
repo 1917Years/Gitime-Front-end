@@ -3,7 +3,7 @@ import { getCookie } from "../../cookie";
 import { SERVER_URL } from "../../SRC";
 import Swal from "sweetalert2";
 
-export const DeleteDevelope = async ({ input, teamName, props }) => {
+export const DeleteDevelope = async ({ input, teamName, props, setUpdate }) => {
   const data = {
     developField: input,
   };
@@ -33,6 +33,7 @@ export const DeleteDevelope = async ({ input, teamName, props }) => {
           toast.addEventListener("mouseleave", Swal.resumeTimer);
         },
       });
+      setUpdate(true);
     })
     .catch((err) => {
       if (err.response) {
@@ -41,7 +42,7 @@ export const DeleteDevelope = async ({ input, teamName, props }) => {
     });
 };
 
-export const AddDevelope = async ({ input, teamName, props }) => {
+export const AddDevelope = async ({ input, teamName, props, setUpdate }) => {
   const data = {
     developField: input,
   };
@@ -72,6 +73,27 @@ export const AddDevelope = async ({ input, teamName, props }) => {
           toast.addEventListener("mouseleave", Swal.resumeTimer);
         },
       });
+      setUpdate(true);
+    })
+    .catch((err) => {
+      if (err.response) {
+        console.log(err.response.data); // => the response payload 오 굿굿
+      }
+    });
+};
+export const deleteTeam = async (props) => {
+  const { teamName } = props;
+  console.log(props);
+  await axios
+    .delete(SERVER_URL + "/api/v1/teams/admin/" + teamName + "/team/delete", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      console.log(res);
+      props.props.history.push("/team");
     })
     .catch((err) => {
       if (err.response) {
@@ -80,7 +102,11 @@ export const AddDevelope = async ({ input, teamName, props }) => {
     });
 };
 
-export const getAllDevelop = async ({ teamName, setDevelopLists }) => {
+export const getAllDevelop = async ({
+  teamName,
+  setDevelopLists,
+  setUpdate,
+}) => {
   await axios
     .get(SERVER_URL + "/api/v1/teams/admin/" + teamName + "/developfield", {
       headers: {
@@ -91,6 +117,7 @@ export const getAllDevelop = async ({ teamName, setDevelopLists }) => {
     .then((res) => {
       console.log(res);
       setDevelopLists(res.data.data);
+      setUpdate(false);
     })
     .catch((err) => {
       if (err.response) {
