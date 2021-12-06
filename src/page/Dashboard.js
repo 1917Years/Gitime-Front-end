@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import "../assets/styles/Dashboard.css";
 import "../assets/styles/Scroll.css";
 import "../assets/styles/alert_banner.css";
 import { AlertNotice } from "../component/Alert";
 import { Board, AddingToDo, ChatRoom, VideoChatRoom } from "../component/Modal";
+
 import {
   BoardWidget,
   CalendarWidget,
@@ -17,7 +20,6 @@ import {
   RecentActivity,
   Upcoming,
   NavFooterMenu,
-  SocketConnect,
 } from "../component/SideNav";
 
 import {
@@ -28,6 +30,12 @@ import { GetTeamNotice } from "../utils/api/team/TeamApi";
 
 var teamName = "델리만쥬";
 var nickName = "신유진";
+
+export let sockJS = new SockJS("http://localhost:8080/api/v1/socket/chat");
+Stomp.client = Stomp.over(sockJS);
+export let stompClient = Stomp.client;
+
+var message;
 
 var videoConference = [
   // 화상회의 목록 리스트
@@ -101,52 +109,17 @@ var dataLists = [
   },
 ];
 
+var chat_id = 1;
 var dataLists2 = [
   // 채팅 샘플 데이터
   {
-    id: 1,
-    username: "팀원1",
+    id: 0,
+    username: "",
     userprofile: "https://randomuser.me/portraits/men/40.jpg",
-    data: "여러분 이거 어떤가요??",
-    date: "2021.11.11",
-    time: "17:04",
+    data: "",
+    date: "",
+    time: "",
     online: false,
-  },
-  {
-    id: 2,
-    data: "오 괜찮은데요?!",
-    username: "팀원2",
-    userprofile: "https://randomuser.me/portraits/men/40.jpg",
-    date: "2021.11.11",
-    time: "17:15",
-    online: true,
-  },
-  {
-    id: 3,
-    data: "오 좋아요!",
-    username: "팀원3",
-    userprofile: "https://randomuser.me/portraits/men/40.jpg",
-    date: "2021.11.11",
-    time: "17:15",
-    online: false,
-  },
-  {
-    id: 4,
-    data: "그럼 이걸로 할까요?",
-    username: "팀원4",
-    userprofile: "https://randomuser.me/portraits/men/40.jpg",
-    date: "2021.11.11",
-    time: "17:26",
-    online: false,
-  },
-  {
-    id: 5,
-    data: "좋아요ㅋㅋ",
-    username: "팀원5",
-    userprofile: "https://randomuser.me/portraits/men/40.jpg",
-    date: "2021.11.11",
-    time: "17:37",
-    online: true,
   },
 ];
 
@@ -198,6 +171,15 @@ var dataLists3 = [
   },
 ];
 
+function addMessage(message) {
+  console.log("안녕");
+  dataLists2.id = chat_id;
+  chat_id += 1;
+  dataLists2.username = message.userName;
+  dataLists2.data = message.content;
+  dataLists2.date = message.date;
+}
+
 function Dashboard(props) {
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
@@ -218,6 +200,12 @@ function Dashboard(props) {
       setNotice: setNotice,
       teamName: props.match.params.teamName,
     });
+    stompClient.connect({}, () => {
+      stompClient.subscribe("/topic/roomid", (data) => {
+        message = JSON.parse(data.body);
+        addMessage(message);
+      });
+    });
   }, []);
 
   const onChangeInput = (e) => {
@@ -226,7 +214,15 @@ function Dashboard(props) {
   const onReset = () => {
     setInputText("");
   };
-  const addChat = (list) => {
+  const handleEnter = () => {
+    var sendMessage = {
+      sendNick: nickName,
+      content: ctext,
+    };
+    //console.log(sendMessage);
+    stompClient.send("/api/v1/socket/chat", {}, JSON.stringify(sendMessage));
+
+    /*
     var tmp = {
       id: 6,
       data: ctext,
@@ -236,7 +232,9 @@ function Dashboard(props) {
       time: "18:33",
       online: true,
     };
-    dataLists2.push(tmp);
+    */
+    //dataLists2.push(tmp);
+
     setTemp(!temp);
   };
   const checkedItemHandler = (list, isChecked) => {
@@ -276,7 +274,7 @@ function Dashboard(props) {
         <ChatRoom
           setShowModal2={setShowModal2}
           dataLists2={dataLists2}
-          addChat={addChat}
+          addChat={handleEnter}
           setCtext={setCtext}
           onChangeInput={onChangeInput}
           onReset={onReset}
@@ -345,11 +343,6 @@ function Dashboard(props) {
             <NavFooterMenu
               setShowModal2={setShowModal2}
               setShowModal3={setShowModal3}
-            />
-            <SocketConnect
-              teamName={teamName}
-              dataLists2={dataLists2}
-              nickName={nickName}
             />
           </div>
         </div>

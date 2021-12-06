@@ -262,6 +262,7 @@ export const ChatRoom = (props) => {
           </div>
           <div className="grid">
             <input
+              id="sendMessage"
               type="text"
               placeholder="메세지 입력..."
               class="font-test border rounded border-opacity-50 w-full lg:px-4 py-2 text-gray-700 border-scroll transition duration-500 px-1 mt-6 shadow"
@@ -273,6 +274,7 @@ export const ChatRoom = (props) => {
               onClick={(e) => {
                 addChat(null);
                 console.log(chat);
+                document.getElementById("sendMessage").value = "";
               }}
             >
               보내기

@@ -33,6 +33,7 @@ function ManageTeam(props) {
   const [devinput, setDevinput] = useState("");
   const [email, setEmail] = useState("");
   const [update, setUpdate] = useState(false);
+  const [selectDev, setSelectDev] = useState(false);
 
   useEffect(() => {
     if (update) {
@@ -675,16 +676,6 @@ function ManageTeam(props) {
                 <div class="font-bold mt-4 pt-2 text-lg">
                   <div>
                     <div class="flex gap-2 items-center h-10">
-                      <div className="w-5/6 h-full">
-                        {" "}
-                        <input
-                          id="email"
-                          value={email}
-                          onChange={onEmailHandler}
-                          placeholder="초대 할 이메일을 입력"
-                          class="block text-base w-full h-full px-1 lg:px-6 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
-                        ></input>
-                      </div>
                       <div className="w-1/6 h-full">
                         <button
                           type="button"
@@ -700,18 +691,11 @@ function ManageTeam(props) {
 
                     <div class="grid mt-5 mx-5">
                       <div class="pb-3 flex w-full items-center">
-                        <div class="grid w-full h-full gap-2 mt-5">
+                        <div class="grid w-full h-full gap-2 mt-5 place-items-center">
                           {sample_member.map((member) => {
                             return (
-                              <div class="flex w-full items-center">
-                                <div class="grid w-1/12 gap-3">
-                                  <img
-                                    class="rounded-full border border-gray-100 shadow-sm"
-                                    src="https://randomuser.me/portraits/men/40.jpg"
-                                    alt="user image"
-                                  />
-                                </div>
-                                <div class="grid w-7/12 h-4/5 mx-auto text-lg text-gray-500 place-items-start ml-3 ">
+                              <div class="flex w-5/6 items-center">
+                                <div class="grid w-7/12 h-4/5  text-lg text-gray-500 place-items-start ml-3 ">
                                   <div>
                                     <p class="text-left">{member.username}</p>
                                   </div>
@@ -723,15 +707,6 @@ function ManageTeam(props) {
                                 </div>
                                 <div class=" grid w-1/4 h-1/3 font-thin text-lg text-purple-300 place-items-center">
                                   {member.state_accept}
-                                </div>
-                                <div class="grid w-1/12 h-1/3  text-gray-600 ">
-                                  <button
-                                    onClick={() => {
-                                      console.log("removed " + member.username);
-                                    }}
-                                  >
-                                    X
-                                  </button>
                                 </div>
                               </div>
                             );
@@ -745,11 +720,113 @@ function ManageTeam(props) {
             </div>
           )}
           {showNowClick7 === true && (
-            <div class="w-full h-full">
-              <div class="pt-5 mt-4 pl-10">
-                <p class="text-2xl font-bold leading-tight tracking-tight text-gray-600 dark:text-gray-400 capitalize">
+            <div class="w-full h-full flex">
+              <div class="w-1/12"></div>
+              <div class="w-3/4 pt-5 pl-10 mt-4">
+                <p class="text-2xl font-bold leading-tight tracking-tight text-black dark:text-gray-400 capitalize">
                   팀원 역할 설정
                 </p>
+                <div class="text-sm pt-2 pb-5 text-gray-400">
+                  팀원들의 역할을 관리할 수 있어요.
+                </div>
+                <hr></hr>
+                <div class="mt-4 pt-5">
+                  <div class="font-bold text-gray-500 text-lg pb-5 flex-grow">
+                    팀원 역할 관리하기
+                  </div>
+
+                  {sample_member.map((member) => {
+                    return (
+                      <div class="w-5/6 items-center my-10 ml-8">
+                        <div class="grid grid-cols-3 w-full">
+                          <div class="flex">
+                            <img
+                              class="w-12 h-12 rounded-full"
+                              src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
+                              alt="collaborator 1"
+                            ></img>
+                            <div class="ml-3">
+                              <div class="text-lg font-btest text-black text-gray-500">
+                                {member.username}
+                              </div>
+                              <div class="font-ttest text-sm text-gray-400">
+                                {member.email}
+                              </div>
+                            </div>
+                          </div>
+                          {member.role === "" ? (
+                            <div class="h-full">
+                              {selectDev ? (
+                                <div class="h-full">
+                                  <select
+                                    aria-label="select an option"
+                                    class="text-sm text-gray-500 mx-auto w-2/3 border rounded-lg h-full focus:outline-none"
+                                  >
+                                    <option selected="" disabled="" value="">
+                                      역할 선택
+                                    </option>
+                                    <option>JAVA</option>
+                                    <option>C</option>
+                                    <option>C++</option>
+                                    <option>Python</option>
+                                    <option>Spring</option>
+                                    <option>React</option>
+                                  </select>
+                                </div>
+                              ) : (
+                                <div class="h-full">
+                                  {" "}
+                                  <div class="grid mx-auto rounded-lg w-2/3 h-full border border-dashed px-5">
+                                    <button
+                                      className="w-full text-xl font-sbtest text-gray-400 text-center"
+                                      onClick={() => {
+                                        setSelectDev(true);
+                                      }}
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div>
+                              <div class="grid mx-auto rounded-lg w-2/3 h-full border px-5">
+                                <div class="flex ">
+                                  <div class="absoulte my-auto ml-3 font-ltest text-opacity-70 text-center"></div>
+                                  <div className="mx-auto my-auto font-sbtest text-date text-opacity-70 text-center">
+                                    {member.role}
+                                  </div>
+                                  <button class="absoulte text-date my-auto font-ltest text-opacity-70 text-center ">
+                                    x
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {member.is_leader ? (
+                            <div class="my-auto mx-auto h-3/4 grid rounded-full w-1/4 border border-red-300">
+                              <div class="my-auto mx-auto">
+                                <div class="font-sbtest text-red-400 text-opacity-70 text-center">
+                                  팀장
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div class="my-auto mx-auto grid h-3/4 rounded-full w-1/4 border border-green-300">
+                              <div class="my-auto mx-auto">
+                                <div class="font-sbtest text-green-400 text-opacity-70 text-center">
+                                  팀원
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}
