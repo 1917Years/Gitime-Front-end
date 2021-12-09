@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-
+import { GetGitRepoList, PostCreateTeam } from "../utils/api/team/TeamApi";
 import {
   DeleteDevelope,
   AddDevelope,
@@ -30,11 +30,27 @@ function ManageTeam(props) {
     { field: "abcd" },
     { field: "dkfdk" },
   ]);
+  const [gitRepos, setGitRepos] = useState([]);
+  const [teamGitRepo, setTeamGitRepo] = useState(null);
+  const [gitRepoChangeMes, setGitRepoChangeMes] = useState({
+    show: false,
+    err: false,
+    mes: "",
+  });
   const [devinput, setDevinput] = useState("");
   const [email, setEmail] = useState("");
   const [update, setUpdate] = useState(false);
   const [selectDev, setSelectDev] = useState(false);
+  const [selectDeve, setSelectDeve] = useState([]);
+  const [showDeleteMem, setShowDeleteMem] = useState(false);
 
+  const tempSel = [true];
+  for (var i = 1; i <= sample_member.length; i++) {
+    tempSel.push(false);
+  }
+  for (var i = 1; i <= sample_member.length; i++) {
+    selectDeve.push(false);
+  }
   useEffect(() => {
     if (update) {
       getAllDevelop({
@@ -45,6 +61,12 @@ function ManageTeam(props) {
     }
   });
 
+  useEffect(() => {
+    GetGitRepoList({ setGitRepos });
+  }, []);
+  const onTeamGitRepoHandler = (event) => {
+    setTeamGitRepo(event.currentTarget.value);
+  };
   const onDevdeleteHandler = (field) => {
     console.log(field);
     DeleteDevelope({
@@ -96,6 +118,62 @@ function ManageTeam(props) {
 
   const onEmailHandler = (event) => {
     setEmail(event.currentTarget.value);
+  };
+
+  const ondeleteDevHandler = (memid) => {
+    sample_member.forEach(function (member) {
+      if (member.id == memid) {
+        member.role = "";
+        setSelectDev(!selectDev);
+      }
+    });
+  };
+
+  const onDevSelHandler = (selected, memid) => {
+    sample_member.forEach(function (member) {
+      if (member.id == memid) {
+        member.role = selected;
+        setSelectDev(!selectDev);
+      }
+    });
+  };
+
+  const onChangeGitRepoHandler = () => {
+    if (teamGitRepo == null) {
+      setGitRepoChangeMes({
+        show: true,
+        err: true,
+        mes: "변경할 깃허브 연동 주소를 선택해주세요.",
+      });
+    } else if (false) {
+      //통신 오류 조건 넣기
+      setGitRepoChangeMes({
+        show: true,
+        err: true,
+        mes: "서버와 통신에 실패했습니다. 다시 시도해주세요.",
+      });
+    } else {
+      //문제 없이 성공했을 경우
+      setGitRepoChangeMes({
+        show: true,
+        err: false,
+        mes: "변경에 성공했습니다!",
+      });
+    }
+    console.log(gitRepoChangeMes.mes);
+  };
+
+  var deleteMemList = [
+    // 다음에 여기 리스트에 값 추가하도록 만들기
+  ];
+
+  const checkDelMemHandler = (event) => {
+    var checkMem;
+    if (event.target.checked) {
+      checkMem = event.target.value;
+    } else {
+    }
+    //console.log(checkMem);
   };
 
   return (
@@ -572,6 +650,67 @@ function ManageTeam(props) {
                 <p class="text-2xl font-bold leading-tight tracking-tight text-gray-600 dark:text-gray-400 capitalize">
                   깃허브 연동 관리
                 </p>
+                <div class="text-sm pt-2 pb-5 text-gray-400">
+                  깃허브 연동 주소를 관리하는 페이지입니다.
+                </div>
+                <hr></hr>
+                <div class="font-bold mt-4 pt-5 text-gray-500 text-lg pb-5 flex-grow">
+                  깃허브 연동 주소 변경하기
+                </div>
+                <div class="w-3/4">
+                  <div class="ml-6 mr-6 my-5">
+                    <label class=" text-sm text-gray-400">
+                      현재 깃허브 연동 주소
+                    </label>
+                    <div class="w-full px-4 mt-4 text-gray-400 bg-gray-50 block resize-none overflow-y-auto py-3 rounded-lg outline-none transition border border-gray-400">
+                      https://github.com/Hodu-BackSpace/SYNC-Software-Contest
+                    </div>
+                  </div>
+                  <div class="ml-6 mr-6 my-5">
+                    <label class=" text-sm text-gray-400">
+                      변경할 깃허브 연동 주소
+                    </label>
+                    <select
+                      aria-label="select an option"
+                      class="w-full px-4 mt-4 text-gray-400 bg-white block resize-none overflow-y-auto py-3 rounded-lg outline-none transition border border-gray-400"
+                      onChange={onTeamGitRepoHandler}
+                    >
+                      <option selected="" disabled="" value="">
+                        Github Repository 선택
+                      </option>
+                      {gitRepos.map((item) => {
+                        return <option>{item.gitRepoUrl}</option>;
+                      })}
+                    </select>
+                  </div>
+                  <div class="mt-7 mr-6 w-1/3 block mx-auto">
+                    <button
+                      class="font-test w-full text-white text-base bg-gray-400 h-10 lg:h-12 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
+                      onClick={() => {
+                        onChangeGitRepoHandler();
+                      }}
+                    >
+                      변경하기
+                    </button>
+                  </div>
+                  {gitRepoChangeMes.show === true && (
+                    <div class="mt-2 mr-6">
+                      {gitRepoChangeMes.err ? (
+                        <div>
+                          <div class="text-red-500 font-ltest text-right">
+                            {gitRepoChangeMes.mes}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div class="text-green-500 font-ltest text-right">
+                            {gitRepoChangeMes.mes}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -737,7 +876,10 @@ function ManageTeam(props) {
 
                   {sample_member.map((member) => {
                     return (
-                      <div class="w-5/6 items-center my-10 ml-8">
+                      <div
+                        class="w-5/6 items-center my-10 ml-8"
+                        key={member.id}
+                      >
                         <div class="grid grid-cols-3 w-full">
                           <div class="flex">
                             <img
@@ -756,21 +898,27 @@ function ManageTeam(props) {
                           </div>
                           {member.role === "" ? (
                             <div class="h-full">
-                              {selectDev ? (
-                                <div class="h-full">
+                              {selectDeve[member.id] ? (
+                                <div class="h-full mx-auto w-2/3">
                                   <select
                                     aria-label="select an option"
-                                    class="text-sm text-gray-500 mx-auto w-2/3 border rounded-lg h-full focus:outline-none"
+                                    class="text-sm text-gray-500 w-full border rounded-lg h-full focus:outline-none text-center"
+                                    onChange={(e) => {
+                                      onDevSelHandler(
+                                        e.currentTarget.value,
+                                        member.id
+                                      );
+                                    }}
                                   >
                                     <option selected="" disabled="" value="">
                                       역할 선택
                                     </option>
-                                    <option>JAVA</option>
-                                    <option>C</option>
-                                    <option>C++</option>
-                                    <option>Python</option>
-                                    <option>Spring</option>
-                                    <option>React</option>
+                                    <option value="Front">Front</option>
+                                    <option value="Back">Back</option>
+                                    <option value="개발분야3">개발분야3</option>
+                                    <option value="개발분야4">개발분야4</option>
+                                    <option value="개발분야5">개발분야5</option>
+                                    <option value="개발분야6">개발분야6</option>
                                   </select>
                                 </div>
                               ) : (
@@ -779,8 +927,11 @@ function ManageTeam(props) {
                                   <div class="grid mx-auto rounded-lg w-2/3 h-full border border-dashed px-5">
                                     <button
                                       className="w-full text-xl font-sbtest text-gray-400 text-center"
+                                      value=""
                                       onClick={() => {
-                                        setSelectDev(true);
+                                        tempSel[member.id] = true;
+                                        //console.log(tempSel[member.id]);
+                                        setSelectDeve(tempSel);
                                       }}
                                     >
                                       +
@@ -797,7 +948,12 @@ function ManageTeam(props) {
                                   <div className="mx-auto my-auto font-sbtest text-date text-opacity-70 text-center">
                                     {member.role}
                                   </div>
-                                  <button class="absoulte text-date my-auto font-ltest text-opacity-70 text-center ">
+                                  <button
+                                    class="absoulte text-date my-auto font-ltest text-opacity-70 text-center "
+                                    onClick={() => {
+                                      ondeleteDevHandler(member.id);
+                                    }}
+                                  >
                                     x
                                   </button>
                                 </div>
@@ -830,6 +986,133 @@ function ManageTeam(props) {
               </div>
             </div>
           )}
+          {showNowClick8 === true && (
+            <div class="w-full h-full flex">
+              <div class="w-1/12"></div>
+              <div class="w-3/4 pt-5 pl-10 mt-4">
+                <p class="text-2xl font-bold leading-tight tracking-tight text-gray-600 dark:text-gray-400 capitalize">
+                  팀원 관리
+                </p>
+                <div class="text-sm pt-2 pb-5 text-gray-400">
+                  팀원을 추방할 수 있는 페이지입니다.
+                </div>
+                <hr></hr>
+
+                <div class="flex items-center">
+                  <div class="flex-1 text-sm font-test my-5">
+                    참여 중인 멤버 ({Object.keys(sample_member).length})
+                  </div>
+                  <div class="flex-1 text-right">
+                    <button
+                      class="rounded-md text-sm border-2 border-gray-400 border-opacity-50 px-4 py-1"
+                      onClick={() => {
+                        setShowDeleteMem(true);
+                      }}
+                    >
+                      팀원 추방
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center bg-gray-50">
+                  <div class="flex items-center font-test text-base w-full text-gray-500">
+                    <input class="ml-3 my-1" type="checkbox"></input>
+                    <div class="flex-1 ml-5 my-1 py-2">멤버</div>
+                    <div class="flex-1 my-1">역할</div>
+                    <div class="text-center flex-1 my-1 my-auto mx-auto h-3/4 w-1/4 pl-2">
+                      권한
+                    </div>
+                  </div>
+                </div>
+
+                <div class="items-center">
+                  <div class="font-test text-base w-full text-gray-500">
+                    {sample_member.map((member) => {
+                      return (
+                        <div class="" key={member.id}>
+                          <div class="flex items-center py-2">
+                            {member.is_leader ? (
+                              <div class="ml-6"></div>
+                            ) : (
+                              <input
+                                class="ml-3"
+                                type="checkbox"
+                                onClick={(event) => checkDelMemHandler(event)}
+                                value={member.username}
+                              ></input>
+                            )}
+
+                            <div class="flex-1 ml-5 my-1 flex">
+                              <img
+                                class="w-12 h-12 rounded-full"
+                                src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
+                                alt="collaborator 1"
+                              ></img>
+                              <div class="ml-2">
+                                <div class="text-lg font-btest text-black text-gray-600">
+                                  {member.username}
+                                </div>
+                                <div class="font-ttest text-sm text-gray-400">
+                                  {member.email}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="flex-1 my-1 my-auto">{member.role}</div>
+                            <div class="flex-1 my-1">
+                              {member.is_leader ? (
+                                <div class="my-auto mx-auto h-3/4 grid rounded-full w-1/4 border border-red-300">
+                                  <div class="my-auto mx-auto">
+                                    <div class="font-sbtest text-red-400 text-opacity-70 text-center">
+                                      팀장
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div class="my-auto mx-auto grid h-3/4 rounded-full w-1/4 border border-green-300">
+                                  <div class="my-auto mx-auto">
+                                    <div class="font-sbtest text-green-400 text-opacity-70 text-center">
+                                      팀원
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <hr></hr>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showDeleteMem ? (
+            <div class="bg-black bg-opacity-25 justify-center w-full items-center flex flex-col overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+              <div class="relative w-1/3 my-5 mx-auto max-w-3xl">
+                {/*content*/}
+                <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                  {/*header*/}
+                  <div class="flex items-start justify-between px-6 py-5 border-b border-solid border-blueGray-200 rounded-t">
+                    <h3 class="text-xl font-sbtest text-center py-1">
+                      팀원 추방하기
+                    </h3>
+                    <button
+                      className="ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                      onClick={() => setShowDeleteMem(false)}
+                    >
+                      <span className="bg-transparent text-black text-opacity-50 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                        x
+                      </span>
+                    </button>
+                  </div>
+                  <div class="relative w-full mx-auto max-w-3xl">
+                    <div class="ml-2 font-test">선택한 멤버는</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ export const sample_activity = [
       1 : 코드 수정
       2 : 계획 업로드
       3 : 화상 회의
-      4 : 파일 업로드
+      4 : 파일 업로드 
   
       */
   {
@@ -90,7 +90,7 @@ export const sample_member = [
   },
 
   {
-    id: 3,
+    id: 4,
     username: "최영찬",
     email: "ab23cd@gmail.com",
     role: "back",
@@ -99,7 +99,7 @@ export const sample_member = [
     is_leader: false,
   },
   {
-    id: 3,
+    id: 5,
     username: "최영찬",
     email: "ab23cd@gmail.com",
     role: "",
@@ -108,7 +108,7 @@ export const sample_member = [
     is_leader: false,
   },
   {
-    id: 3,
+    id: 6,
     username: "최영찬",
     email: "ab23cd@gmail.com",
     role: "",
