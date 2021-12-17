@@ -9,6 +9,7 @@ import {
   getTeamNoticeList,
   deleteTeam,
 } from "../utils/api/teamAdmin/TeamAdminApi";
+import SearchUser from "../component/UserSearch";
 
 import { sample_member } from "../component/test/sample_data"; // 나중에 지울 것
 
@@ -163,17 +164,17 @@ function ManageTeam(props) {
     console.log(gitRepoChangeMes.mes);
   };
 
-  var deleteMemList = [
-    // 다음에 여기 리스트에 값 추가하도록 만들기
-  ];
+  var deleteMemList = [];
 
   const checkDelMemHandler = (event) => {
     var checkMem;
     if (event.target.checked) {
       checkMem = event.target.value;
+      deleteMemList.push(checkMem);
     } else {
     }
-    //console.log(checkMem);
+    console.log(deleteMemList);
+    console.log(checkMem);
   };
 
   return (
@@ -647,7 +648,7 @@ function ManageTeam(props) {
             <div class="w-full h-full flex">
               <div class="w-1/12"></div>
               <div class="w-3/4 pt-5 pl-10 mt-4">
-                <p class="text-2xl font-bold leading-tight tracking-tight text-gray-600 dark:text-gray-400 capitalize">
+                <p class="text-2xl font-bold leading-tight tracking-tight text-black dark:text-gray-400 capitalize">
                   깃허브 연동 관리
                 </p>
                 <div class="text-sm pt-2 pb-5 text-gray-400">
@@ -814,7 +815,11 @@ function ManageTeam(props) {
                 </div>
                 <div class="font-bold mt-4 pt-2 text-lg">
                   <div>
-                    <div class="flex gap-2 items-center h-10">
+                    <div class="flex gasp-2 items-center h-10">
+                      <div>
+                        <SearchUser />
+                      </div>
+
                       <div className="w-1/6 h-full">
                         <button
                           type="button"
@@ -1107,7 +1112,7 @@ function ManageTeam(props) {
                     </button>
                   </div>
                   <div class="relative w-full mx-auto max-w-3xl">
-                    <div class="ml-2 font-test">선택한 멤버는</div>
+                    <div class="ml-2 font-test">선택한 팀원은</div>
                   </div>
                 </div>
               </div>

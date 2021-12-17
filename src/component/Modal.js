@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"; // css import
+import { ko } from "date-fns/esm/locale";
 import { GetGitRepoList, PostCreateTeam } from "../utils/api/team/TeamApi";
+import { PostCreateTodo } from "../utils/api/dashboard/DashboardApi";
 
 export const Board = (props) => {
   const { setShowModal4, dataLists3 } = props;
@@ -89,6 +93,11 @@ export const AddingToDo = (props) => {
     checkedItemHandler,
     checkedList,
     changeComplete,
+    setNextTodo,
+    nextTodo,
+    todoDate,
+    setTodoDate,
+    ExampleCustomInput,
   } = props;
   return (
     <>
@@ -111,13 +120,97 @@ export const AddingToDo = (props) => {
             {/*body*/}
             <div class="relative w-full mx-auto max-w-3xl">
               <div class="font-test flex items-center px-6 space-x-2 lg:space-x-4 py-2 text-blueGray-500 leading-relaxed">
-                <input
-                  placeholder="추가할 목표를 입력해주세요!"
-                  class="block text-base w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
-                ></input>
-                <button class="font-test w-1/3 float-right block text-white text-base bg-gray-400 h-10 lg:h-12 mt-2 lg:mt-4 px-4 lg:px-7 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500">
-                  추가
-                </button>
+                {nextTodo ? (
+                  <>
+                    <div class="flex-col w-full">
+                      <div class="w-auto font-ltest text-gray-600">
+                        목표 날짜와 개발 분야를 선택해주세요.
+                      </div>
+                      <div class="flex mt-3 w-full">
+                        <DatePicker
+                          closeOnScroll={(e) => e.target === document}
+                          selected={todoDate}
+                          locale="ko"
+                          dateFormat="yyyy년 MM월 dd일"
+                          minDate={new Date()}
+                          popperModifiers={{
+                            preventOverflow: { enabled: true },
+                          }}
+                          onChange={(date) => setTodoDate(date)}
+                          customInput={<ExampleCustomInput />}
+                        />
+                        <select
+                          aria-label="select an option"
+                          class="border-date border-opacity-50 font-ltest example-custom-input bg-develbg bg-opacity-30 text-date text-opacity-70 rounded-full py-2 px-4 text-sm text-gray-500 w-full border rounded-lg h-full focus:outline-none text-center"
+                        >
+                          <option selected="" disabled="" value="">
+                            개발 분야
+                          </option>
+                          <option value="Front">Front</option>
+                          <option value="Back">Back</option>
+                          <option value="개발분야3">개발분야3</option>
+                          <option value="개발분야4">개발분야4</option>
+                          <option value="개발분야5">개발분야5</option>
+                          <option value="개발분야6">개발분야6</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button
+                      class="font-test w-1/3 float-right block text-white text-base bg-gray-400 h-10 lg:h-12 mt-2 lg:mt-4 px-4 lg:px-7 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
+                      onClick={() => {
+                        PostCreateTodo();
+                        setNextTodo(false);
+                      }}
+                    >
+                      추가
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div class="w-full">
+                      <input
+                        placeholder="추가할 목표를 입력해주세요!"
+                        class="block flex-grow text-base w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
+                      ></input>
+                      <div class="flex mt-3 w-full">
+                        <DatePicker
+                          closeOnScroll={(e) => e.target === document}
+                          selected={todoDate}
+                          locale="ko"
+                          dateFormat="yyyy년 MM월 dd일"
+                          minDate={new Date()}
+                          popperModifiers={{
+                            preventOverflow: { enabled: true },
+                          }}
+                          onChange={(date) => setTodoDate(date)}
+                          customInput={<ExampleCustomInput />}
+                        />
+                        <select
+                          aria-label="select an option"
+                          class="border-date border-opacity-50 font-ltest example-custom-input bg-develbg bg-opacity-30 text-date text-opacity-70 rounded-full py-2 px-4 w-full border rounded-lg h-full focus:outline-none text-center"
+                        >
+                          <option selected="" disabled="" value="">
+                            개발 분야
+                          </option>
+                          <option value="Front">Front</option>
+                          <option value="Back">Back</option>
+                          <option value="개발분야3">개발분야3</option>
+                          <option value="개발분야4">개발분야4</option>
+                          <option value="개발분야5">개발분야5</option>
+                          <option value="개발분야6">개발분야6</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button
+                      class="font-test w-1/3 float-right block text-white text-base bg-gray-400 h-10 lg:h-12 mt-2 lg:mt-4 px-4 lg:px-7 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
+                      onClick={() => {
+                        setNextTodo(true);
+                      }}
+                    >
+                      추가
+                    </button>
+                  </>
+                )}
               </div>
               {endCheck.map((list) => {
                 return (
@@ -228,16 +321,16 @@ export const ChatRoom = (props) => {
             </div>
           </div>
           <div id="chat" className="grid max-h-72 overflow-y-auto">
-            {dataLists2.map((list) => {
+            {dataLists2.map((list2) => {
               return (
-                <div class="pb-3 flex space-x-2 px-3">
+                <div class="pb-3 flex space-x-2 px-3" key={list2.id}>
                   <div class="relative w-12 h-12">
                     <img
                       class="rounded-full border border-gray-100 shadow-sm"
-                      src={list.userprofile}
+                      src={list2.userprofile}
                       alt="user image"
                     />
-                    {list.online ? (
+                    {list2.online ? (
                       <>
                         <div class="absolute top-0 right-0 h-3 w-3 my-1 border-2 border-white rounded-full bg-green-400 z-2"></div>
                       </>
@@ -248,13 +341,13 @@ export const ChatRoom = (props) => {
                     )}
                   </div>
                   <div class="font-test flex-grow text-sm text-sscroll pl-2">
-                    {list.username}
+                    {list2.username}
                     <div class="font-ltest text-xs mt-1 text-gray-400 pl-2">
-                      {list.data}
+                      {list2.data}
                     </div>
                   </div>
                   <div class="font-ltest float-right text-right text-xs mt-1 text-gray-300">
-                    {list.time}
+                    {list2.date}
                   </div>
                 </div>
               );
@@ -266,15 +359,19 @@ export const ChatRoom = (props) => {
               type="text"
               placeholder="메세지 입력..."
               class="font-test border rounded border-opacity-50 w-full lg:px-4 py-2 text-gray-700 border-scroll transition duration-500 px-1 mt-6 shadow"
-              onChange={(e) => setCtext(e.target.value)}
+              onChange={(e) => {
+                setCtext(e.target.value);
+              }}
             />
             <button
               class="font-test bg-scroll mt-3 hover:bg-gray-500 w-full text-white font-medium py-2 rounded shadow-lg hover:shadow-xl transition duration-200"
               type="submit"
               onClick={(e) => {
                 addChat(null);
-                console.log(chat);
+                //console.log(document.getElementById("sendMessage").value);
+                //setCtext(document.getElementById("sendMessage").value);
                 document.getElementById("sendMessage").value = "";
+                setChat(!chat);
               }}
             >
               보내기

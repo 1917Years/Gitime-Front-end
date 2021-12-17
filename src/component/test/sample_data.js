@@ -23,7 +23,6 @@ export const sample_activity = [
       2 : 계획 업로드
       3 : 화상 회의
       4 : 파일 업로드 
-  
       */
   {
     id: 1,

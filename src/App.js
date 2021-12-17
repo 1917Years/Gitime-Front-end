@@ -108,6 +108,7 @@ function App() {
           path="/dashboard/:teamName"
           exact={true}
           component={(props) => {
+            console.log(props);
             return <Dashboard {...props}></Dashboard>;
           }}
         />

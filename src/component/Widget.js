@@ -248,7 +248,7 @@ export const BoardWidget = (props) => {
 };
 
 export const TodoWidget = (props) => {
-  const { setShowModal, dataLists } = props;
+  const { setShowModal, dataLists, setNextTodo } = props;
   return (
     <div
       className="Todo"

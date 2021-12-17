@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, forwardRef } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import DatePicker from "react-datepicker";
 import "../assets/styles/Dashboard.css";
 import "../assets/styles/Scroll.css";
 import "../assets/styles/alert_banner.css";
@@ -32,6 +33,7 @@ var teamName = "델리만쥬";
 var nickName = "신유진";
 
 export let sockJS = new SockJS("http://localhost:8080/api/v1/socket/chat");
+console.log(sockJS);
 Stomp.client = Stomp.over(sockJS);
 export let stompClient = Stomp.client;
 
@@ -109,19 +111,19 @@ var dataLists = [
   },
 ];
 
-var chat_id = 1;
+var chat_id = 0;
 var dataLists2 = [
   // 채팅 샘플 데이터
-  {
-    id: 0,
-    username: "",
-    userprofile: "https://randomuser.me/portraits/men/40.jpg",
-    data: "",
-    date: "",
-    time: "",
-    online: false,
-  },
 ];
+
+var msg = {
+  id: 0,
+  username: "",
+  userprofile: "https://randomuser.me/portraits/men/40.jpg",
+  data: "",
+  date: "",
+  online: false,
+};
 
 var dataLists3 = [
   // 자료실 샘플 데이터
@@ -172,12 +174,18 @@ var dataLists3 = [
 ];
 
 function addMessage(message) {
-  console.log("안녕");
-  dataLists2.id = chat_id;
+  msg.id = chat_id;
+  msg.username = message.userName;
+  msg.data = message.content;
+  msg.date = message.date;
+
+  msg.userprofile = "https://randomuser.me/portraits/men/40.jpg";
+  console.log(dataLists2);
+  //console.log(msg);
+  dataLists2.push(msg);
   chat_id += 1;
-  dataLists2.username = message.userName;
-  dataLists2.data = message.content;
-  dataLists2.date = message.date;
+
+  console.log(dataLists2);
 }
 
 function Dashboard(props) {
@@ -185,6 +193,19 @@ function Dashboard(props) {
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
   const [showModal4, setShowModal4] = useState(false);
+  /*Todo*/
+  const [nextTodo, setNextTodo] = useState(false);
+  const [todoDate, setTodoDate] = useState(new Date());
+  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+    <button
+      className="border border-date border-opacity-50 font-ltest example-custom-input bg-develbg bg-opacity-30 text-date text-opacity-70 rounded-full py-2 px-5"
+      onClick={onClick}
+      ref={ref}
+    >
+      {value}
+    </button>
+  ));
+  /*Todo*/
   const [ctext, setCtext] = useState("");
   const [inputText, setInputText] = useState("");
   const [checkedList, setCheckedItems] = useState([]);
@@ -200,8 +221,9 @@ function Dashboard(props) {
       setNotice: setNotice,
       teamName: props.match.params.teamName,
     });
+    console.log(stompClient);
     stompClient.connect({}, () => {
-      stompClient.subscribe("/topic/roomid", (data) => {
+      stompClient.subscribe("/topic/roomId", (data) => {
         message = JSON.parse(data.body);
         addMessage(message);
       });
@@ -214,12 +236,14 @@ function Dashboard(props) {
   const onReset = () => {
     setInputText("");
   };
+
   const handleEnter = () => {
     var sendMessage = {
-      sendNick: nickName,
+      userName: nickName,
       content: ctext,
+      date: 2020,
     };
-    //console.log(sendMessage);
+    console.log(ctext);
     stompClient.send("/api/v1/socket/chat", {}, JSON.stringify(sendMessage));
 
     /*
@@ -267,6 +291,11 @@ function Dashboard(props) {
           checkedItemHandler={checkedItemHandler}
           checkedList={checkedList}
           changeComplete={changeComplete}
+          setNextTodo={setNextTodo}
+          nextTodo={nextTodo}
+          setTodoDate={setTodoDate}
+          todoDate={todoDate}
+          ExampleCustomInput={ExampleCustomInput}
         />
       ) : null}
 
