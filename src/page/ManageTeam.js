@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { GetGitRepoList, PostCreateTeam } from "../utils/api/team/TeamApi";
+import { GetGitRepoList } from "../utils/api/team/TeamApi";
 import {
   DeleteDevelope,
   AddDevelope,
@@ -8,6 +8,12 @@ import {
   getAllDevelop,
   getTeamNoticeList,
   deleteTeam,
+  GetAllTeamMember,
+  SetDevelopToMember,
+  GetAllInviteTeamMember,
+  SearchMember,
+  InviteMemberToTeam,
+  GetTeamInfo,
 } from "../utils/api/teamAdmin/TeamAdminApi";
 import SearchUser from "../component/UserSearch";
 
@@ -45,11 +51,34 @@ function ManageTeam(props) {
   const [selectDeve, setSelectDeve] = useState([]);
   const [showDeleteMem, setShowDeleteMem] = useState(false);
 
+  const [deleteMemList, setDeleteMemList] = useState([]);
+  const [deleteMemIdList, setDeleteMemIdList] = useState([]);
+  const [confirmCkMemList, setConfirmCkMemList] = useState([]);
+
+  const [teamMemberList, setTeamMemberList] = useState([]);
+  const [memberDevelopPlus, setMemberDevelopPlus] = useState(false);
+  const [memberDevelopUpdate, setMemberDevelopUpdate] = useState(false);
+
+  const [inviteTeamMember, setInviteTeamMember] = useState(null);
+  const [inviteTeamMemberUpdate, setInviteTeamMemberUpdate] = useState(true);
+
+  const [searchUserResult, setSearchUserResult] = useState(null);
+  const [searchEmail, setSearchEmail] = useState(null);
+
+  const [teamInfo, setTeamInfo] = useState(null);
+
+  const onSearchEmailHandler = (event) => {
+    setSearchEmail(event.currentTarget.value);
+  };
+
+  const checkDelMemList = [];
+  const Swal = require("sweetalert2");
+
   const tempSel = [true];
-  for (var i = 1; i <= sample_member.length; i++) {
+  for (var i = 1; i <= teamMemberList.length; i++) {
     tempSel.push(false);
   }
-  for (var i = 1; i <= sample_member.length; i++) {
+  for (var i = 1; i <= teamMemberList.length; i++) {
     selectDeve.push(false);
   }
   useEffect(() => {
@@ -60,14 +89,39 @@ function ManageTeam(props) {
         teamName: props.match.params.teamName,
       });
     }
+    if (memberDevelopUpdate) {
+      GetAllTeamMember({
+        teamName: props.match.params.teamName,
+        setTeamMemberList: setTeamMemberList,
+        setMemberDevelopUpdate: setMemberDevelopUpdate,
+      });
+    }
+    if (inviteTeamMemberUpdate) {
+      GetAllInviteTeamMember({
+        teamName: props.match.params.teamName,
+        setInviteTeamMember: setInviteTeamMember,
+        setInviteTeamMemberUpdate: setInviteTeamMemberUpdate,
+      });
+    }
   });
 
   useEffect(() => {
+    GetAllTeamMember({
+      teamName: props.match.params.teamName,
+      setTeamMemberList: setTeamMemberList,
+    });
+    GetAllInviteTeamMember({
+      teamName: props.match.params.teamName,
+      setInviteTeamMember: setInviteTeamMember,
+      setInviteTeamMemberUpdate: setInviteTeamMemberUpdate,
+    });
     GetGitRepoList({ setGitRepos });
   }, []);
+
   const onTeamGitRepoHandler = (event) => {
     setTeamGitRepo(event.currentTarget.value);
   };
+
   const onDevdeleteHandler = (field) => {
     console.log(field);
     DeleteDevelope({
@@ -121,20 +175,35 @@ function ManageTeam(props) {
     setEmail(event.currentTarget.value);
   };
 
-  const ondeleteDevHandler = (memid) => {
-    sample_member.forEach(function (member) {
-      if (member.id == memid) {
-        member.role = "";
-        setSelectDev(!selectDev);
+  const ondeleteDevHandler = (memEmail) => {
+    teamMemberList.forEach(function (member) {
+      if (member.memberEmail == memEmail) {
+        SetDevelopToMember({
+          data: {
+            isDeleted: true,
+            memberEmail: memEmail,
+            developField: null,
+          },
+          teamName: props.match.params.teamName,
+          setMemberDevelopUpdate: setMemberDevelopUpdate,
+        });
       }
     });
   };
 
-  const onDevSelHandler = (selected, memid) => {
-    sample_member.forEach(function (member) {
-      if (member.id == memid) {
-        member.role = selected;
-        setSelectDev(!selectDev);
+  const onDevSelHandler = (selected, memEmail) => {
+    teamMemberList.forEach(function (member) {
+      if (member.memberEmail == memEmail) {
+        SetDevelopToMember({
+          data: {
+            isDeleted: false,
+            memberEmail: memEmail,
+            developField: selected,
+          },
+          teamName: props.match.params.teamName,
+          setMemberDevelopUpdate: setMemberDevelopUpdate,
+        });
+        setMemberDevelopPlus(!memberDevelopPlus); //없는 애
       }
     });
   };
@@ -164,18 +233,252 @@ function ManageTeam(props) {
     console.log(gitRepoChangeMes.mes);
   };
 
-  var deleteMemList = [];
+  const TeamMemberListFunction = ({ member, idx }) => {
+    return (
+      <div class="" key={idx}>
+        <div class="flex items-center py-2">
+          {member.is_leader ? (
+            <div class="ml-6"></div>
+          ) : (
+            <input
+              class="ml-3"
+              type="checkbox"
+              onClick={(event) => checkDelMemHandler(event)}
+              value={idx}
+              onChange={(e) => selectMember(e.target.checked, member)}
+              checked={confirmCkMemList.includes(member) ? true : false}
+            ></input>
+          )}
+
+          <div class="flex-1 ml-5 my-1 flex">
+            <img
+              class="w-12 h-12 rounded-full"
+              src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
+              alt="collaborator 1"
+            ></img>
+            <div class="ml-2">
+              <div class="text-lg font-btest text-black text-gray-600">
+                {member.memberName}
+              </div>
+              <div class="font-ttest text-sm text-gray-400">
+                {member.memberEmail}
+              </div>
+            </div>
+          </div>
+          <div class="flex-1 my-1 my-auto">
+            {member.developField == null ? "미정" : member.developField}
+          </div>
+          <div class="flex-1 my-1">
+            {member.teamAuthority == "ROLE_PARENT" ? (
+              <div class="my-auto mx-auto h-3/4 grid rounded-full w-1/4 border border-red-300">
+                <div class="my-auto mx-auto">
+                  <div class="font-sbtest text-red-400 text-opacity-70 text-center">
+                    팀장
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div class="my-auto mx-auto grid h-3/4 rounded-full w-1/4 border border-green-300">
+                <div class="my-auto mx-auto">
+                  <div class="font-sbtest text-green-400 text-opacity-70 text-center">
+                    팀원
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <hr></hr>
+      </div>
+    );
+  };
 
   const checkDelMemHandler = (event) => {
     var checkMem;
     if (event.target.checked) {
-      checkMem = event.target.value;
+      sample_member.map((list) => {
+        if (list.id == event.target.value) {
+          checkMem = list.username;
+          deleteMemIdList.push(event.target.value);
+        }
+      });
       deleteMemList.push(checkMem);
     } else {
+      sample_member.map((list) => {
+        if (list.id == event.target.value) {
+          checkMem = list.username;
+        }
+      });
+      for (var i = 0; i < deleteMemList.length; i++) {
+        if (deleteMemList[i] == checkMem) {
+          deleteMemList.splice(i, 1);
+          break;
+        }
+      }
+
+      for (var i = 0; i < deleteMemIdList.length; i++) {
+        if (deleteMemIdList[i] == event.target.value) {
+          deleteMemIdList.splice(i, 1);
+          break;
+        }
+      }
     }
-    console.log(deleteMemList);
     console.log(checkMem);
+    console.log(deleteMemList);
+    console.log(deleteMemIdList);
   };
+
+  const removeMemHandler = () => {
+    sample_member.forEach(function (member) {
+      checkDelMemList.forEach(function (delMem) {
+        if (member.id == delMem.id) {
+          sample_member.splice(member.id - 1, 1);
+
+          var idx = 1;
+          sample_member.map((list) => {
+            list.id = idx;
+            idx += 1;
+          });
+        }
+      });
+    });
+
+    for (var i = 0; i <= checkDelMemList.length; i++) {
+      checkDelMemList.pop();
+    }
+    for (var i = 0; i <= deleteMemList.length; i++) {
+      deleteMemList.pop();
+    }
+    for (var i = 0; i <= deleteMemIdList.length; i++) {
+      deleteMemIdList.pop();
+    }
+
+    confirmDelete();
+  };
+
+  const SelectedTrueMemberSetDevelopField = ({ member }) => {
+    return (
+      <div class="h-full mx-auto w-2/3">
+        <select
+          aria-label="select an option"
+          class="text-sm text-gray-500 w-full border rounded-lg h-full focus:outline-none text-center"
+          onChange={(e) => {
+            onDevSelHandler(e.currentTarget.value, member.memberEmail);
+          }}
+        >
+          <option selected="" disabled="" value="">
+            역할 선택
+          </option>
+          {developLists.map((item) => {
+            return <option value={item.field}>{item.field}</option>;
+          })}
+        </select>
+      </div>
+    );
+  };
+
+  const SelectedFalseMemberSetDevelopField = ({ member }) => {
+    return (
+      <div class="h-full">
+        {" "}
+        <div class="grid mx-auto rounded-lg w-2/3 h-full border border-dashed px-5">
+          <button
+            className="w-full text-xl font-sbtest text-gray-400 text-center"
+            value=""
+            onClick={() => {
+              setMemberDevelopPlus(!memberDevelopPlus);
+            }}
+          >
+            +
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const confirmDelete = () => {
+    Swal.fire({
+      title: "O",
+      text: "팀원을 삭제하였어요.",
+      confirmButtonText: "👍",
+      confirmButtonColor: "#171717",
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener("mouseenter", Swal.stopTimer);
+        toast.addEventListener("mouseleave", Swal.resumeTimer);
+      },
+    });
+    setShowDeleteMem(false);
+  };
+
+  const selectAllMember = useCallback(
+    (checked) => {
+      if (checked) {
+        // 기존에 체크된 거 비워주는 작업
+        teamMemberList.map((list) => {
+          for (var i = 0; i < deleteMemList.length; i++) {
+            if (deleteMemList[i] == list.memberName) {
+              deleteMemList.splice(i, 1);
+              break;
+            }
+          }
+          for (var i = 0; i < deleteMemIdList.length; i++) {
+            if (deleteMemIdList[i] == list.id) {
+              deleteMemIdList.splice(i, 1);
+              break;
+            }
+          }
+        });
+
+        const checkMemList = [];
+        teamMemberList.forEach((list) => checkMemList.push(list));
+        setConfirmCkMemList(checkMemList);
+        teamMemberList.map((list) => {
+          if (!list.is_leader) {
+            deleteMemList.push(list.memberName);
+            deleteMemIdList.push(list.id);
+          }
+        });
+        console.log("모두 선택시 리스트");
+        console.log(deleteMemList);
+        console.log(deleteMemIdList);
+      } else {
+        setConfirmCkMemList([]);
+        teamMemberList.map((list) => {
+          if (!list.is_leader) {
+            for (var i = 0; i < deleteMemList.length; i++) {
+              if (deleteMemList[i] == list.memberName) {
+                deleteMemList.splice(i, 1);
+                break;
+              }
+            }
+            for (var i = 0; i < deleteMemIdList.length; i++) {
+              if (deleteMemIdList[i] == list.id) {
+                deleteMemIdList.splice(i, 1);
+                break;
+              }
+            }
+          }
+        });
+        console.log("모두 해제시 리스트");
+        console.log(deleteMemList);
+        console.log(deleteMemIdList);
+      }
+    },
+    [sample_member]
+  );
+
+  const selectMember = useCallback(
+    (checked, list) => {
+      if (checked) {
+        setConfirmCkMemList([...confirmCkMemList, list]);
+      } else {
+        setConfirmCkMemList(confirmCkMemList.filter((el) => el !== list));
+      }
+    },
+    [confirmCkMemList]
+  );
 
   return (
     <div class="grid grid-cols-5 h-full min-h-screen">
@@ -233,6 +536,10 @@ function ManageTeam(props) {
                       setShowNowClick6(false);
                       setShowNowClick7(false);
                       setShowNowClick8(false);
+                      GetTeamInfo({
+                        teamName: props.match.params.teamName,
+                        setTeamInfo: setTeamInfo,
+                      });
                     }}
                   >
                     팀 설정 관리
@@ -386,6 +693,10 @@ function ManageTeam(props) {
                       setShowNowClick6(false);
                       setShowNowClick7(false);
                       setShowNowClick8(true);
+                      GetAllTeamMember({
+                        teamName: props.match.params.teamName,
+                        setTeamMemberList: setTeamMemberList,
+                      });
                     }}
                   >
                     팀원 목록
@@ -408,6 +719,10 @@ function ManageTeam(props) {
                       setShowNowClick6(true);
                       setShowNowClick7(false);
                       setShowNowClick8(false);
+                      GetAllInviteTeamMember({
+                        teamName: props.match.params.teamName,
+                        setInviteTeamMember: setInviteTeamMember,
+                      });
                     }}
                   >
                     팀원 초대
@@ -431,6 +746,14 @@ function ManageTeam(props) {
                       setShowNowClick6(false);
                       setShowNowClick7(true);
                       setShowNowClick8(false);
+                      getAllDevelop({
+                        setDevelopLists: setDevelopLists,
+                        teamName: props.match.params.teamName,
+                      });
+                      GetAllTeamMember({
+                        teamName: props.match.params.teamName,
+                        setTeamMemberList: setTeamMemberList,
+                      });
                     }}
                   >
                     팀원 역할 설정
@@ -444,152 +767,150 @@ function ManageTeam(props) {
 
       <div className="col-span-4 w-full font-test">
         <div class="w-full h-full">
-          {showNowClick1 === true && (
-            <div class="w-full h-full flex">
-              <div class="w-1/12"></div>
-              <div class="w-3/4 pt-5 mt-4 pl-10">
-                <p class="text-2xl font-bold leading-tight tracking-tight text-black dark:text-gray-400 capitalize">
-                  팀 설정 관리
-                </p>
-                <div class="text-sm pt-2 pb-5 text-gray-400">
-                  팀의 기본 설정을 관리할 수 있어요.
-                </div>
-                <hr></hr>
-                <div class="mt-4 pt-5 w-full">
-                  <div class="p-2 bg-opacity-5 border-gray-100 rounded-t">
-                    <div class="grid grid-cols-2 gap-6">
-                      <div>
-                        <label class="ml-6 mr-6 text-sm text-gray-400">
-                          대표 이미지
-                        </label>
-                        <div class="pl-8 mt-4 md:mx-0">
-                          <div class="items-center space-x-4 ">
-                            <div class="flex w-full items-end ">
-                              <div
-                                tabindex="0"
-                                aria-label="img"
-                                role="img"
-                                class="focus:outline-none w-40 h-40 p-16 bg-gray-100 rounded-md flex items-center justify-center"
-                              >
-                                <svg
-                                  width="36"
-                                  height="36"
-                                  viewBox="0 0 36 36"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
+          {showNowClick1 ? (
+            teamInfo == null ? null : (
+              <div class="w-full h-full flex">
+                <div class="w-1/12"></div>
+                <div class="w-3/4 pt-5 mt-4 pl-10">
+                  <p class="text-2xl font-bold leading-tight tracking-tight text-black dark:text-gray-400 capitalize">
+                    팀 설정 관리
+                  </p>
+                  <div class="text-sm pt-2 pb-5 text-gray-400">
+                    팀의 기본 설정을 관리할 수 있어요.
+                  </div>
+                  <hr></hr>
+                  <div class="mt-4 pt-5 w-full">
+                    <div class="p-2 bg-opacity-5 border-gray-100 rounded-t">
+                      <div class="grid grid-cols-2 gap-6">
+                        <div>
+                          <label class="ml-6 mr-6 text-sm text-gray-400">
+                            대표 이미지
+                          </label>
+                          <div class="pl-8 mt-4 md:mx-0">
+                            <div class="items-center space-x-4 ">
+                              <div class="flex w-full items-end ">
+                                <div
+                                  tabindex="0"
+                                  aria-label="img"
+                                  role="img"
+                                  class="focus:outline-none w-40 h-40 p-16 bg-gray-100 rounded-md flex items-center justify-center"
                                 >
-                                  <path
-                                    d="M22.5 12H22.515"
-                                    stroke="#94A3B8"
-                                    stroke-width="2.25"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                  ></path>
-                                  <path
-                                    d="M25.5 6H10.5C8.01472 6 6 8.01472 6 10.5V25.5C6 27.9853 8.01472 30 10.5 30H25.5C27.9853 30 30 27.9853 30 25.5V10.5C30 8.01472 27.9853 6 25.5 6Z"
-                                    stroke="#94A3B8"
-                                    stroke-width="2.25"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                  ></path>
-                                  <path
-                                    d="M6 22.4999L12 16.4999C12.6841 15.8417 13.4601 15.4951 14.25 15.4951C15.0399 15.4951 15.8159 15.8417 16.5 16.4999L24 23.9999"
-                                    stroke="#94A3B8"
-                                    stroke-width="2.25"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                  ></path>
-                                  <path
-                                    d="M21 20.9999L22.5 19.4999C23.1841 18.8417 23.9601 18.4951 24.75 18.4951C25.5399 18.4951 26.3159 18.8417 27 19.4999L30 22.4999"
-                                    stroke="#94A3B8"
-                                    stroke-width="2.25"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                  ></path>
-                                </svg>
+                                  <svg
+                                    width="36"
+                                    height="36"
+                                    viewBox="0 0 36 36"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M22.5 12H22.515"
+                                      stroke="#94A3B8"
+                                      stroke-width="2.25"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    ></path>
+                                    <path
+                                      d="M25.5 6H10.5C8.01472 6 6 8.01472 6 10.5V25.5C6 27.9853 8.01472 30 10.5 30H25.5C27.9853 30 30 27.9853 30 25.5V10.5C30 8.01472 27.9853 6 25.5 6Z"
+                                      stroke="#94A3B8"
+                                      stroke-width="2.25"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    ></path>
+                                    <path
+                                      d="M6 22.4999L12 16.4999C12.6841 15.8417 13.4601 15.4951 14.25 15.4951C15.0399 15.4951 15.8159 15.8417 16.5 16.4999L24 23.9999"
+                                      stroke="#94A3B8"
+                                      stroke-width="2.25"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    ></path>
+                                    <path
+                                      d="M21 20.9999L22.5 19.4999C23.1841 18.8417 23.9601 18.4951 24.75 18.4951C25.5399 18.4951 26.3159 18.8417 27 19.4999L30 22.4999"
+                                      stroke="#94A3B8"
+                                      stroke-width="2.25"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    ></path>
+                                  </svg>
+                                </div>
+                                <div class="ml-2 text-sm text-gray-400 font-ltest">
+                                  추천 사이즈: 200x200, 파일 최대 크기: 1MB
+                                </div>
                               </div>
-                              <div class="ml-2 text-sm text-gray-400 font-ltest">
-                                추천 사이즈: 200x200, 파일 최대 크기: 1MB
+                            </div>
+                          </div>
+                        </div>
+                        <div class="bg-white col-span-1">
+                          <div class="font-test space-y-2 md:space-y-0 p-2 w-full text-gray-500 items-center">
+                            <div class="ml-6 mr-6 ">
+                              <div>
+                                <label class="text-sm text-gray-400">
+                                  팀 이름
+                                </label>
+                                <div
+                                  tabindex="0"
+                                  class="col-span-1 block text-base bg-white w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white border rounded border-gray-400 py-2.5"
+                                >
+                                  <label class="text-sm text-gray-400">
+                                    {teamInfo.teamName}
+                                  </label>
+                                </div>
+                              </div>
+                              <div class="mt-4">
+                                <label class="text-sm text-gray-400">
+                                  개발 언어
+                                </label>
+                                <div
+                                  tabindex="0"
+                                  class="col-span-1 block text-base bg-white w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white border rounded border-gray-400 py-2.5"
+                                >
+                                  <label class="text-sm text-gray-400">
+                                    {teamInfo.developType}
+                                  </label>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div class="bg-white col-span-1">
-                        <div class="font-test space-y-2 md:space-y-0 p-2 w-full text-gray-500 items-center">
-                          <div class="ml-6 mr-6 ">
-                            <div>
-                              <label class="text-sm text-gray-400">
-                                팀 이름
-                              </label>
-                              <div class="w-full">
-                                <input class="block text-base bg-white w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500" />
-                              </div>
-                            </div>
-                            <div class="mt-4">
-                              <label class="text-sm text-gray-400">
-                                개발 언어
-                              </label>
-                              <div
-                                tabindex="0"
-                                class="col-span-1 block text-base bg-white w-full h-10 lg:h-12 mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white border rounded border-gray-400 py-2.5"
-                              >
-                                <select
-                                  aria-label="select an option"
-                                  class="text-sm text-gray-500 w-full focus:outline-none"
-                                >
-                                  <option selected="" disabled="" value="">
-                                    개발 언어 선택
-                                  </option>
-                                  <option>JAVA</option>
-                                  <option>C</option>
-                                  <option>C++</option>
-                                  <option>Python</option>
-                                  <option>Spring</option>
-                                  <option>React</option>
-                                </select>
-                              </div>
+                      <div class="mt-4 font-test space-y-2 md:space-y-0 p-2 w-full text-gray-500 items-center">
+                        <div class="ml-6 mr-6">
+                          <label class=" text-sm text-gray-400">
+                            깃허브 연동 주소
+                          </label>
+                          <div class="w-full px-4 mt-4 text-gray-400 bg-gray-50 block resize-none overflow-y-auto py-3 rounded-lg outline-none transition border border-gray-400">
+                            {teamInfo.gitRepoUrl}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mt-4 font-test space-y-2 md:space-y-0 p-2 w-full text-gray-500 items-center">
+                        <div class="ml-6 mr-6">
+                          <label class=" text-sm text-gray-400">팀 설명</label>
+                          <div class="w-full inline-flex">
+                            <div class="w-full px-4 mt-4 text-gray-400 bg-white-50 block resize-none overflow-y-auto py-3 rounded-lg outline-none transition border border-gray-400">
+                              <label>{teamInfo.teamDescription}</label>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="mt-4 font-test space-y-2 md:space-y-0 p-2 w-full text-gray-500 items-center">
-                      <div class="ml-6 mr-6">
-                        <label class=" text-sm text-gray-400">
-                          깃허브 연동 주소
-                        </label>
-                        <div class="w-full px-4 mt-4 text-gray-400 bg-gray-50 block resize-none overflow-y-auto py-3 rounded-lg outline-none transition border border-gray-400">
-                          https://github.com/Hodu-BackSpace/SYNC-Software-Contest
-                        </div>
+                      <div class="font-test w-full p-6 text-right text-gray-500">
+                        <button
+                          class="text-red-400"
+                          onClick={() => {
+                            deleteTeam({
+                              props,
+                              teamName: props.match.params.teamName,
+                            });
+                          }}
+                        >
+                          팀 삭제하기
+                        </button>
                       </div>
-                    </div>
-                    <div class="mt-4 font-test space-y-2 md:space-y-0 p-2 w-full text-gray-500 items-center">
-                      <div class="ml-6 mr-6">
-                        <label class=" text-sm text-gray-400">팀 설명</label>
-                        <div class="w-full inline-flex">
-                          <textarea class="block resize-none overflow-y-auto py-3 h-24 text-base bg-white w-full mt-2 lg:mt-4 px-1 lg:px-6 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500" />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="font-test w-full p-6 text-right text-gray-500">
-                      <button
-                        class="text-red-400"
-                        onClick={() => {
-                          deleteTeam({
-                            props,
-                            teamName: props.match.params.teamName,
-                          });
-                        }}
-                      >
-                        팀 삭제하기
-                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )
+          ) : null}
           {showNowClick2 === true && (
             <div class="w-full h-full flex">
               <div class="w-1/12"></div>
@@ -801,63 +1122,117 @@ function ManageTeam(props) {
             <div class="w-full h-full flex">
               <div class="w-1/12"></div>
               <div class="w-3/4 pt-5 pl-10 mt-4">
-                <p class="text-2xl font-bold leading-tight tracking-tight text-black dark:text-gray-400">
+                <p class="text-2xl font-bold leading-tight tracking-tight text-black dark:text-gray-400 capitalize">
                   팀원 초대
                 </p>
                 <div class="text-sm pt-2 pb-5 text-gray-400">
                   <p>새로운 팀원에게 초대 메일을 보냅니다.</p>
                 </div>
                 <hr />
-                <div class="flex">
-                  <div class="font-bold mt-4 pt-5 text-gray-500 text-lg pb-5 flex-grow">
-                    팀원 초대하기
-                  </div>
-                </div>
-                <div class="font-bold mt-4 pt-2 text-lg">
-                  <div>
-                    <div class="flex gasp-2 items-center h-10">
-                      <div>
-                        <SearchUser />
-                      </div>
 
-                      <div className="w-1/6 h-full">
+                <div class="font-bold mt-4 pt-2 text-lg w-full">
+                  <div class="">
+                    <div class="grid grid-cols-4 gap-4">
+                      <input
+                        id="findMail"
+                        placeholder="찾을 팀원의 이메일을 정확하게 입력해 주세요."
+                        class="ml-10 text-sm block text-base col-span-3 h-10 lg:h-12  px-1 lg:px-6 outline-none transition border border-dashed hover:border-primary-500 border-gray-400 bg-white focus:border-primary-500"
+                        onChange={onSearchEmailHandler}
+                      ></input>
+                      <button
+                        class="float-right mr-10 font-test bg-gray-200 p-2 border border-dashed hover:border-primary-500 border-gray-400"
+                        onClick={() => {
+                          SearchMember({
+                            email: searchEmail,
+                            props: props,
+                            setSearchUserResult,
+                          });
+                          document.getElementById("findMail").value = "";
+                        }}
+                      >
+                        🔎
+                      </button>
+                    </div>
+                    {searchUserResult == null ? null : searchUserResult ==
+                      "해당 이메일을 가진 유저가 없습니다." ? (
+                      <div class="ml-10 mt-5 text-sm font-base font-light">
+                        검색 결과가 없습니다😥 검색어를 다시 확인해 주세요!
+                      </div>
+                    ) : (
+                      <div class="grid grid-cols-3 ml-10 mt-5 text-base font-base font-light">
+                        <img
+                          class="w-12 h-12"
+                          src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
+                          alt="collaborator 1"
+                        ></img>
+                        <div>
+                          {" "}
+                          {searchUserResult.memberName} (
+                          {searchUserResult.memberNickName})
+                          <p> {searchUserResult.memberEmail}</p>
+                          <p>
+                            {searchUserResult.memberBirth[0] +
+                              "." +
+                              searchUserResult.memberBirth[1] +
+                              "." +
+                              searchUserResult.memberBirth[2]}
+                          </p>
+                        </div>
+
                         <button
-                          type="button"
                           onClick={() => {
-                            console.log(email);
+                            InviteMemberToTeam({
+                              teamName: props.match.params.teamName,
+                              data: {
+                                memberEmail: searchUserResult.memberEmail,
+                              },
+                            });
                           }}
-                          class="w-full h-full bg-gray-400 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white transition ease-in duration-200 text-center text-base rounded-lg "
                         >
-                          초대 보내기
+                          초대하기
                         </button>
                       </div>
-                    </div>
+                    )}
+                    {
+                      <div class="">
+                        <div class="mt-4 mx-10 text-base font-normal font-test flex items-center bg-gray-50">
+                          <div class="py-2 flex items-center font-test text-base w-full text-center">
+                            <div class="flex-1 my-1">
+                              초대 목록 (
+                              {Object.keys(inviteTeamMember.content).length})
+                            </div>
+                            <div class="flex-1 my-1">
+                              상태{" "}
+                              <a class="text-sm text-gray-500">
+                                (ACCEPT/DENIED/WAIT)
+                              </a>
+                            </div>
+                          </div>
+                        </div>
 
-                    <div class="grid mt-5 mx-5">
-                      <div class="pb-3 flex w-full items-center">
-                        <div class="grid w-full h-full gap-2 mt-5 place-items-center">
-                          {sample_member.map((member) => {
-                            return (
-                              <div class="flex w-5/6 items-center">
-                                <div class="grid w-7/12 h-4/5  text-lg text-gray-500 place-items-start ml-3 ">
-                                  <div>
-                                    <p class="text-left">{member.username}</p>
+                        <div class="mt-2 mx-10">
+                          {inviteTeamMember == null
+                            ? null
+                            : inviteTeamMember.content.map((member) => {
+                                return (
+                                  <div class="grid grid-cols-2">
+                                    <div class="pb-2 text-center text-lg font-btest text-black text-gray-600">
+                                      {member.memberName}
+                                      <a class="text-sm font-ttest">
+                                        {" "}
+                                        ({member.memberEmail})
+                                      </a>
+                                    </div>
+
+                                    <div class="text-center font-light font-test text-lg text-purple-300 ">
+                                      {member.inviteStatus}
+                                    </div>
                                   </div>
-                                  <div>
-                                    <p class="truncate text-left text-base text-gray-400">
-                                      {member.email}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div class=" grid w-1/4 h-1/3 font-thin text-lg text-purple-300 place-items-center">
-                                  {member.state_accept}
-                                </div>
-                              </div>
-                            );
-                          })}
+                                );
+                              })}
                         </div>
                       </div>
-                    </div>
+                    }
                   </div>
                 </div>
               </div>
@@ -879,12 +1254,9 @@ function ManageTeam(props) {
                     팀원 역할 관리하기
                   </div>
 
-                  {sample_member.map((member) => {
+                  {teamMemberList.map((member) => {
                     return (
-                      <div
-                        class="w-5/6 items-center my-10 ml-8"
-                        key={member.id}
-                      >
+                      <div class="w-5/6 items-center my-10 ml-8">
                         <div class="grid grid-cols-3 w-full">
                           <div class="flex">
                             <img
@@ -894,55 +1266,25 @@ function ManageTeam(props) {
                             ></img>
                             <div class="ml-3">
                               <div class="text-lg font-btest text-black text-gray-500">
-                                {member.username}
+                                {member.memberName}
                               </div>
                               <div class="font-ttest text-sm text-gray-400">
-                                {member.email}
+                                {member.memberEmail}
                               </div>
                             </div>
                           </div>
-                          {member.role === "" ? (
+
+                          {member.developField == null ? (
                             <div class="h-full">
-                              {selectDeve[member.id] ? (
-                                <div class="h-full mx-auto w-2/3">
-                                  <select
-                                    aria-label="select an option"
-                                    class="text-sm text-gray-500 w-full border rounded-lg h-full focus:outline-none text-center"
-                                    onChange={(e) => {
-                                      onDevSelHandler(
-                                        e.currentTarget.value,
-                                        member.id
-                                      );
-                                    }}
-                                  >
-                                    <option selected="" disabled="" value="">
-                                      역할 선택
-                                    </option>
-                                    <option value="Front">Front</option>
-                                    <option value="Back">Back</option>
-                                    <option value="개발분야3">개발분야3</option>
-                                    <option value="개발분야4">개발분야4</option>
-                                    <option value="개발분야5">개발분야5</option>
-                                    <option value="개발분야6">개발분야6</option>
-                                  </select>
-                                </div>
+                              {memberDevelopPlus ? ( //그건... 상호가 해봐... ㅇㅇㅇㅇㅇ 트루일땐 셀렉트문이 보임 //빼면 영찬이꺼 역할추가?를 눌렀는데 다른애들꺼까지 다 추가상태로 바뀜 // 근데 이걸 멤버별로 관리해줘야 해서 배열형태로 만든거고 인덱스에 member.id를 넣은거 ㅇㅇ /// << 제어가 여기로 넘어가게 되겠지?? 그럼 이게 참이니까 밑에 셀렉트문이 보일 거 아냐
+                                //ㄴㄴ 그 말이 아니라... 그 +버ㅇㅇㅇㅇㅇㅇㅇ +버튼이 다 셀렉트로 바뀜 저 변수를 멤버별로 뺀 게 그거때문이야
+                                <SelectedTrueMemberSetDevelopField
+                                  member={member}
+                                />
                               ) : (
-                                <div class="h-full">
-                                  {" "}
-                                  <div class="grid mx-auto rounded-lg w-2/3 h-full border border-dashed px-5">
-                                    <button
-                                      className="w-full text-xl font-sbtest text-gray-400 text-center"
-                                      value=""
-                                      onClick={() => {
-                                        tempSel[member.id] = true;
-                                        //console.log(tempSel[member.id]);
-                                        setSelectDeve(tempSel);
-                                      }}
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                </div>
+                                <SelectedFalseMemberSetDevelopField
+                                  member={member}
+                                />
                               )}
                             </div>
                           ) : (
@@ -951,12 +1293,12 @@ function ManageTeam(props) {
                                 <div class="flex ">
                                   <div class="absoulte my-auto ml-3 font-ltest text-opacity-70 text-center"></div>
                                   <div className="mx-auto my-auto font-sbtest text-date text-opacity-70 text-center">
-                                    {member.role}
+                                    {member.developField}
                                   </div>
                                   <button
                                     class="absoulte text-date my-auto font-ltest text-opacity-70 text-center "
                                     onClick={() => {
-                                      ondeleteDevHandler(member.id);
+                                      ondeleteDevHandler(member.memberEmail);
                                     }}
                                   >
                                     x
@@ -966,7 +1308,7 @@ function ManageTeam(props) {
                             </div>
                           )}
 
-                          {member.is_leader ? (
+                          {member.teamAuthority == "ROLE_PARENT" ? (
                             <div class="my-auto mx-auto h-3/4 grid rounded-full w-1/4 border border-red-300">
                               <div class="my-auto mx-auto">
                                 <div class="font-sbtest text-red-400 text-opacity-70 text-center">
@@ -995,7 +1337,7 @@ function ManageTeam(props) {
             <div class="w-full h-full flex">
               <div class="w-1/12"></div>
               <div class="w-3/4 pt-5 pl-10 mt-4">
-                <p class="text-2xl font-bold leading-tight tracking-tight text-gray-600 dark:text-gray-400 capitalize">
+                <p class="text-2xl font-bold leading-tight tracking-tight text-black dark:text-gray-400 capitalize">
                   팀원 관리
                 </p>
                 <div class="text-sm pt-2 pb-5 text-gray-400">
@@ -1005,13 +1347,14 @@ function ManageTeam(props) {
 
                 <div class="flex items-center">
                   <div class="flex-1 text-sm font-test my-5">
-                    참여 중인 멤버 ({Object.keys(sample_member).length})
+                    참여 중인 멤버 ({teamMemberList.length})
                   </div>
                   <div class="flex-1 text-right">
                     <button
                       class="rounded-md text-sm border-2 border-gray-400 border-opacity-50 px-4 py-1"
                       onClick={() => {
                         setShowDeleteMem(true);
+                        //console.log(deleteMemList);
                       }}
                     >
                       팀원 추방
@@ -1020,7 +1363,18 @@ function ManageTeam(props) {
                 </div>
                 <div class="flex items-center bg-gray-50">
                   <div class="flex items-center font-test text-base w-full text-gray-500">
-                    <input class="ml-3 my-1" type="checkbox"></input>
+                    <input
+                      class="ml-3 my-1"
+                      type="checkbox"
+                      onChange={(e) => selectAllMember(e.target.checked)}
+                      checked={
+                        confirmCkMemList.length === 0
+                          ? false
+                          : confirmCkMemList.length === teamMemberList.length
+                          ? true
+                          : false
+                      }
+                    ></input>
                     <div class="flex-1 ml-5 my-1 py-2">멤버</div>
                     <div class="flex-1 my-1">역할</div>
                     <div class="text-center flex-1 my-1 my-auto mx-auto h-3/4 w-1/4 pl-2">
@@ -1031,59 +1385,9 @@ function ManageTeam(props) {
 
                 <div class="items-center">
                   <div class="font-test text-base w-full text-gray-500">
-                    {sample_member.map((member) => {
+                    {teamMemberList.map((member, idx) => {
                       return (
-                        <div class="" key={member.id}>
-                          <div class="flex items-center py-2">
-                            {member.is_leader ? (
-                              <div class="ml-6"></div>
-                            ) : (
-                              <input
-                                class="ml-3"
-                                type="checkbox"
-                                onClick={(event) => checkDelMemHandler(event)}
-                                value={member.username}
-                              ></input>
-                            )}
-
-                            <div class="flex-1 ml-5 my-1 flex">
-                              <img
-                                class="w-12 h-12 rounded-full"
-                                src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
-                                alt="collaborator 1"
-                              ></img>
-                              <div class="ml-2">
-                                <div class="text-lg font-btest text-black text-gray-600">
-                                  {member.username}
-                                </div>
-                                <div class="font-ttest text-sm text-gray-400">
-                                  {member.email}
-                                </div>
-                              </div>
-                            </div>
-                            <div class="flex-1 my-1 my-auto">{member.role}</div>
-                            <div class="flex-1 my-1">
-                              {member.is_leader ? (
-                                <div class="my-auto mx-auto h-3/4 grid rounded-full w-1/4 border border-red-300">
-                                  <div class="my-auto mx-auto">
-                                    <div class="font-sbtest text-red-400 text-opacity-70 text-center">
-                                      팀장
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div class="my-auto mx-auto grid h-3/4 rounded-full w-1/4 border border-green-300">
-                                  <div class="my-auto mx-auto">
-                                    <div class="font-sbtest text-green-400 text-opacity-70 text-center">
-                                      팀원
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <hr></hr>
-                        </div>
+                        <TeamMemberListFunction member={member} idx={idx} />
                       );
                     })}
                   </div>
@@ -1111,8 +1415,65 @@ function ManageTeam(props) {
                       </span>
                     </button>
                   </div>
+
                   <div class="relative w-full mx-auto max-w-3xl">
-                    <div class="ml-2 font-test">선택한 팀원은</div>
+                    <div class="pt-4 ml-4 font-test">
+                      ✔총 {deleteMemList.length}명을 선택하였습니다.
+                    </div>
+                    <div class="ml-4 font-test">
+                      선택한 멤버는
+                      {deleteMemList.map((member) => {
+                        return <a> {member} 님</a>;
+                      })}
+                      입니다.
+                    </div>
+                    <div class="pt-2 ml-4 font-test">
+                      {sample_member.forEach(function (member) {
+                        deleteMemIdList.forEach(function (memId) {
+                          if (member.id == memId) {
+                            checkDelMemList.push(member);
+                            console.log(checkDelMemList);
+                          }
+                        });
+                      })}
+                      {checkDelMemList.map((member) => {
+                        return (
+                          <div class="flex-1 ml-5 my-1 flex pt-3">
+                            <img
+                              class="w-10 h-10 rounded-full"
+                              src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
+                              alt="collaborator 1"
+                            ></img>
+                            <div class="ml-2">
+                              <div class="text-base font-btest text-black text-gray-600">
+                                {member.username} ({member.email})
+                              </div>
+                              <div class="font-ltest text-sm text-gray-500">
+                                역할: {member.role}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div class="ml-4 pt-6 font-test">
+                      정말로 삭제하시겠습니까?
+                    </div>
+                    <div class="px-4 py-4 grid grid-cols-2 gap-4">
+                      <button
+                        class="grow py-4 bg-red-200 rounded-lg "
+                        onClick={() => removeMemHandler()}
+                      >
+                        네, 삭제할게요!
+                      </button>
+
+                      <button
+                        class="px-4 grow py-4 bg-gray-200 rounded-lg "
+                        onClick={() => setShowDeleteMem(false)}
+                      >
+                        아뇨, 다시 생각해볼게요😥
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

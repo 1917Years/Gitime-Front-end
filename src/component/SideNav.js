@@ -6,11 +6,11 @@ export const Upcoming = (props) => {
     <div className="grid mt-10 font-sbtest">
       <div>
         <p>Upcoming!</p>
-        <div className="grid mt-4">
+        <div className="grid mt-3 gap-2">
           {dataLists.map((item) => {
             return (
-              <div className="grid grid-cols-5 my-2 gap-2">
-                <div class="grid rounded-lg bg-yellow-300  justify-items-center place-content-center px-2 py-2">
+              <div className="grid grid-cols-5 my-2 gap-2 relative">
+                <div class="grid rounded-lg xl:rounded-large bg-yellow-300 justify-items-center place-content-center px-2 py-2 2xl:mx-1">
                   <div class="text-red-200">
                     <img
                       src="https://svgsilh.com/svg/558009-ff9800.svg"
@@ -18,9 +18,9 @@ export const Upcoming = (props) => {
                     />
                   </div>
                 </div>
-                <div class="col-span-4 text-sm">
+                <div class="col-span-4 text-tiny">
                   <p>{item.title}</p>
-                  <p class="text-xs font-ltest">
+                  <p class="text-xs font-ltest text-gray-400">
                     {item.date} {item.time}
                   </p>
                 </div>
@@ -39,7 +39,7 @@ export const RecentActivity = (props) => {
     <div className="grid mt-10 font-sbtest">
       <div>
         <p>Recent Activity</p>
-        <div className="grid mt-4">
+        <div className="grid mt-3 gap-2">
           {dataLists.map((item) => {
             switch (item.type) {
               case 1:
@@ -55,7 +55,7 @@ export const RecentActivity = (props) => {
                     </div>
                     <div class="col-span-4 text-sm">
                       <p>{item.username}님이 코드를 수정했습니다.</p>
-                      <p class="text-sm font-ltest">
+                      <p class="text-xs font-ltest text-gray-400">
                         {item.date} {item.time}
                       </p>
                     </div>
@@ -74,7 +74,7 @@ export const RecentActivity = (props) => {
                     </div>
                     <div class="col-span-4 text-sm">
                       <p>{item.username}님이 새로운 계획을 업로드 했습니다.</p>
-                      <p class="text-sm font-ltest">
+                      <p class="text-xs font-ltest text-gray-400">
                         {item.date} {item.time}
                       </p>
                     </div>
@@ -93,7 +93,7 @@ export const RecentActivity = (props) => {
                     </div>
                     <div class="col-span-4 text-sm">
                       <p>{item.username}님이 화상회의를 녹화했습니다.</p>
-                      <p class="text-sm font-ltest">
+                      <p class="text-xs font-ltest text-gray-400">
                         {item.date} {item.time}
                       </p>
                     </div>
@@ -102,7 +102,7 @@ export const RecentActivity = (props) => {
               case 4:
                 return (
                   <div className="grid grid-cols-5 my-2 gap-2">
-                    <div class="grid rounded-lg bg-purple-300  justify-items-center place-content-center px-2 py-2">
+                    <div class="grid rounded-lg bg-purple-300 justify-items-center place-content-center px-2 py-2">
                       <div class="text-white">
                         <img
                           src="https://svgsilh.com/svg/310475-9c27b0.svg"
@@ -112,7 +112,7 @@ export const RecentActivity = (props) => {
                     </div>
                     <div class="col-span-4 text-sm">
                       <p>{item.username}님이 파일을 업로드 했습니다.</p>
-                      <p class="text-sm font-ltest">
+                      <p class="text-xs font-ltest text-gray-400">
                         {item.date} {item.time}
                       </p>
                     </div>
@@ -133,7 +133,7 @@ export const Members = (props) => {
     <div className="mt-10 grid font-sbtest">
       <div>
         <p>Members</p>
-        <div className="grid mt-4">
+        <div className="grid mt-3">
           <div class="flex  gap-4 grid grid-rows-3 grid-cols-3 place-items-center">
             <div>
               <img

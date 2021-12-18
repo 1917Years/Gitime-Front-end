@@ -4,6 +4,7 @@ import "./App.css";
 import Mainpage from "./page/Mainpage";
 import Register from "./page/Register";
 import Login from "./page/Login";
+import VideoChat from "./page/VideoChat";
 import TeamForm from "./page/TeamForm";
 import Dashboard from "./page/Dashboard";
 import Oauth from "./utils/oauth/Oauth";
@@ -55,6 +56,14 @@ function App() {
           exact={true}
           component={(props) => {
             return <Login {...props}></Login>;
+          }}
+        />
+
+        <Route
+          path="/VideoChat"
+          exact={true}
+          component={(props) => {
+            return <VideoChat {...props}></VideoChat>;
           }}
         />
 

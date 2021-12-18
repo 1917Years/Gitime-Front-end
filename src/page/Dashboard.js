@@ -3,7 +3,6 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import DatePicker from "react-datepicker";
 import "../assets/styles/Dashboard.css";
-import "../assets/styles/Scroll.css";
 import "../assets/styles/alert_banner.css";
 import { AlertNotice } from "../component/Alert";
 import { Board, AddingToDo, ChatRoom, VideoChatRoom } from "../component/Modal";
@@ -28,12 +27,17 @@ import {
   sample_upcoming,
 } from "../component/test/sample_data";
 import { GetTeamNotice } from "../utils/api/team/TeamApi";
+import { GetBoardList } from "../utils/api/board/BoardApi";
+import {
+  GetDevelopProgressResult,
+  GetTodoList,
+  PostCreateTodo,
+} from "../utils/api/dashboard/DashboardApi";
 
 var teamName = "델리만쥬";
 var nickName = "신유진";
 
 export let sockJS = new SockJS("http://localhost:8080/api/v1/socket/chat");
-console.log(sockJS);
 Stomp.client = Stomp.over(sockJS);
 export let stompClient = Stomp.client;
 
@@ -79,34 +83,51 @@ var memList = [
   },
 ];
 
+var todo_id = 1;
 var dataLists = [
   // 투두리스트 샘플 데이터
   {
-    id: 1,
     data: "프론트 디자인 완성하기",
     kinds: "F",
-    date: "2021.09.14",
+    startDateY: "2021",
+    startDateM: "12",
+    startDateD: "01",
+    endDateY: "2021",
+    endDateM: "12",
+    endDateD: "28",
     end: false,
   },
   {
-    id: 2,
     data: "프론트 코드 쓰기",
     kinds: "F",
-    date: "2021.09.25",
+    startDateY: "2021",
+    startDateM: "12",
+    startDateD: "03",
+    endDateY: "2021",
+    endDateM: "12",
+    endDateD: "19",
     end: false,
   },
   {
-    id: 3,
     data: "백엔드 코드 짜기",
     kinds: "B",
-    date: "2021.09.30",
+    startDateY: "2021",
+    startDateM: "12",
+    startDateD: "07",
+    endDateY: "2021",
+    endDateM: "12",
+    endDateD: "13",
     end: true,
   },
   {
-    id: 4,
     data: "백엔드 채팅방 만들기",
     kinds: "B",
-    date: "2021.11.22",
+    startDateY: "2021",
+    startDateM: "12",
+    startDateD: "16",
+    endDateY: "2021",
+    endDateM: "12",
+    endDateD: "25",
     end: true,
   },
 ];
@@ -130,6 +151,7 @@ var dataLists3 = [
   {
     id: 1,
     username: "팀원1",
+    userfield: "F",
     title: "오늘 프론트 결과 캡쳐해서 올려요",
     data: "오늘은 꽤 많이 한듯ㅋㅋ",
     file: "PNG",
@@ -141,6 +163,7 @@ var dataLists3 = [
   {
     id: 2,
     username: "팀원2",
+    userfield: "B",
     title: "오늘 백 결과입니다",
     data: "다들 수고하셨어요~",
     file: "HWP",
@@ -152,6 +175,7 @@ var dataLists3 = [
   {
     id: 3,
     username: "팀원3",
+    userfield: "F",
     title: "중간보고서 임시",
     data: "결과부분 내용 보충해주세요",
     file: "HWP",
@@ -163,6 +187,7 @@ var dataLists3 = [
   {
     id: 4,
     username: "팀원4",
+    userfield: "B",
     title: "발표자료입니다",
     data: "피드백해주세요~",
     file: "PDF",
@@ -172,30 +197,26 @@ var dataLists3 = [
     comment: "5",
   },
 ];
-
-function addMessage(message) {
-  msg.id = chat_id;
-  msg.username = message.userName;
-  msg.data = message.content;
-  msg.date = message.date;
-
-  msg.userprofile = "https://randomuser.me/portraits/men/40.jpg";
-  console.log(dataLists2);
-  //console.log(msg);
-  dataLists2.push(msg);
-  chat_id += 1;
-
-  console.log(dataLists2);
-}
-
 function Dashboard(props) {
+  const { chat } = props;
+
+  const [tmp, setTmp] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
   const [showModal4, setShowModal4] = useState(false);
-  /*Todo*/
-  const [nextTodo, setNextTodo] = useState(false);
+  /*Todo 시작*/
   const [todoDate, setTodoDate] = useState(new Date());
+  const [todoInput, setTodoInput] = useState("");
+  const [todoStruct, setTodoStruct] = useState({
+    data: "",
+    kinds: "",
+    startData: "",
+    endDate: "",
+    end: false,
+  });
+  const [todoDev, setTodoDev] = useState("");
+
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <button
       className="border border-date border-opacity-50 font-ltest example-custom-input bg-develbg bg-opacity-30 text-date text-opacity-70 rounded-full py-2 px-5"
@@ -205,7 +226,25 @@ function Dashboard(props) {
       {value}
     </button>
   ));
-  /*Todo*/
+  const onTodoInputHandler = (event) => {
+    setTodoInput(event.currentTarget.value);
+  };
+
+  const tempfun = () => {
+    /*
+    console.log("text : " + todoStruct.date);
+    console.log("date : " + todoStruct.date);
+    console.log("dev : " + todoStruct.dev);
+    */
+  };
+  const formatDate = (d) => {
+    const date = new Date(d);
+    const monthIndex = date.getMonth() + 1;
+    const year = date.getFullYear();
+    return `${year}년 ${`0${monthIndex}`.slice(-2)}월`;
+  };
+
+  /*Todo 끝*/
   const [ctext, setCtext] = useState("");
   const [inputText, setInputText] = useState("");
   const [checkedList, setCheckedItems] = useState([]);
@@ -214,20 +253,55 @@ function Dashboard(props) {
   const [videoList, setShowVideoList] = useState(true);
   const [memberList, setMemberList] = useState(false);
   const [notice, setNotice] = useState("불러오는중..");
+  const [boardList, setBoardList] = useState(null);
+  const [todoList, setTodoList] = useState(null);
+
   console.log();
+
+  const addMessage = (message) => {
+    msg.id = chat_id;
+    msg.username = message.userName;
+    msg.data = message.content;
+    msg.date = message.date;
+    msg.userprofile = "https://randomuser.me/portraits/men/40.jpg";
+    dataLists2.push(msg);
+    chat_id += 1;
+  };
+
+  const setMessage = () => {
+    stompClient.connect({}, () => {
+      stompClient.subscribe("/topic/" + nickName, (data) => {
+        message = JSON.parse(data.body);
+        addMessage(message);
+      });
+    });
+  };
+
+  useEffect(() => {
+    setMessage();
+  }, [chat]);
 
   useEffect(() => {
     GetTeamNotice({
       setNotice: setNotice,
       teamName: props.match.params.teamName,
     });
-    console.log(stompClient);
-    stompClient.connect({}, () => {
-      stompClient.subscribe("/topic/roomId", (data) => {
-        message = JSON.parse(data.body);
-        addMessage(message);
-      });
+    GetBoardList({
+      setBoardList: setBoardList,
+      teamName: props.match.params.teamName,
+      page: "1",
     });
+    GetTodoList({
+      setTodoList: setTodoList,
+      teamName: props.match.params.teamName,
+    });
+    GetDevelopProgressResult({
+      teamName: props.match.params.teamName,
+    });
+
+    // return function cleanup() {
+    //   stompClient.disconnect();
+    // };
   }, []);
 
   const onChangeInput = (e) => {
@@ -244,7 +318,11 @@ function Dashboard(props) {
       date: 2020,
     };
     console.log(ctext);
-    stompClient.send("/api/v1/socket/chat", {}, JSON.stringify(sendMessage));
+    stompClient.send(
+      "/api/v1/socket/chat/" + nickName,
+      {},
+      JSON.stringify(sendMessage)
+    );
 
     /*
     var tmp = {
@@ -287,15 +365,18 @@ function Dashboard(props) {
       {showModal ? (
         <AddingToDo
           setShowModal={setShowModal}
-          endCheck={endCheck}
+          endCheck={todoList}
           checkedItemHandler={checkedItemHandler}
           checkedList={checkedList}
           changeComplete={changeComplete}
-          setNextTodo={setNextTodo}
-          nextTodo={nextTodo}
           setTodoDate={setTodoDate}
           todoDate={todoDate}
           ExampleCustomInput={ExampleCustomInput}
+          onTodoInputHandler={onTodoInputHandler}
+          setTodoDev={setTodoDev}
+          setTodoStruct={setTodoStruct}
+          tempfun={tempfun}
+          props={props}
         />
       ) : null}
 
@@ -323,7 +404,11 @@ function Dashboard(props) {
         />
       ) : null}
       {showModal4 ? (
-        <Board setShowModal4={setShowModal4} dataLists3={dataLists3} />
+        <Board
+          props={props}
+          setShowModal4={setShowModal4}
+          dataLists3={dataLists3}
+        />
       ) : null}
       <div className="Dashboard" class="grid grid-cols-5">
         <div className="LeftSide" class="col-span-4 ml-10 mb-10">
@@ -354,18 +439,34 @@ function Dashboard(props) {
           <div className="grid grid-cols-3 grid-rows-7 gap-4 ">
             <WeeklyWidget />
             <DevelopeWidget />
-            <CalendarWidget />
-            <BoardWidget
-              setShowModal4={setShowModal4}
-              dataLists3={dataLists3}
-            />
-            <TodoWidget setShowModal={setShowModal} dataLists={dataLists} />
+
+            {todoList == null ? (
+              "불러오는중..."
+            ) : (
+              <CalendarWidget todoLists={todoList} />
+            )}
+
+            {boardList == null ? (
+              "불러오는중..."
+            ) : (
+              <BoardWidget
+                setShowModal4={setShowModal4}
+                dataLists3={boardList}
+              />
+            )}
+
+            {todoList == null ? (
+              "불러오는중..."
+            ) : (
+              <TodoWidget setShowModal={setShowModal} dataLists={todoList} />
+            )}
+
             <ConsoleWidget />
           </div>
         </div>
 
         <div className="RightSide" class="col-span-1 bg-rightbar ml-10">
-          <div className="grid  ml-5 mr-5">
+          <div className="grid ml-5 mr-5 px-1">
             <Upcoming dataLists={sample_upcoming} />
             <RecentActivity dataLists={sample_activity} />
             <Members />

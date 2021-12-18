@@ -2,18 +2,24 @@ import axios from "axios";
 import { getCookie } from "../../cookie";
 import { SERVER_URL } from "../../SRC";
 
-export const PostCreateTodo = async ({ teamName, item, setUpdateTodo }) => {
+export const GetBoardList = async ({ setBoardList, teamName, page }) => {
   await axios
-    .post(SERVER_URL + "/api/v1/dashboard/" + teamName + "/todo/add", item, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: getCookie("token"),
-      },
-    })
+    .get(
+      SERVER_URL +
+        "/api/v1/dashboard/board/" +
+        teamName +
+        "/list?page=" +
+        (page - 1),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: getCookie("token"),
+        },
+      }
+    )
     .then((res) => {
-      console.log(item);
-      console.log(res);
-      setUpdateTodo(true);
+      console.log(res.data.data[0]);
+      setBoardList(res.data.data[0]);
     })
     .catch((err) => {
       if (err.response) {
@@ -22,9 +28,36 @@ export const PostCreateTodo = async ({ teamName, item, setUpdateTodo }) => {
     });
 };
 
-export const GetDevelopProgressResult = async ({ teamName }) => {
+export const GetBoardDetail = async ({
+  setBoardDetail,
+  teamName,
+  boardId,
+  setBoardTmp,
+}) => {
   await axios
-    .get(SERVER_URL + "/api/v1/dashboard/" + teamName + "/progress", {
+    .get(SERVER_URL + "/api/v1/dashboard/board/" + teamName + "/" + boardId, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      console.log(res.data.data[0]);
+      setBoardDetail(res.data.data[0]);
+      setBoardTmp(true);
+    })
+    .catch((err) => {
+      if (err.response) {
+        console.log(err.response.data); // => the response payload 오 굿굿
+      }
+    });
+};
+
+export const PostWriteBoard = async ({ data, teamName, setWriting }) => {
+  console.log(data);
+
+  await axios
+    .post(SERVER_URL + "/api/v1/dashboard/board/" + teamName + "/write", data, {
       headers: {
         "Content-Type": "application/json",
         Authorization: getCookie("token"),
@@ -32,47 +65,48 @@ export const GetDevelopProgressResult = async ({ teamName }) => {
     })
     .then((res) => {
       console.log(res.data);
+      setWriting(false);
+      // 성공
     })
     .catch((err) => {
+      // 실패
       if (err.response) {
         console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
 
-export const GetTodoList = async ({ setTodoList, teamName, setUpdateTodo }) => {
+export const PostWriteCommentToBoard = async ({
+  data,
+  teamName,
+  boardId,
+  setBoardDetail,
+  setBoardTmp,
+}) => {
   await axios
-    .get(SERVER_URL + "/api/v1/dashboard/" + teamName + "/todo", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: getCookie("token"),
-      },
-    })
-    .then((res) => {
-      setTodoList(res.data.data);
-      setUpdateTodo(false);
-    })
-    .catch((err) => {
-      if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
+    .post(
+      SERVER_URL +
+        "/api/v1/dashboard/board/" +
+        teamName +
+        "/" +
+        boardId +
+        "/comment",
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: getCookie("token"),
+        },
       }
-    });
-};
-
-export const PostCreateTeam = async ({ data, props }) => {
-  console.log(data);
-
-  await axios
-    .post(SERVER_URL + "/api/v1/teams/add", data, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: getCookie("token"),
-      },
-    })
+    )
     .then((res) => {
-      console.log(res);
-      props.setShowCreateTeamForm(false);
-      window.location.href = "http://localhost:3000/team";
+      console.log(res.data);
+      GetBoardDetail({
+        teamName: teamName,
+        setBoardDetail: setBoardDetail,
+        setBoardTmp: setBoardTmp,
+        boardId: boardId,
+      });
       // 성공
     })
     .catch((err) => {

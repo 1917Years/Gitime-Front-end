@@ -184,7 +184,7 @@ function Header(props) {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src={SERVER_URL + "/api/v1/files/images/" + memberImg}
+                          // src={SERVER_URL + "/api/v1/files/images/" + memberImg}
                           alt=""
                         />
                       </Menu.Button>
