@@ -1,8 +1,39 @@
 import axios from "axios";
-import { getCookie } from "../../cookie";
+import { getCookie, deleteCookie, setCookie } from "../../cookie";
 import { SERVER_URL } from "../../SRC";
 
-export const GetTeamList = async ({ setTeamList, page }) => {
+export const GetAcceptCode = async ({
+  acceptCode,
+  setErrorAcceptCode,
+  setCompleteAcceptCode,
+  setUpdate,
+}) => {
+  await axios
+    .get(SERVER_URL + "/api/v1/members/invite/accept/" + acceptCode, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      console.log(res);
+      setCompleteAcceptCode(true);
+      setUpdate(true);
+    })
+    .catch((err) => {
+      setErrorAcceptCode(true);
+
+      if (err.response) {
+        console.log(err.response);
+      }
+    });
+};
+
+export const GetTeamList = async ({
+  setTeamList,
+  page,
+  setTeamAdditionalInfo,
+}) => {
   await axios
     .get(SERVER_URL + "/api/v1/teams?page=" + page, {
       headers: {
@@ -11,11 +42,11 @@ export const GetTeamList = async ({ setTeamList, page }) => {
       },
     })
     .then((res) => {
-      setTeamList(res.data);
+      setTeamAdditionalInfo(res.data.data[0].maps);
+      setTeamList(res.data.data[0].pages);
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
@@ -33,14 +64,15 @@ export const GetGitRepoList = async ({ setGitRepos }) => {
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
 
-export const PostCreateTeam = async ({ data, props }) => {
-  console.log(data);
-
+export const PostCreateTeam = async ({
+  data,
+  setShowCreateTeamForm,
+  setUpdate,
+}) => {
   await axios
     .post(SERVER_URL + "/api/v1/teams/add", data, {
       headers: {
@@ -49,15 +81,13 @@ export const PostCreateTeam = async ({ data, props }) => {
       },
     })
     .then((res) => {
-      console.log(res);
-      props.setShowCreateTeamForm(false);
-      window.location.href = "http://localhost:3000/team";
+      setUpdate(true);
+      setShowCreateTeamForm(false);
       // 성공
     })
     .catch((err) => {
       // 실패
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
@@ -71,13 +101,10 @@ export const GetTeamNotice = async ({ setNotice, teamName }) => {
       },
     })
     .then((res) => {
-      console.log(res);
       setNotice(res.data.data[0].notice);
-      console.log(res.data.data[0].notice);
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };

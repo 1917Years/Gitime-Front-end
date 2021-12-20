@@ -1,32 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const Upcoming = (props) => {
-  const { dataLists } = props;
+  const { dataLists, upcoming } = props;
   return (
-    <div className="grid mt-10 font-sbtest">
+    <div className="font-sbtest mx-5">
       <div>
-        <p>Upcoming!</p>
-        <div className="grid mt-3 gap-2">
-          {dataLists.map((item) => {
-            return (
-              <div className="grid grid-cols-5 my-2 gap-2 relative">
-                <div class="grid rounded-lg xl:rounded-large bg-yellow-300 justify-items-center place-content-center px-2 py-2 2xl:mx-1">
-                  <div class="text-red-200">
-                    <img
-                      src="https://svgsilh.com/svg/558009-ff9800.svg"
-                      alt="alert"
-                    />
+        <p class="text-lg">Upcoming!</p>
+        <div className="mt-4 gap-2 ">
+          {Object.keys(upcoming).length == 0 ? (
+            <div class="text-sm font-test text-gray-500">
+              아직 해야 할 일이 없어요.😂
+              <div>이곳에는 오늘까지 마감인 할 일과</div>
+              <div>정기 회의 시간 등이 보여져요!</div>
+              {
+                <div className="grid grid-cols-5 my-2 gap-2 2xl:gap-1">
+                  <div class="col-span-4 text-base mx-1 font-rtest text-gray-600">
+                    <p>{""}</p>
+                    <p class="text-xs font-ltest text-gray-400">{""}</p>
                   </div>
                 </div>
-                <div class="col-span-4 text-tiny">
-                  <p>{item.title}</p>
-                  <p class="text-xs font-ltest text-gray-400">
-                    {item.date} {item.time}
-                  </p>
+              }
+            </div>
+          ) : (
+            upcoming.map((item) => {
+              return (
+                <div className="grid grid-cols-5 my-2 gap-2 2xl:gap-1">
+                  <div class="grid rounded-lg xl:rounded-large bg-yellow-300 justify-items-center place-content-center px-2 py-2 2xl:mx-1">
+                    <div class="text-red-200">
+                      <img
+                        src="https://svgsilh.com/svg/558009-ff9800.svg"
+                        alt="alert"
+                      />
+                    </div>
+                  </div>
+                  <div class="gap-1 font-test col-span-4 text-base mx-1 font-rtest text-gray-600">
+                    {console.log(item)}
+                    <p class="text-sm">
+                      {item.notificationType == "TODO"
+                        ? "TODO 할 일 업데이트"
+                        : item.notificationType == "BOARD"
+                        ? "BOARD"
+                        : item.notificationType == "MEMBER"
+                        ? "MEMBER"
+                        : item.notificationType == "PROGRESS"
+                        ? "PROGRESS"
+                        : item.notificationType == "VIDEO"
+                        ? "VIDEO"
+                        : null}
+                    </p>
+                    <p class="text-xs font-ltest text-gray-400">
+                      {item.date} {item.time}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
     </div>
@@ -34,163 +63,218 @@ export const Upcoming = (props) => {
 };
 
 export const RecentActivity = (props) => {
-  const { dataLists } = props;
+  const { dataLists, recentActivity } = props;
+  const mes1 = "님이 새로운 계획을 등록했습니다.";
+  const mes2 = "님이 새로운 글을 등록했습니다.";
+  const mes3 = "님이 팀에 들어왔습니다. 환영해요!🥳";
+  const mes4 = "님이 코드를 수정했습니다. 디버깅 파이팅!";
+  const mes5 = "님이 화상회의를 녹화했습니다.";
   return (
-    <div className="grid mt-10 font-sbtest">
+    <div className="absolute 3xl:top-32.5/100 2xl:top-3/10 font-sbtest mx-5">
       <div>
-        <p>Recent Activity</p>
-        <div className="grid mt-3 gap-2">
-          {dataLists.map((item) => {
-            switch (item.type) {
-              case 1:
-                return (
-                  <div className="grid grid-cols-5 my-2 gap-2">
-                    <div class="grid rounded-lg bg-green-300  justify-items-center place-content-center px-2 py-2">
-                      <div class="text-white">
-                        <img
-                          src="https://svgsilh.com/svg/1970468-4caf50.svg"
-                          alt="code"
-                        />
+        <p class="text-lg">Recent Activity</p>
+        <div className="mt-4">
+          {Object.keys(recentActivity).length == 0 ? (
+            <div class="text-sm font-light font-test text-gray-500">
+              최근 활동이 없네요.😅
+              <div>여기에는 새로운 팀원이 초대되거나</div>
+              <div>새로운 할 일이 올라왔을 때,</div>
+              <div>게시판 및 화상회의 등록 알림,</div>
+              <div>코드 수정 알림이 보여져요.</div>
+            </div>
+          ) : (
+            <>
+              {" "}
+              {recentActivity.map((item) => {
+                switch (item.notificationType) {
+                  case "TODO":
+                    return (
+                      <div className="grid grid-cols-5 my-2 gap-3 2xl:gap-2">
+                        <div class="grid rounded-lg bg-blue-300 justify-items-center place-content-center px-2 py-2">
+                          <div class="text-white">
+                            <img
+                              src="
+                          https://svgsilh.com/svg/1294836-3f51b5.svg
+                          "
+                              alt="code"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="col-span-4 text-sm mx-1 font-rtest text-gray-600">
+                          {(item.memberName + mes1).length > 17 ? (
+                            <p>{item.memberName + mes1}</p>
+                          ) : (
+                            <p>{item.memberName + mes1}</p>
+                          )}
+                          <p class="text-xs font-ltest text-gray-400">
+                            {item.date} {item.time}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-span-4 text-sm">
-                      <p>{item.username}님이 코드를 수정했습니다.</p>
-                      <p class="text-xs font-ltest text-gray-400">
-                        {item.date} {item.time}
-                      </p>
-                    </div>
-                  </div>
-                );
-              case 2:
-                return (
-                  <div className="grid grid-cols-5 my-2 gap-2">
-                    <div class="grid rounded-lg bg-blue-300  justify-items-center place-content-center px-2 py-2">
-                      <div class="text-white">
-                        <img
-                          src="https://svgsilh.com/svg/1294836-3f51b5.svg"
-                          alt="code"
-                        />
+                    );
+                  case "BOARD":
+                    return (
+                      <div className="grid grid-cols-5 my-2 gap-3 2xl:gap-2">
+                        <div class="grid rounded-lg bg-purple-300 justify-items-center place-content-center px-2 py-2">
+                          <div class="text-white">
+                            <img
+                              src="
+                          https://svgsilh.com/svg/310475-9c27b0.svg
+                          "
+                              alt="code"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-span-4 text-sm mx-1 font-rtest text-gray-600">
+                          {(item.memberName + mes2).length > 18 ? (
+                            <p>{item.memberName + mes2}</p>
+                          ) : (
+                            <p>{item.memberName + mes2}</p>
+                          )}
+                          <p class="text-xs font-ltest text-gray-400">
+                            {item.date} {item.time}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-span-4 text-sm">
-                      <p>{item.username}님이 새로운 계획을 업로드 했습니다.</p>
-                      <p class="text-xs font-ltest text-gray-400">
-                        {item.date} {item.time}
-                      </p>
-                    </div>
-                  </div>
-                );
-              case 3:
-                return (
-                  <div className="grid grid-cols-5 my-2 gap-2">
-                    <div class="grid rounded-lg bg-red-300  justify-items-center place-content-center px-2 py-2">
-                      <div class="text-white">
-                        <img
-                          src="https://svgsilh.com/svg/481821-f44336.svg"
-                          alt="code"
-                        />
+                    );
+                  case "MEMBER":
+                    return (
+                      <div className="grid grid-cols-5 my-2 gap-3 2xl:gap-2">
+                        <div class="grid rounded-lg bg-gray-300 justify-items-center place-content-center px-2 py-2">
+                          <div class="text-white">
+                            <img
+                              src="https://svgsilh.com/svg/42919.svg"
+                              alt="code"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-span-4 text-sm mx-1 font-rtest text-gray-600">
+                          {(item.memberName + mes3).length > 17 ? (
+                            <p>{item.memberName + mes3}</p>
+                          ) : (
+                            <p>{item.memberName + mes3}</p>
+                          )}
+                          <p class="text-xs font-ltest text-gray-400">
+                            {item.date} {item.time}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-span-4 text-sm">
-                      <p>{item.username}님이 화상회의를 녹화했습니다.</p>
-                      <p class="text-xs font-ltest text-gray-400">
-                        {item.date} {item.time}
-                      </p>
-                    </div>
-                  </div>
-                );
-              case 4:
-                return (
-                  <div className="grid grid-cols-5 my-2 gap-2">
-                    <div class="grid rounded-lg bg-purple-300 justify-items-center place-content-center px-2 py-2">
-                      <div class="text-white">
-                        <img
-                          src="https://svgsilh.com/svg/310475-9c27b0.svg"
-                          alt="code"
-                        />
+                    );
+
+                  case "CODE":
+                    return (
+                      <div className="grid grid-cols-5 my-2 gap-3 2xl:gap-2">
+                        <div class="grid rounded-lg bg-green-300   justify-items-center place-content-center px-2 py-2">
+                          <div class="text-white">
+                            <img
+                              src="https://svgsilh.com/svg/1970468-4caf50.svg"
+                              alt="code"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-span-4 text-sm font-rtest text-gray-600">
+                          <p>{item.memberName + mes4}</p>
+                          <p class="text-xs font-ltest text-gray-400">
+                            {item.date} {item.time}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-span-4 text-sm">
-                      <p>{item.username}님이 파일을 업로드 했습니다.</p>
-                      <p class="text-xs font-ltest text-gray-400">
-                        {item.date} {item.time}
-                      </p>
-                    </div>
-                  </div>
-                );
-              default:
-                return null;
-            }
-          })}
+                    );
+
+                  case "VIDEO":
+                    return (
+                      <div className="grid grid-cols-5 my-2 gap-3 2xl:gap-2">
+                        <div class="grid rounded-lg bg-red-300 justify-items-center place-content-center px-2 py-2">
+                          <div class="text-white">
+                            <img
+                              src="https://svgsilh.com/svg/481821-f44336.svg"
+                              alt="code"
+                            />
+                          </div>
+                        </div>
+                        <div class="col-span-4 text-xs">
+                          <p>{item.memberName + mes5}</p>
+                          <p class="text-xs font-ltest text-gray-400">
+                            {item.date} {item.time}
+                          </p>
+                        </div>
+                      </div>
+                    );
+
+                  default:
+                    return null;
+                }
+              })}
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export const Members = (props) => {
+export const Members = ({ teamInfo }) => {
+  const [tempArray, setTempArray] = useState([]);
+  var array = [];
+  const temp = () => {
+    for (var i = 0; i < teamInfo.totalMembers; i++) {
+      array.push(i);
+    }
+  };
+
+  useEffect(() => {
+    temp();
+    setTempArray(array);
+  }, []);
   return (
-    <div className="mt-10 grid font-sbtest">
+    <div className="absolute my-5 w-full 3xl:top-65/100 top-62.5/100 font-sbtest mx-5">
       <div>
-        <p>Members</p>
-        <div className="grid mt-3">
-          <div class="flex  gap-4 grid grid-rows-3 grid-cols-3 place-items-center">
-            <div>
+        <p class="text-lg">Members</p>
+        <div className="grid mt-4 w-5/6">
+          <div class="flex gap-4 grid grid-rows-32 grid-cols-3 place-items-center">
+            {tempArray.map((item) => {
+              return (
+                <div class="2xl:w-12 2xl:h-12 w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center">
+                  {}
+                  <img
+                    class="shadow-md 2xl:w-8 2xl:h-8 w-6 h-6 rounded-full "
+                    src="https://svgsilh.com/svg/1299805.svg"
+                    alt="collaborator 1"
+                  />
+                </div>
+              );
+            })}
+
+            {/* <div class="2xl:w-14 2xl:h-14 w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center">
               <img
-                class="shadow-md w-10 h-10 rounded-full "
-                src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
-                alt="collaborator 1"
-              />
-            </div>
-            <div>
-              <img
-                class="shadow-md w-10 h-10 rounded-full "
+                class="shadow-md 2xl:w-8 2xl:h-8 w-6 h-6 rounded-full "
                 src="https://cdn.tuk.dev/assets/templates/olympus/projects(9).png"
                 alt="collaborator 2"
               />
             </div>
-            <div>
+            <div class="2xl:w-14 2xl:h-14 w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center">
               <img
-                class="shadow-md w-10 h-10 rounded-full "
+                class="shadow-md 2xl:w-8 2xl:h-8 w-6 h-6 rounded-full "
                 src="https://cdn.tuk.dev/assets/templates/olympus/projects(10).png"
                 alt="collaborator 3"
               />
             </div>
-            <div>
+            <div class="2xl:w-14 2xl:h-14 w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center">
               <img
-                class="shadow-md w-10 h-10 rounded-full "
+                class="shadow-md 2xl:w-8 2xl:h-8 w-6 h-6 rounded-full "
                 src="https://cdn.tuk.dev/assets/templates/olympus/projects(11).png"
                 alt="collaborator 4"
               />
             </div>
-            <div>
+            <div class="2xl:w-14 2xl:h-14 w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center">
               <img
-                class="shadow-md w-10 h-10 rounded-full "
+                class="shadow-md 2xl:w-8 2xl:h-8 w-6 h-6 rounded-full "
                 src="https://cdn.tuk.dev/assets/templates/olympus/projects(11).png"
                 alt="collaborator 4"
               />
-            </div>
-            <div>
-              <img
-                class="shadow-md w-10 h-10 rounded-full "
-                src="https://cdn.tuk.dev/assets/templates/olympus/projects(11).png"
-                alt="collaborator 4"
-              />
-            </div>
-            <div>
-              <img
-                class="shadow-md w-10 h-10 rounded-full "
-                src="https://cdn.tuk.dev/assets/templates/olympus/projects(11).png"
-                alt="collaborator 4"
-              />
-            </div>
-            <div>
-              <img
-                class="shadow-md w-10 h-10 rounded-full "
-                src="https://cdn.tuk.dev/assets/templates/olympus/projects(11).png"
-                alt="collaborator 4"
-              />
-            </div>
+            </div> */}
+
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -232,33 +316,21 @@ export const NavFooterMenu = (props) => {
   const [linkSocket, setLinkSocket] = useState(false);
 
   return (
-    <div className="grid grid-cols-3 justify-items-stretch mt-10 h-10">
-      <div className="grid justify-items-center">
-        <button
-          onClick={() => {
-            setShowModal2(true);
-            setLinkSocket(true);
-          }}
-        >
-          <img
-            class="w-12 h-12"
-            src="https://svgsilh.com/svg/310399.svg"
-            alt="chat"
-          />
-        </button>
-        {linkSocket ? null : null}
-      </div>
-      <div></div>
+    <div className="px-8 absolute font-test grid grid-cols-2 gap-10 bottom-0 right-0 w-full">
+      <button
+        class="text-3xl"
+        onClick={() => {
+          setShowModal2(true);
+          setLinkSocket(true);
+        }}
+      >
+        💬
+      </button>
+      {linkSocket ? null : null}
 
-      <div className="grid justify-items-center">
-        <button onClick={() => setShowModal3(true)}>
-          <img
-            class="w-10 h-12"
-            src="https://svgsilh.com/svg/651704.svg"
-            alt="call"
-          />
-        </button>
-      </div>
+      <button class="text-3xl" onClick={() => setShowModal3(true)}>
+        🎬
+      </button>
     </div>
   );
 };

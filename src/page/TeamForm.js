@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { CreateTeam } from "../component/Modal";
-import { GetTeamList } from "../utils/api/team/TeamApi";
+import { GetAcceptCode, GetTeamList } from "../utils/api/team/TeamApi";
 import "../assets/styles/Progressbar.css";
-
+import { GetTodoList } from "../utils/api/dashboard/DashboardApi";
 var ProgressBar = ({ width, percent, color }) => {
   const [value, setValue] = useState(0);
 
@@ -23,7 +23,9 @@ var ProgressBar = ({ width, percent, color }) => {
   );
 };
 const DropDownEditDelete = (props) => {
-  const { item } = props;
+  const { item, data } = props;
+
+  console.log(data);
   return (
     <tr
       tabindex="0"
@@ -52,15 +54,23 @@ const DropDownEditDelete = (props) => {
         </div>
       </td>
       <td class="pl-12">
-        <p class="text-sm font-medium leading-none text-gray-800">100%</p>
+        <p class="text-sm font-medium leading-none text-gray-800">
+          {data.progress == "NaN" ? "0%" : Math.floor(data.progress) + "%"}
+        </p>
         <div class="w-24 h-3 bg-gray-100 rounded-full mt-2">
-          <ProgressBar width={10} percent={10} color={"black"} />
+          <ProgressBar
+            width={10}
+            percent={data.progress / 10}
+            color={"black"}
+          />
         </div>
       </td>
       <td class="pl-12">
-        <p class="font-medium">32/47</p>
+        <p class="font-medium">
+          {data.working[0]}/{data.working[1]}
+        </p>
         <p class="text-xs leading-3 text-gray-600 mt-2">
-          5개의 작업이 남았습니다.
+          {data.working[1] - data.working[0]}개의 작업이 남았습니다.
         </p>
       </td>
       <td class="pl-20">
@@ -71,26 +81,7 @@ const DropDownEditDelete = (props) => {
       </td>
       <td class="pl-16">
         <div class="flex items-center">
-          <img
-            class="shadow-md w-8 h-8 rounded-full"
-            src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
-            alt="collaborator 1"
-          />
-          <img
-            class="shadow-md w-8 h-8 rounded-full -ml-2"
-            src="https://cdn.tuk.dev/assets/templates/olympus/projects(9).png"
-            alt="collaborator 2"
-          />
-          <img
-            class="shadow-md w-8 h-8 rounded-full -ml-2"
-            src="https://cdn.tuk.dev/assets/templates/olympus/projects(10).png"
-            alt="collaborator 3"
-          />
-          <img
-            class="shadow-md w-8 h-8 rounded-full -ml-2"
-            src="https://cdn.tuk.dev/assets/templates/olympus/projects(11).png"
-            alt="collaborator 4"
-          />
+          <p class="font-medium">{data.teamMemberCount} 명</p>
         </div>
       </td>
     </tr>
@@ -102,40 +93,104 @@ function TeamForm(props) {
   const [teamList, setTeamList] = useState(null);
   const [update, setUpdate] = useState(true);
   const [page, setPage] = useState(0);
+  const [acceptCode, setAcceptCode] = useState(null);
+  const [isCodeEmpty, setIsCodeEmpty] = useState(false);
+  const [errorAcceptCode, setErrorAcceptCode] = useState(false);
+  const [completeAcceptCode, setCompleteAcceptCode] = useState(false);
+  const [teamAdditionalInfo, setTeamAdditionalInfo] = useState(null);
+  var tempList = [];
+
+  const codeButtonHandler = () => {
+    if (acceptCode == null || acceptCode == "") {
+      setErrorAcceptCode(false);
+      setIsCodeEmpty(true);
+    } else {
+      setIsCodeEmpty(false);
+      GetAcceptCode({
+        acceptCode: acceptCode,
+        setErrorAcceptCode: setErrorAcceptCode,
+        setCompleteAcceptCode: setCompleteAcceptCode,
+        setUpdate: setUpdate,
+      });
+    }
+  };
+
+  useEffect(() => {
+    GetTeamList({ setTeamList, page, setTeamAdditionalInfo });
+  }, []);
 
   useEffect(() => {
     if (update) {
-      GetTeamList({ setTeamList, page });
-      setUpdate(false);
+      GetTeamList({ setTeamList, page, setTeamAdditionalInfo });
     }
+    setUpdate(false);
   });
 
   return (
-    <div class="w-full sm:px-6 pt-6 h-full">
+    <div class="font-test w-full sm:px-6 pt-6 h-full">
       {showCreateTeamForm ? (
         <CreateTeam
           setShowCreateTeamForm={setShowCreateTeamForm}
           props={props} // 1
+          setUpdate={setUpdate}
         />
       ) : null}
       <div class="px-4 md:px-10 py-4 md:py-7 border rounded-tl-lg rounded-tr-lg">
         <div class="sm:flex items-center justify-between">
           <p
             tabindex="0"
-            class="focus:outline-none text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800"
+            class="font-test focus:outline-none text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800"
           >
             팀 목록
           </p>
 
-          <div>
+          <div class="">
+            <input
+              id="sendMessage"
+              type="text"
+              placeholder="초대 코드를 입력해주세요."
+              class="font-rtest border border-opacity-70 inline-flex sm:ml-3 mt-4 sm:mt-0 items-start justify-start px-6 py-2 bg-gray-white focus:outline-none rounded border-scroll transition duration-500 px-1 mt-6"
+              onChange={(e) => {
+                setAcceptCode(e.target.value);
+              }}
+            />
+
+            <button
+              class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 inline-flex sm:ml-3 mt-4 sm:mt-0 items-start justify-start px-6 py-3 bg-gray-800 hover:bg-gray-900 focus:outline-none rounded"
+              onClick={() => {
+                document.getElementById("sendMessage").value = "";
+                codeButtonHandler();
+              }}
+            >
+              <p class="font-test text-sm font-medium leading-none text-white">
+                초대 코드 입력
+              </p>
+            </button>
             <button
               class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 inline-flex sm:ml-3 mt-4 sm:mt-0 items-start justify-start px-6 py-3 bg-gray-800 hover:bg-gray-900 focus:outline-none rounded"
               onClick={() => {
                 setShowCreateTeamForm(true);
               }}
             >
-              <p class="text-sm font-medium leading-none text-white">팀 생성</p>
+              <p class="font-test text-sm font-medium leading-none text-white">
+                팀 생성
+              </p>
             </button>
+            {isCodeEmpty ? (
+              <div class="font-rtest mt-1 ml-4 text-red-500 text-sm">
+                초대 코드를 입력한 후 버튼을 클릭해주세요.
+              </div>
+            ) : null}
+            {errorAcceptCode ? (
+              <div class="font-rtest mt-1 ml-4 text-red-500 text-sm">
+                존재하지 않거나 만료된 코드입니다.
+              </div>
+            ) : null}
+            {completeAcceptCode ? (
+              <div class="font-rtest mt-1 ml-4 text-green-500 text-sm">
+                팀 가입이 완료되었습니다!
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -155,9 +210,15 @@ function TeamForm(props) {
           </thead>
           <tbody class="w-full">
             {teamList == null
-              ? "불러오는중..."
-              : teamList.content.map((item) => {
-                  return <DropDownEditDelete item={item} props={props} />;
+              ? "불러오는 중..."
+              : teamList.content.map((item, idx) => {
+                  return (
+                    <DropDownEditDelete
+                      item={item}
+                      data={teamAdditionalInfo[item.teamName]}
+                      props={props}
+                    />
+                  );
                 })}
           </tbody>
         </table>

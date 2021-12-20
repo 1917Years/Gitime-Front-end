@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { getCookie } from "../utils/cookie";
+import { getCookie, deleteCookie, setCookie } from "../utils/cookie";
 import { SERVER_URL } from "../utils/SRC";
 import { getMemberInfo } from "../utils/ApiConfig";
 const onImgChange = async (event) => {

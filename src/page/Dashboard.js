@@ -8,6 +8,7 @@ import { AlertNotice } from "../component/Alert";
 import { Board, AddingToDo, ChatRoom, VideoChatRoom } from "../component/Modal";
 
 import {
+  ProgressBar,
   BoardWidget,
   CalendarWidget,
   ConsoleWidget,
@@ -27,19 +28,25 @@ import {
   sample_upcoming,
 } from "../component/test/sample_data";
 import { GetTeamNotice } from "../utils/api/team/TeamApi";
+import {
+  getAllDevelop,
+  GetTeamInfo,
+} from "../utils/api/teamAdmin/TeamAdminApi";
 import { GetBoardList } from "../utils/api/board/BoardApi";
 import {
   GetDevelopProgressResult,
+  GetRecentActivity,
   GetTodoList,
+  GetUpcoming,
   PostCreateTodo,
 } from "../utils/api/dashboard/DashboardApi";
 
 var teamName = "델리만쥬";
 var nickName = "신유진";
 
-export let sockJS = new SockJS("http://localhost:8080/api/v1/socket/chat");
-Stomp.client = Stomp.over(sockJS);
-export let stompClient = Stomp.client;
+// export let sockJS = new SockJS("http://localhost:8080/api/v1/socket/chat");
+// Stomp.client = Stomp.over(sockJS);
+// export let stompClient = Stomp.client;
 
 var message;
 
@@ -197,9 +204,7 @@ var dataLists3 = [
     comment: "5",
   },
 ];
-function Dashboard(props) {
-  const { chat } = props;
-
+function Dashboard({ memberName, props }) {
   const [tmp, setTmp] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
@@ -232,9 +237,9 @@ function Dashboard(props) {
 
   const tempfun = () => {
     /*
-    console.log("text : " + todoStruct.date);
-    console.log("date : " + todoStruct.date);
-    console.log("dev : " + todoStruct.dev);
+    
+    
+    
     */
   };
   const formatDate = (d) => {
@@ -255,8 +260,13 @@ function Dashboard(props) {
   const [notice, setNotice] = useState("불러오는중..");
   const [boardList, setBoardList] = useState(null);
   const [todoList, setTodoList] = useState(null);
+  const [upcoming, setUpcoming] = useState(null);
+  const [developProgress, setDevelopProgress] = useState(null);
+  const [recentActivity, setRecentActivity] = useState(null);
+  const [developLists, setDevelopLists] = useState(null);
+  const [teamInfo, setTeamInfo] = useState(null);
 
-  console.log();
+  const [updateView, setUpdateView] = useState(false);
 
   const addMessage = (message) => {
     msg.id = chat_id;
@@ -268,18 +278,18 @@ function Dashboard(props) {
     chat_id += 1;
   };
 
-  const setMessage = () => {
-    stompClient.connect({}, () => {
-      stompClient.subscribe("/topic/" + nickName, (data) => {
-        message = JSON.parse(data.body);
-        addMessage(message);
-      });
-    });
-  };
+  // const setMessage = () => {
+  //   stompClient.connect({}, () => {
+  //     stompClient.subscribe("/topic/" + nickName, (data) => {
+  //       message = JSON.parse(data.body);
+  //       addMessage(message);
+  //     });
+  //   });
+  // };
 
-  useEffect(() => {
-    setMessage();
-  }, [chat]);
+  // useEffect(() => {
+  //   setMessage();
+  // }, [chat]);
 
   useEffect(() => {
     GetTeamNotice({
@@ -297,12 +307,75 @@ function Dashboard(props) {
     });
     GetDevelopProgressResult({
       teamName: props.match.params.teamName,
+      setDevelopProgress: setDevelopProgress,
     });
 
+    GetRecentActivity({
+      setRecentActivity: setRecentActivity,
+      teamName: props.match.params.teamName,
+    });
+
+    GetUpcoming({
+      setUpcoming: setUpcoming,
+      teamName: props.match.params.teamName,
+    });
+
+    getAllDevelop({
+      setDevelopLists: setDevelopLists,
+      teamName: props.match.params.teamName,
+    });
+
+    GetTeamInfo({
+      teamName: props.match.params.teamName,
+      setTeamInfo: setTeamInfo,
+    });
     // return function cleanup() {
     //   stompClient.disconnect();
     // };
   }, []);
+
+  useEffect(() => {
+    if (updateView) {
+      GetTeamNotice({
+        setNotice: setNotice,
+        teamName: props.match.params.teamName,
+      });
+      GetBoardList({
+        setBoardList: setBoardList,
+        teamName: props.match.params.teamName,
+        page: "1",
+      });
+      GetTodoList({
+        setTodoList: setTodoList,
+        teamName: props.match.params.teamName,
+      });
+      GetDevelopProgressResult({
+        teamName: props.match.params.teamName,
+        setDevelopProgress: setDevelopProgress,
+      });
+
+      GetRecentActivity({
+        setRecentActivity: setRecentActivity,
+        teamName: props.match.params.teamName,
+      });
+
+      GetUpcoming({
+        setUpcoming: setUpcoming,
+        teamName: props.match.params.teamName,
+      });
+
+      getAllDevelop({
+        setDevelopLists: setDevelopLists,
+        teamName: props.match.params.teamName,
+      });
+
+      GetTeamInfo({
+        teamName: props.match.params.teamName,
+        setTeamInfo: setTeamInfo,
+      });
+    }
+    setUpdateView(false);
+  });
 
   const onChangeInput = (e) => {
     setInputText(e.target.value);
@@ -317,12 +390,12 @@ function Dashboard(props) {
       content: ctext,
       date: 2020,
     };
-    console.log(ctext);
-    stompClient.send(
-      "/api/v1/socket/chat/" + nickName,
-      {},
-      JSON.stringify(sendMessage)
-    );
+
+    // stompClient.send(
+    //   "/api/v1/socket/chat/" + nickName,
+    //   {},
+    //   JSON.stringify(sendMessage)
+    // );
 
     /*
     var tmp = {
@@ -377,6 +450,7 @@ function Dashboard(props) {
           setTodoStruct={setTodoStruct}
           tempfun={tempfun}
           props={props}
+          setUpdateView={setUpdateView}
         />
       ) : null}
 
@@ -408,46 +482,72 @@ function Dashboard(props) {
           props={props}
           setShowModal4={setShowModal4}
           dataLists3={dataLists3}
+          setUpdateView={setUpdateView}
         />
       ) : null}
       <div className="Dashboard" class="grid grid-cols-5">
         <div className="LeftSide" class="col-span-4 ml-10 mb-10">
           <div class="pt-5 pl-5 font-ltest text-gray-400">
-            {nickName}님 반가워요, 다시 돌아오신 걸 환영해요! 👋
+            {memberName}님 반가워요, 다시 돌아오신 걸 환영해요! 👋
           </div>
 
           <div class="flex">
             <div class="flex-grow pl-5 text-3xl font-sbtest text-2xl">
-              {teamName} DashBoard Today
+              {teamInfo == null
+                ? "Undefined"
+                : teamInfo.teamName + " DashBoard Today"}
             </div>
-            <button
-              class="text-3xl font-sbtest"
-              onClick={() => {
-                // window.location.href =
-                props.history.push(
-                  "/dashboard/" + props.match.params.teamName + "/setting"
-                );
-              }}
-            >
-              <img
-                src="https://cdn.discordapp.com/attachments/874658668434583655/913307164058218506/iconmonstr-gear-1-32.png"
-                alt="alert"
-              />
-            </button>
+            {teamInfo == null ? null : teamInfo.teamAuthority ==
+              "ROLE_PARENT" ? (
+              <button
+                class="text-3xl font-sbtest"
+                onClick={() => {
+                  // window.location.href =
+                  props.history.push(
+                    "/dashboard/" + props.match.params.teamName + "/setting"
+                  );
+                }}
+              >
+                <img
+                  src="https://cdn.discordapp.com/attachments/874658668434583655/913307164058218506/iconmonstr-gear-1-32.png"
+                  alt="alert"
+                />
+              </button>
+            ) : null}
           </div>
 
           <div className="grid grid-cols-3 grid-rows-7 gap-4 ">
-            <WeeklyWidget />
-            <DevelopeWidget />
+            {todoList == null ? (
+              "불러오는 중..."
+            ) : (
+              <WeeklyWidget
+                todoLists={todoList}
+                updateView={updateView}
+                setUpdateView={setUpdateView}
+                setTodoList={setTodoList}
+                props={props}
+              />
+            )}
+
+            {developProgress == null ? (
+              "불러오는 중..."
+            ) : developLists == null ? (
+              "불러오는 중..."
+            ) : (
+              <DevelopeWidget
+                developProgress={developProgress}
+                developLists={developLists}
+              />
+            )}
 
             {todoList == null ? (
-              "불러오는중..."
+              "불러오는 중..."
             ) : (
               <CalendarWidget todoLists={todoList} />
             )}
 
             {boardList == null ? (
-              "불러오는중..."
+              "불러오는 중..."
             ) : (
               <BoardWidget
                 setShowModal4={setShowModal4}
@@ -456,24 +556,36 @@ function Dashboard(props) {
             )}
 
             {todoList == null ? (
-              "불러오는중..."
+              "불러오는 중..."
             ) : (
               <TodoWidget setShowModal={setShowModal} dataLists={todoList} />
             )}
 
-            <ConsoleWidget />
+            <ConsoleWidget props={props} />
           </div>
         </div>
 
-        <div className="RightSide" class="col-span-1 bg-rightbar ml-10">
-          <div className="grid ml-5 mr-5 px-1">
-            <Upcoming dataLists={sample_upcoming} />
-            <RecentActivity dataLists={sample_activity} />
-            <Members />
-            <NavFooterMenu
-              setShowModal2={setShowModal2}
-              setShowModal3={setShowModal3}
-            />
+        <div
+          className="RightSide"
+          class="h-full col-span-1 bg-rightbar ml-10 pt-10"
+        >
+          <div className="fixed z-10 h-5/6 bg-rightbar px-4">
+            <div class="">
+              {upcoming == null ? null : (
+                <Upcoming dataLists={sample_upcoming} upcoming={upcoming} />
+              )}
+              {recentActivity == null ? null : (
+                <RecentActivity
+                  dataLists={sample_activity}
+                  recentActivity={recentActivity}
+                />
+              )}
+              {teamInfo == null ? null : <Members teamInfo={teamInfo} />}
+              <NavFooterMenu
+                setShowModal2={setShowModal2}
+                setShowModal3={setShowModal3}
+              />
+            </div>
           </div>
         </div>
       </div>

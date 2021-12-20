@@ -1,6 +1,6 @@
 import React from "react";
 import "animate.css";
-import { getCookie } from "../utils/cookie";
+import { getCookie, deleteCookie, setCookie } from "../utils/cookie";
 
 function Mainpage(props) {
   return (

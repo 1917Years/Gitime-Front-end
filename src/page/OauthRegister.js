@@ -2,7 +2,7 @@ import { React, useState } from "react";
 import axios from "axios";
 import "../assets/styles/Register.css";
 import { SERVER_URL } from "../utils/SRC";
-import { getCookie } from "../utils/cookie";
+import { getCookie, deleteCookie, setCookie } from "../utils/cookie";
 
 function postRegister({ data, props }) {
   axios

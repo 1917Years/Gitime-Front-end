@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookie } from "../../cookie";
+import { getCookie, deleteCookie, setCookie } from "../../cookie";
 import { SERVER_URL } from "../../SRC";
 
 export const GetBoardList = async ({ setBoardList, teamName, page }) => {
@@ -18,12 +18,10 @@ export const GetBoardList = async ({ setBoardList, teamName, page }) => {
       }
     )
     .then((res) => {
-      console.log(res.data.data[0]);
       setBoardList(res.data.data[0]);
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
@@ -42,20 +40,21 @@ export const GetBoardDetail = async ({
       },
     })
     .then((res) => {
-      console.log(res.data.data[0]);
       setBoardDetail(res.data.data[0]);
       setBoardTmp(true);
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
 
-export const PostWriteBoard = async ({ data, teamName, setWriting }) => {
-  console.log(data);
-
+export const PostWriteBoard = async ({
+  data,
+  teamName,
+  setWriting,
+  setUpdateView,
+}) => {
   await axios
     .post(SERVER_URL + "/api/v1/dashboard/board/" + teamName + "/write", data, {
       headers: {
@@ -64,14 +63,13 @@ export const PostWriteBoard = async ({ data, teamName, setWriting }) => {
       },
     })
     .then((res) => {
-      console.log(res.data);
       setWriting(false);
+      setUpdateView(true);
       // 성공
     })
     .catch((err) => {
       // 실패
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
@@ -100,7 +98,6 @@ export const PostWriteCommentToBoard = async ({
       }
     )
     .then((res) => {
-      console.log(res.data);
       GetBoardDetail({
         teamName: teamName,
         setBoardDetail: setBoardDetail,
@@ -112,7 +109,6 @@ export const PostWriteCommentToBoard = async ({
     .catch((err) => {
       // 실패
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
@@ -126,13 +122,10 @@ export const GetTeamNotice = async ({ setNotice, teamName }) => {
       },
     })
     .then((res) => {
-      console.log(res);
       setNotice(res.data.data[0].notice);
-      console.log(res.data.data[0].notice);
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };

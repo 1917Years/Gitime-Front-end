@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import Mainpage from "./page/Mainpage";
 import Register from "./page/Register";
@@ -17,14 +17,27 @@ import MyPage from "./page/MyPage";
 import GoogleOauth from "./utils/oauth/GoogleOauth";
 import Footer from "./particals/Footer";
 import ManageTeam from "./page/ManageTeam";
+import { getCookie } from "./utils/cookie";
+import NotFound from "./particals/NotFound";
 
 function App() {
+  const [update, setUpdate] = useState(false);
+  const [memberName, setMemberName] = useState(null);
+
   return (
     <BrowserRouter>
       <Route
         path="*"
         component={(props) => {
-          return <Header {...props} />;
+          return (
+            <Header
+              props={props}
+              update={update}
+              setUpdate={setUpdate}
+              setMemberName={setMemberName}
+              memberName={memberName}
+            />
+          );
         }}
       />
       <Switch>
@@ -42,7 +55,6 @@ function App() {
             return <Register {...props}></Register>;
           }}
         />
-
         <Route
           path="/oauth/register"
           exact={true}
@@ -50,15 +62,19 @@ function App() {
             return <OauthRegister {...props}></OauthRegister>;
           }}
         />
-
         <Route
           path="/login"
           exact={true}
           component={(props) => {
-            return <Login {...props}></Login>;
+            return (
+              <Login
+                props={props}
+                update={update}
+                setUpdate={setUpdate}
+              ></Login>
+            );
           }}
         />
-
         <Route
           path="/VideoChat"
           exact={true}
@@ -66,7 +82,6 @@ function App() {
             return <VideoChat {...props}></VideoChat>;
           }}
         />
-
         <Route
           path="/auth/github"
           exact={true}
@@ -74,7 +89,6 @@ function App() {
             return <Oauth {...props}></Oauth>;
           }}
         />
-
         <Route
           path="/auth/kakao"
           exact={true}
@@ -89,20 +103,18 @@ function App() {
             return <GoogleOauth {...props}></GoogleOauth>;
           }}
         />
-
-        <Route
-          path="/mypage"
-          exact={true}
-          component={(props) => {
-            return <MyPage {...props}></MyPage>;
-          }}
-        />
-
         <Route
           path="/Loading"
           exact={true}
           component={(props) => {
             return <Loading {...props}></Loading>;
+          }}
+        />
+        <Route
+          path="/mypage"
+          exact={true}
+          component={(props) => {
+            return <MyPage {...props}></MyPage>;
           }}
         />
         <Route
@@ -112,24 +124,22 @@ function App() {
             return <TeamForm {...props}></TeamForm>;
           }}
         />
-
         <Route
           path="/dashboard/:teamName"
           exact={true}
           component={(props) => {
-            console.log(props);
-            return <Dashboard {...props}></Dashboard>;
+            return (
+              <Dashboard props={props} memberName={memberName}></Dashboard>
+            );
           }}
         />
-
-        {/* /dashboard/test/manageteam */}
         <Route
           path="/dashboard/:teamName/setting"
           exact={true}
           component={(props) => {
             return <ManageTeam {...props}></ManageTeam>;
           }}
-        />
+        />{" "}
       </Switch>
       <Route
         path="*"

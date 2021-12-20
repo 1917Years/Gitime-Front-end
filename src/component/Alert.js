@@ -2,9 +2,8 @@ import React from "react";
 
 export const AlertNotice = (props) => {
   const { notice } = props;
-  console.log(notice);
   return (
-    <div class="alert-banner w-full fixed top-100 z-50">
+    <div class="alert-banner w-full fixed top-100 z-30">
       <input type="checkbox" class="hidden" id="banneralert" />
 
       <label

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import queryString from "query-string";
 import axios from "axios";
 import { SERVER_URL } from "../SRC";
-import { setCookie } from "../cookie";
+import { getCookie, deleteCookie, setCookie } from "../cookie";
 import { getMemberInfoOauth } from "../ApiConfig";
 
 function GoogleOauth(props) {

@@ -2,44 +2,27 @@ import { React, useState } from "react";
 import "../assets/styles/Login.css";
 import axios from "axios";
 import { SERVER_URL } from "../utils/SRC";
-import { setCookie, getCookie } from "../utils/cookie";
+import { getCookie, deleteCookie, setCookie } from "../utils/cookie";
 import "animate.css";
 
-// function studyAxios(){
-//   axios
-//   .get(SERVER_URL + "/api/v1/messages/received?page=" + pageNum, {
-//     headers: {
-//       Authorization: "Bearer " + access_token,
-//     },
-//   },
-//   data)
-//   .then((res) => {
-//     console.log("Yes Message");
-//     setmessage(res);
-//     setabc(false);
-//   })
-//   .catch((err) => {
-//     console.log("No Message");
-//     console.log(err);
-//     setnullm(true);
-//     setabc(false);
-//   });
-// }
-
-const postLogin = async ({ props, data, setSync, setLoginError }) => {
+const postLogin = async ({
+  props,
+  data,
+  setSync,
+  setLoginError,
+  setUpdate,
+}) => {
   await axios
     .post(SERVER_URL + "/api/v1/auth/login", data)
     .then((res) => {
       setCookie("token", "Bearer " + res.data.accessToken, {
         path: "/",
-        secure: true,
-        sameSite: "none",
+        expires: 0,
       });
       setLoginError(false);
       // window.location.href =
       //   "https://github.com/login/oauth/authorize?client_id=a76250c81934f034f0d9&redirect_uri=http://localhost:3000/auth/github&scope=user&scope=repo";
-      console.log(res);
-      getMembers({ props, setSync }); // 깃과 연동 됐는지 확인
+      getMembers({ props, setSync, setUpdate }); // 깃과 연동 됐는지 확인
     })
     .catch((err) => {
       setLoginError(true);
@@ -49,7 +32,7 @@ const postLogin = async ({ props, data, setSync, setLoginError }) => {
     });
 };
 
-const getMembers = async ({ props, setSync }) => {
+const getMembers = async ({ props, setSync, setUpdate }) => {
   await axios
     .get(SERVER_URL + "/api/v1/members", {
       headers: {
@@ -58,13 +41,11 @@ const getMembers = async ({ props, setSync }) => {
       },
     })
     .then((res) => {
-      console.log(res);
-      console.log(res.data.data[0].sync); // 연동되었는지 확인
-
       if (res.data.data[0].sync) {
         props.history.push("/team");
       } else {
         setSync(true);
+
         // 연동이 안되어있따면
         // 알러트 발생 후
         // 깃허브 연동페이지로 이동
@@ -79,7 +60,7 @@ const getMembers = async ({ props, setSync }) => {
     });
 };
 
-function Login(props) {
+function Login({ props, update, setUpdate }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [sync, setSync] = useState(false);
@@ -260,7 +241,8 @@ function Login(props) {
                   } else {
                     setPwdError(false);
                   }
-                  postLogin({ props, data, setSync, setLoginError });
+
+                  postLogin({ props, data, setSync, setLoginError, setUpdate });
                 }}
                 class="mb-5 col-span-3 bg-black hover:bg-gray-400 text-white font-medium py-3 rounded shadow-lg hover:shadow-xl transition duration-200"
               >

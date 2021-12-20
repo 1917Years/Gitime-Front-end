@@ -19,6 +19,89 @@ import SearchUser from "../component/UserSearch";
 
 import { sample_member } from "../component/test/sample_data"; // 나중에 지울 것
 
+const onDevSelHandler = (
+  selected,
+  memEmail,
+  setMemberDevelopPlus,
+  SetDevelopToMember,
+  teamMemberList,
+  setMemberDevelopUpdate,
+  memberDevelopPlus,
+  props
+) => {
+  teamMemberList.forEach(function (member) {
+    if (member.memberEmail == memEmail) {
+      SetDevelopToMember({
+        data: {
+          isDeleted: false,
+          memberEmail: memEmail,
+          developField: selected,
+        },
+        teamName: props.match.params.teamName,
+        setMemberDevelopUpdate: setMemberDevelopUpdate,
+      });
+      setMemberDevelopPlus(!memberDevelopPlus); //없는 애
+    }
+  });
+};
+
+const SelectedTrueMemberSetDevelopField = ({
+  member,
+  developLists,
+  SetDevelopToMember,
+  teamMemberList,
+  setMemberDevelopUpdate,
+  props,
+}) => {
+  const [memberDevelopPlus, setMemberDevelopPlus] = useState(false);
+  if (memberDevelopPlus) {
+    return (
+      <div class="h-full mx-auto w-2/3">
+        <select
+          aria-label="select an option"
+          class="text-sm text-gray-500 w-full border rounded-lg h-full focus:outline-none text-center"
+          onChange={(e) => {
+            onDevSelHandler(
+              e.currentTarget.value,
+              member.memberEmail,
+              setMemberDevelopPlus,
+              SetDevelopToMember,
+              teamMemberList,
+              setMemberDevelopUpdate,
+              memberDevelopPlus,
+              props
+            );
+          }}
+        >
+          <option selected="" disabled="" value="">
+            역할 선택
+          </option>
+          {developLists.map((item) => {
+            return <option value={item.field}>{item.field}</option>;
+          })}
+        </select>
+      </div>
+    );
+  } else {
+    return (
+      <div class="h-full">
+        {" "}
+        <div class="grid mx-auto rounded-lg w-2/3 h-full border border-dashed px-5">
+          <button
+            className="w-full text-xl font-sbtest text-gray-400 text-center"
+            value=""
+            onClick={() => {
+              setMemberDevelopPlus(!memberDevelopPlus);
+            }}
+          >
+            +
+          </button>
+        </div>
+      </div>
+    );
+  }
+};
+
 function ManageTeam(props) {
   const [showSubMenu, setShowSubMenu] = useState(false);
   const [showSubMenu2, setShowSubMenu2] = useState(false);
@@ -30,13 +113,11 @@ function ManageTeam(props) {
   const [showNowClick6, setShowNowClick6] = useState(false);
   const [showNowClick7, setShowNowClick7] = useState(false);
   const [showNowClick8, setShowNowClick8] = useState(false);
+
   const [showInputDev, setShowInputDev] = useState(false);
   const [noticeLists, setNoticeLists] = useState([]);
   const [noticeText, setNoticeText] = useState(null);
-  const [developLists, setDevelopLists] = useState([
-    { field: "abcd" },
-    { field: "dkfdk" },
-  ]);
+  const [developLists, setDevelopLists] = useState([]);
   const [gitRepos, setGitRepos] = useState([]);
   const [teamGitRepo, setTeamGitRepo] = useState(null);
   const [gitRepoChangeMes, setGitRepoChangeMes] = useState({
@@ -56,7 +137,6 @@ function ManageTeam(props) {
   const [confirmCkMemList, setConfirmCkMemList] = useState([]);
 
   const [teamMemberList, setTeamMemberList] = useState([]);
-  const [memberDevelopPlus, setMemberDevelopPlus] = useState(false);
   const [memberDevelopUpdate, setMemberDevelopUpdate] = useState(false);
 
   const [inviteTeamMember, setInviteTeamMember] = useState(null);
@@ -187,23 +267,6 @@ function ManageTeam(props) {
           teamName: props.match.params.teamName,
           setMemberDevelopUpdate: setMemberDevelopUpdate,
         });
-      }
-    });
-  };
-
-  const onDevSelHandler = (selected, memEmail) => {
-    teamMemberList.forEach(function (member) {
-      if (member.memberEmail == memEmail) {
-        SetDevelopToMember({
-          data: {
-            isDeleted: false,
-            memberEmail: memEmail,
-            developField: selected,
-          },
-          teamName: props.match.params.teamName,
-          setMemberDevelopUpdate: setMemberDevelopUpdate,
-        });
-        setMemberDevelopPlus(!memberDevelopPlus); //없는 애
       }
     });
   };
@@ -354,46 +417,6 @@ function ManageTeam(props) {
     }
 
     confirmDelete();
-  };
-
-  const SelectedTrueMemberSetDevelopField = ({ member }) => {
-    return (
-      <div class="h-full mx-auto w-2/3">
-        <select
-          aria-label="select an option"
-          class="text-sm text-gray-500 w-full border rounded-lg h-full focus:outline-none text-center"
-          onChange={(e) => {
-            onDevSelHandler(e.currentTarget.value, member.memberEmail);
-          }}
-        >
-          <option selected="" disabled="" value="">
-            역할 선택
-          </option>
-          {developLists.map((item) => {
-            return <option value={item.field}>{item.field}</option>;
-          })}
-        </select>
-      </div>
-    );
-  };
-
-  const SelectedFalseMemberSetDevelopField = ({ member }) => {
-    return (
-      <div class="h-full">
-        {" "}
-        <div class="grid mx-auto rounded-lg w-2/3 h-full border border-dashed px-5">
-          <button
-            className="w-full text-xl font-sbtest text-gray-400 text-center"
-            value=""
-            onClick={() => {
-              setMemberDevelopPlus(!memberDevelopPlus);
-            }}
-          >
-            +
-          </button>
-        </div>
-      </div>
-    );
   };
 
   const confirmDelete = () => {
@@ -621,7 +644,7 @@ function ManageTeam(props) {
                     개발 분야 관리
                   </button>
                 </div>
-                <div class="pl-2 block">
+                {/* <div class="pl-2 block">
                   <div class="h-6"></div>
                   <button
                     class={
@@ -642,7 +665,7 @@ function ManageTeam(props) {
                   >
                     서버 관리
                   </button>
-                </div>
+                </div> */}
               </div>
 
               <div
@@ -1159,54 +1182,53 @@ function ManageTeam(props) {
                         검색 결과가 없습니다😥 검색어를 다시 확인해 주세요!
                       </div>
                     ) : (
-                      <div class="grid grid-cols-3 ml-10 mt-5 text-base font-base font-light">
-                        <img
-                          class="w-12 h-12"
-                          src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
-                          alt="collaborator 1"
-                        ></img>
-                        <div>
-                          {" "}
-                          {searchUserResult.memberName} (
-                          {searchUserResult.memberNickName})
-                          <p> {searchUserResult.memberEmail}</p>
-                          <p>
-                            {searchUserResult.memberBirth[0] +
-                              "." +
-                              searchUserResult.memberBirth[1] +
-                              "." +
-                              searchUserResult.memberBirth[2]}
-                          </p>
-                        </div>
+                      <div>
+                        <div class="grid grid-cols-7 ml-10 mr-10 mt-5 text-base font-base font-light">
+                          <img
+                            class="w-16 h-16 m-auto"
+                            src="https://cdn.tuk.dev/assets/templates/olympus/projects(8).png"
+                            alt="collaborator 1"
+                          ></img>
+                          <div class="col-span-5">
+                            {" "}
+                            {searchUserResult.memberName} (
+                            {searchUserResult.memberNickName})
+                            <div> {searchUserResult.memberEmail}</div>
+                            <div class="text-sm text-gray-500">
+                              🎂{"  "}
+                              {searchUserResult.memberBirth[0] +
+                                "." +
+                                searchUserResult.memberBirth[1] +
+                                "." +
+                                searchUserResult.memberBirth[2]}
+                            </div>
+                          </div>
 
-                        <button
-                          onClick={() => {
-                            InviteMemberToTeam({
-                              teamName: props.match.params.teamName,
-                              data: {
-                                memberEmail: searchUserResult.memberEmail,
-                              },
-                            });
-                          }}
-                        >
-                          초대하기
-                        </button>
+                          <button
+                            class="rounded-md text-sm border-2 border-gray-400 border-opacity-50"
+                            onClick={() => {
+                              InviteMemberToTeam({
+                                teamName: props.match.params.teamName,
+                                data: {
+                                  memberEmail: searchUserResult.memberEmail,
+                                },
+                              });
+                            }}
+                          >
+                            초대하기
+                          </button>
+                        </div>
                       </div>
                     )}
                     {
                       <div class="">
-                        <div class="mt-4 mx-10 text-base font-normal font-test flex items-center bg-gray-50">
+                        <div class="mt-8 mx-10 text-base font-normal font-test flex items-center bg-gray-50">
                           <div class="py-2 flex items-center font-test text-base w-full text-center">
                             <div class="flex-1 my-1">
                               초대 목록 (
                               {Object.keys(inviteTeamMember.content).length})
                             </div>
-                            <div class="flex-1 my-1">
-                              상태{" "}
-                              <a class="text-sm text-gray-500">
-                                (ACCEPT/DENIED/WAIT)
-                              </a>
-                            </div>
+                            <div class="flex-1 my-1">상태</div>
                           </div>
                         </div>
 
@@ -1224,8 +1246,24 @@ function ManageTeam(props) {
                                       </a>
                                     </div>
 
-                                    <div class="text-center font-light font-test text-lg text-purple-300 ">
-                                      {member.inviteStatus}
+                                    <div
+                                      class={
+                                        member.inviteStatus == "ACCEPT"
+                                          ? "text-center font-light font-test text-lg text-green-600"
+                                          : member.inviteStatus == "DENIED"
+                                          ? "text-center font-light font-test text-lg text-red-600"
+                                          : member.inviteStatus == "WAIT"
+                                          ? "text-center font-light font-test text-lg text-yellow-600"
+                                          : "text-center font-light font-test text-lg text-gray-600"
+                                      }
+                                    >
+                                      {member.inviteStatus == "ACCEPT"
+                                        ? "승인"
+                                        : member.inviteStatus == "DENIED"
+                                        ? "거절"
+                                        : member.inviteStatus == "WAIT"
+                                        ? "대기"
+                                        : "불러오는 중..."}
                                     </div>
                                   </div>
                                 );
@@ -1276,16 +1314,14 @@ function ManageTeam(props) {
 
                           {member.developField == null ? (
                             <div class="h-full">
-                              {memberDevelopPlus ? ( //그건... 상호가 해봐... ㅇㅇㅇㅇㅇ 트루일땐 셀렉트문이 보임 //빼면 영찬이꺼 역할추가?를 눌렀는데 다른애들꺼까지 다 추가상태로 바뀜 // 근데 이걸 멤버별로 관리해줘야 해서 배열형태로 만든거고 인덱스에 member.id를 넣은거 ㅇㅇ /// << 제어가 여기로 넘어가게 되겠지?? 그럼 이게 참이니까 밑에 셀렉트문이 보일 거 아냐
-                                //ㄴㄴ 그 말이 아니라... 그 +버ㅇㅇㅇㅇㅇㅇㅇ +버튼이 다 셀렉트로 바뀜 저 변수를 멤버별로 뺀 게 그거때문이야
-                                <SelectedTrueMemberSetDevelopField
-                                  member={member}
-                                />
-                              ) : (
-                                <SelectedFalseMemberSetDevelopField
-                                  member={member}
-                                />
-                              )}
+                              <SelectedTrueMemberSetDevelopField
+                                member={member}
+                                developLists={developLists}
+                                SetDevelopToMember={SetDevelopToMember}
+                                teamMemberList={teamMemberList}
+                                setMemberDevelopUpdate={setMemberDevelopUpdate}
+                                props={props}
+                              />
                             </div>
                           ) : (
                             <div>

@@ -21,7 +21,29 @@ module.exports = {
       transitionDelay: {
         2000: "2000ms",
       },
-
+      spacing: {
+        "1/10": "10%",
+        "12/100": "12%",
+        "15/100": "15%",
+        "2/10": "20%",
+        "27/100": "27%",
+        "28.5/100": "28.5%",
+        "3/10": "30%",
+        "32.5/100": "32.5%",
+        "4/10": "40%",
+        "5/10": "50%",
+        "55/100": "55%",
+        "57.5/100": "57.5%",
+        "6/10": "60%",
+        "62.5/100": "62.5%",
+        "65/100": "65%",
+        "7/10": "70%",
+        "8/10": "80%",
+        "9/10": "90%",
+      },
+      screens: {
+        "3xl": "1600px",
+      },
       fontFamily: {
         test: ["pretend-medium"],
         btest: ["pretend-bold"],
@@ -32,6 +54,8 @@ module.exports = {
         sbtest: ["pretend-SBold"],
         ttest: ["pretend-Thin"],
         quiche: ["quiche-Sans"],
+        confont1: ["consoleFont"],
+        confont2: ["consoleFont2"],
       },
 
       backgroundImage: {

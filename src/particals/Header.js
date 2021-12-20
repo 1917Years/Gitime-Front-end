@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
-import { getCookie, deleteCookie } from "../utils/cookie";
+import { getCookie, deleteCookie, setCookie } from "../utils/cookie";
 import { getMemberInfo } from "../utils/ApiConfig";
 import Swal from "sweetalert2";
 import { SERVER_URL } from "../utils/SRC";
 import logo from "../assets/img/logo-white.png";
 
-const navigation = [{ name: "My Teams", href: "/team", current: false }];
+const navigation = [{ name: "MY TEAMS", href: "/team", current: false }];
 
 const logOut = () => {
   Swal.fire({
@@ -29,13 +29,21 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-function Header(props) {
-  const [memberName, setMemberName] = useState(null);
+function Header({ props, update, setUpdate, memberName, setMemberName }) {
   const [memberImg, setMemberImg] = useState(null);
+  // const [update, setUpdate] = useState(false);
 
   useEffect(() => {
-    getMemberInfo({ setMemberName, setMemberImg });
-  }, [memberName]);
+    if (getCookie("token")) getMemberInfo({ setMemberName, setMemberImg });
+  }, []);
+
+  useEffect(() => {
+    if (update) {
+      getMemberInfo({ setMemberName, setMemberImg });
+    }
+    setUpdate(false);
+  });
+
   return (
     <Disclosure as="nav" className="bg-black sticky top-0 z-50">
       {({ open }) => (
@@ -66,7 +74,7 @@ function Header(props) {
                 </div>
 
                 {getCookie("token") ? (
-                  <div className="hidden sm:block sm:ml-6">
+                  <div className="font-test hidden sm:block sm:ml-6 sm:mt-2">
                     <div className="flex space-x-4">
                       {navigation.map((item) => (
                         <button
@@ -123,7 +131,7 @@ function Header(props) {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="origin-top-right absolute z-100 right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
                             <span
@@ -213,7 +221,7 @@ function Header(props) {
                             </span>
                           )}
                         </Menu.Item>
-                        <Menu.Item>
+                        {/* <Menu.Item>
                           {({ active }) => (
                             <a
                               onClick={() => {
@@ -227,7 +235,7 @@ function Header(props) {
                               마이페이지
                             </a>
                           )}
-                        </Menu.Item>
+                        </Menu.Item> */}
                         {/* <Menu.Item>
                           {({ active }) => (
                             <a
@@ -249,8 +257,11 @@ function Header(props) {
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
                               onClick={() => {
-                                deleteCookie("token");
-                                logOut();
+                                deleteCookie("token", {
+                                  path: "/",
+                                });
+                                console.log(getCookie("token"));
+                                setUpdate(true);
                                 props.history.push("/");
                               }}
                             >

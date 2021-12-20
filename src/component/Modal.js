@@ -6,6 +6,7 @@ import { GetGitRepoList, PostCreateTeam } from "../utils/api/team/TeamApi";
 import {
   GetTodoList,
   PostCreateTodo,
+  PostFinishTodo,
 } from "../utils/api/dashboard/DashboardApi";
 import {
   GetBoardDetail,
@@ -16,7 +17,7 @@ import {
 import Dashboard from "../page/Dashboard";
 import { getAllDevelop } from "../utils/api/teamAdmin/TeamAdminApi";
 
-export const Board = ({ props, setShowModal4, dataLists3 }) => {
+export const Board = ({ props, setShowModal4, dataLists3, setUpdateView }) => {
   const [writing, setWriting] = useState(false);
   const [boardList, setBoardList] = useState(null);
   const [title, setTitle] = useState(null);
@@ -28,6 +29,7 @@ export const Board = ({ props, setShowModal4, dataLists3 }) => {
   // page가 바뀔때마다 통신해 받아와 리스트를
   // const [pageNum, setPageNum] = useState([]);
   const [boardTmp, setBoardTmp] = useState(false);
+  const [boardUpdate, setBoardUpdate] = useState(false);
   const [pageList, setPageList] = useState([]);
   const [boardDetail, setBoardDetail] = useState(null);
   const [commentText, setCommentText] = useState("");
@@ -59,6 +61,17 @@ export const Board = ({ props, setShowModal4, dataLists3 }) => {
       page: page,
     });
   }, [page, writing]);
+
+  useEffect(() => {
+    if (boardUpdate) {
+      GetBoardList({
+        setBoardList: setBoardList,
+        teamName: props.match.params.teamName,
+        page: page,
+      });
+    }
+    setBoardUpdate(false);
+  });
 
   const onChangeTitle = (e) => {
     setTitle(e.target.value);
@@ -131,8 +144,8 @@ export const Board = ({ props, setShowModal4, dataLists3 }) => {
                     },
                     teamName: props.match.params.teamName,
                     setWriting: setWriting,
+                    setUpdateView: setUpdateView,
                   });
-                  setWriting(false);
                 }}
               >
                 글 작성하기
@@ -250,76 +263,74 @@ export const Board = ({ props, setShowModal4, dataLists3 }) => {
                   </div>
                   <div class="mx-2 overflow-y-auto">
                     {console.log(boardList)}
-                    {boardList == null ? (
-                      <div>asdasd</div>
-                    ) : (
-                      boardList.content.map((list) => {
-                        return (
-                          <button
-                            value={list.id}
-                            onClick={(e) => {
-                              setNowId(e.currentTarget.value);
-                              GetBoardDetail({
-                                setBoardDetail: setBoardDetail,
-                                teamName: props.match.params.teamName,
-                                boardId: list.id,
-                                setBoardTmp: setBoardTmp,
-                              });
-                              console.log("selected ID is " + nowId);
-                            }}
-                          >
-                            <div class="justify-between border-b border-dashed border-blueGray-200 py-4 mx-5 grid grid-cols-8 grid-rows-2 gap-4">
-                              <div class="col-start-1 row-start-1 col-span-1 row-span-2 rounded-lg bg-black font-sbtest">
-                                <div class="my-6 font-sbtest text-center text-develbg">
-                                  {/* {list.file} */}
-                                </div>
-                              </div>
-                              <h3 class="col-span-6 text-left row-start-1 lg:text-lg font-ltest text-fontColor-900 ">
-                                {list.title}
-                              </h3>
-
-                              <h3 class="col-span-4 col-start-2 text-left row-start-2 lg:text-sm font-ltest text-gray-500 text-fontColor-900 ">
-                                {list.content}
-                              </h3>
-                              <div class="place-content-end my-0 float-right justify-self-end col-span-2 col-start-6 row-start-2 row-end-2 flex pl-12 text-right text-sm font-ltest text-date">
-                                <div class="">
-                                  {list.writeTime[0] +
-                                    "." +
-                                    list.writeTime[1] +
-                                    "." +
-                                    list.writeTime[2]}
-                                </div>
-                                <div class="pl-2">
-                                  {" "}
-                                  {list.writeTime[3] +
-                                    ":" +
-                                    list.writeTime[4] +
-                                    ":" +
-                                    list.writeTime[5]}
-                                </div>
-                              </div>
-                              <div class="flex">
-                                <div class="col-span-3 p-1 rounded-lg w-6 h-6 bg-develbg font-sbtest mr-1">
-                                  <div class="m-auto w-3 h-3 text-center text-xs">
-                                    {list.writerField == null
-                                      ? "X"
-                                      : list.writerField.substring(0, 1)}
+                    {boardList == null
+                      ? "불러오는 중입니다..."
+                      : boardList.content.map((list) => {
+                          return (
+                            <button
+                              value={list.id}
+                              onClick={(e) => {
+                                setNowId(e.currentTarget.value);
+                                GetBoardDetail({
+                                  setBoardDetail: setBoardDetail,
+                                  teamName: props.match.params.teamName,
+                                  boardId: list.id,
+                                  setBoardTmp: setBoardTmp,
+                                });
+                                console.log("selected ID is " + nowId);
+                              }}
+                            >
+                              <div class="justify-between border-b border-dashed border-blueGray-200 py-4 mx-5 grid grid-cols-8 grid-rows-2 gap-4">
+                                <div class="col-start-1 row-start-1 col-span-1 row-span-2 rounded-lg bg-black font-sbtest">
+                                  <div class="my-6 font-sbtest text-center text-develbg">
+                                    {/* {list.file} */}
                                   </div>
                                 </div>
-                                <div class="col-span-1 col-start-8 text-gray-600 row-start-1 row-end-1 text-right font-ltest text-base">
-                                  {list.writer.length >= 5
-                                    ? list.writer.substring(0, 2) + "..."
-                                    : list.writer}
+                                <h3 class="col-span-6 text-left row-start-1 lg:text-lg font-ltest text-fontColor-900 ">
+                                  {list.title}
+                                </h3>
+
+                                <h3 class="col-span-4 col-start-2 text-left row-start-2 lg:text-sm font-ltest text-gray-500 text-fontColor-900 ">
+                                  {list.content}
+                                </h3>
+                                <div class="place-content-end my-0 float-right justify-self-end col-span-2 col-start-6 row-start-2 row-end-2 flex pl-12 text-right text-sm font-ltest text-date">
+                                  <div class="">
+                                    {list.writeTime[0] +
+                                      "." +
+                                      list.writeTime[1] +
+                                      "." +
+                                      list.writeTime[2]}
+                                  </div>
+                                  <div class="pl-2">
+                                    {" "}
+                                    {list.writeTime[3] +
+                                      ":" +
+                                      list.writeTime[4] +
+                                      ":" +
+                                      list.writeTime[5]}
+                                  </div>
+                                </div>
+                                <div class="flex">
+                                  <div class="col-span-3 p-1 rounded-lg w-6 h-6 bg-develbg font-sbtest mr-1">
+                                    <div class="m-auto w-3 h-3 text-center text-xs">
+                                      {list.writerField == null
+                                        ? "X"
+                                        : list.writerField.substring(0, 1)}
+                                    </div>
+                                  </div>
+                                  <div class="col-span-1 col-start-8 text-gray-600 row-start-1 row-end-1 text-right font-ltest text-base">
+                                    {list.writer.length >= 5
+                                      ? list.writer.substring(0, 2) + "..."
+                                      : list.writer}
+                                  </div>
+                                </div>
+                                <div class="place-content-end my-0 col-span-1 col-start-8 text-gray-500 row-start-2 row-end-2 text-right font-ltest text-sm text-date">
+                                  👍 {list.likeCount} 💬 {list.commentCount}
                                 </div>
                               </div>
-                              <div class="place-content-end my-0 col-span-1 col-start-8 text-gray-500 row-start-2 row-end-2 text-right font-ltest text-sm text-date">
-                                👍 {list.likeCount} 💬 {list.commentCount}
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })
-                    )}
+                            </button>
+                          );
+                        })}
                   </div>
                   <div class="flex justify-center mt-5 mb-6">
                     {console.log(pageNum)}
@@ -380,6 +391,7 @@ export const AddingToDo = ({
   checkedList,
   changeComplete,
   ExampleCustomInput,
+  setUpdateView,
   props,
 }) => {
   const [developLists, setDevelopLists] = useState(null);
@@ -391,6 +403,18 @@ export const AddingToDo = ({
 
   const onTodoInputHandler = (event) => {
     setTodoInput(event.currentTarget.value);
+  };
+
+  const onTodoFinishHandler = ({ list }) => {
+    PostFinishTodo({
+      teamName: props.match.params.teamName,
+      setUpdateTodo: setUpdateTodo,
+      setUpdateView: setUpdateView,
+      item: {
+        working: list.todo,
+        fieldName: list.developField,
+      },
+    });
   };
 
   useEffect(() => {
@@ -474,7 +498,7 @@ export const AddingToDo = ({
                 </div>
 
                 <button
-                  class="relative align-top bottom-7 font-ltest w-1/3 mt-2 lg:mt-4  float-right block text-white text-base bg-gray-400 h-10 lg:h-12 px-4 lg:px-7 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
+                  class="relative align-top bottom-7 font-ltest w-1/3 mt-2 lg:mt-4 float-right block text-white text-base bg-gray-400 h-10 lg:h-12 px-4 lg:px-7 rounded-lg outline-none transition border hover:border-primary-500 border-gray-400 focus:border-primary-500"
                   onClick={() => {
                     var untilDate =
                       todoDate.getFullYear() +
@@ -496,6 +520,7 @@ export const AddingToDo = ({
                           todoDate.getDate(),
                       },
                       setUpdateTodo: setUpdateTodo,
+                      setUpdateView: setUpdateView,
                     });
                     setUpdateTodo(true);
                     //PostCreateTodo();
@@ -504,75 +529,87 @@ export const AddingToDo = ({
                   추가
                 </button>
               </div>
-              {todoList == null
-                ? null
-                : todoList.map((list, idx) => {
-                    return (
-                      <div class="flex items-center justify-between w-full h-auto sm:h-16 px-4 lg:px-8 rounded-lg shadow bg-white">
-                        <div
-                          class="flex items-center space-x-2 lg:space-x-4 w-full h-auto"
-                          key={idx}
-                        >
-                          <input
-                            type="checkbox"
-                            onChange={(e) =>
-                              checkedItemHandler(list, e.target.checked)
-                            }
-                            checked={checkedList.includes(list) ? true : false}
-                          ></input>
-                          <div class="col-span-3 rounded-lg w-12 h-8 bg-develbg font-sbtest">
-                            <div class="pt-2 m-auto w-6 h-6 text-center text-xs">
-                              {list.developField.substring(0, 1)}
+              <div class="overflow-y-auto h-96">
+                {todoList == null
+                  ? null
+                  : todoList.map((list, idx) => {
+                      return (
+                        <div class="flex items-center justify-between w-full overflow-y-auto h-96 sm:h-16 px-4 lg:px-8 rounded-lg shadow bg-white">
+                          <div
+                            class="flex items-center space-x-2 lg:space-x-4 w-full h-auto"
+                            key={idx}
+                          >
+                            <input
+                              type="checkbox"
+                              onChange={(e) =>
+                                checkedItemHandler(list, e.target.checked)
+                              }
+                              checked={
+                                checkedList.includes(list) ? true : false
+                              }
+                            ></input>
+                            <div class="col-span-3 rounded-lg w-12 h-8 bg-develbg font-sbtest">
+                              <div class="pt-2 m-auto w-6 h-6 text-center text-xs">
+                                {list.developField.substring(0, 1)}
+                              </div>
+                            </div>
+                            <h3 class="flex-grow lg:text-base font-test text-fontColor-900 ">
+                              {list.todo}
+                            </h3>
+                            <div class="float-right my-auto pl-10 text-right col-span-4 text-sm font-ltest text-date">
+                              {list.untilDate[0] +
+                                "." +
+                                list.untilDate[1] +
+                                "." +
+                                list.untilDate[2]}
+                            </div>
+                            <div>
+                              {list.isFinish ? (
+                                <button
+                                  onClick={() => {
+                                    onTodoFinishHandler({ list });
+                                  }}
+                                >
+                                  <svg
+                                    class="h-8 w-8 text-purple-500 text-opacity-70 font-ltest text-date"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  >
+                                    {" "}
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />{" "}
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                  </svg>
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    onTodoFinishHandler({ list });
+                                  }}
+                                >
+                                  <svg
+                                    class="h-8 w-8 text-purple-500 text-opacity-20 font-ltest text-date"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  >
+                                    {" "}
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />{" "}
+                                  </svg>
+                                </button>
+                              )}
                             </div>
                           </div>
-                          <h3 class="flex-grow lg:text-base font-test text-fontColor-900 ">
-                            {list.todo}
-                          </h3>
-                          <div class="float-right my-auto pl-10 text-right col-span-4 text-sm font-ltest text-date">
-                            {list.untilDate[0] +
-                              "." +
-                              list.untilDate[1] +
-                              "." +
-                              list.untilDate[2]}
-                          </div>
-                          <div>
-                            {list.isFinish ? (
-                              <button onClick={(e) => changeComplete(list)}>
-                                <svg
-                                  class="h-8 w-8 text-purple-500 text-opacity-70 font-ltest text-date"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                >
-                                  {" "}
-                                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />{" "}
-                                  <polyline points="22 4 12 14.01 9 11.01" />
-                                </svg>
-                              </button>
-                            ) : (
-                              <button onClick={(e) => changeComplete(list)}>
-                                <svg
-                                  class="h-8 w-8 text-purple-500 text-opacity-20 font-ltest text-date"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                >
-                                  {" "}
-                                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />{" "}
-                                </svg>
-                              </button>
-                            )}
-                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+              </div>
 
               {/*footer*/}
               <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
@@ -832,7 +869,7 @@ export const VideoChatRoom = (props) => {
   );
 };
 
-export const CreateTeam = ({ props, setShowCreateTeamForm }) => {
+export const CreateTeam = ({ props, setShowCreateTeamForm, setUpdate }) => {
   const [gitRepos, setGitRepos] = useState([]);
   const [teamName, setTeamName] = useState(null);
   const [teamDevelopType, setTeamDevelopType] = useState(null);
@@ -985,8 +1022,11 @@ export const CreateTeam = ({ props, setShowCreateTeamForm }) => {
                         gitRepoUrl: teamGitRepo,
                         developType: teamDevelopType,
                       };
-                      PostCreateTeam({ data, props });
-                      setShowCreateTeamForm(false);
+                      PostCreateTeam({
+                        data,
+                        setShowCreateTeamForm: setShowCreateTeamForm,
+                        setUpdate: setUpdate,
+                      });
                     }}
                   >
                     팀 생성

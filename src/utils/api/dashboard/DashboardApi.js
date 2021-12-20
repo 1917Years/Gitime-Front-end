@@ -1,8 +1,64 @@
 import axios from "axios";
-import { getCookie } from "../../cookie";
+import { getCookie, deleteCookie, setCookie } from "../../cookie";
 import { SERVER_URL } from "../../SRC";
 
-export const PostCreateTodo = async ({ teamName, item, setUpdateTodo }) => {
+export const GetUpcoming = async ({ setUpcoming, teamName }) => {
+  await axios
+    .get(SERVER_URL + "/api/v1/notification/" + teamName + "/list/upcoming", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      setUpcoming(res.data.data);
+    })
+    .catch((err) => {
+      if (err.response) {
+      }
+    });
+};
+
+export const GetServerStatus = async ({ setServerStatus, teamName }) => {
+  await axios
+    .get(SERVER_URL + "/api/v1/dashboard/" + teamName + "/endpoint", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      setServerStatus(res.data.data[0]);
+    })
+    .catch((err) => {
+      if (err.response) {
+      }
+    });
+};
+
+export const GetRecentActivity = async ({ setRecentActivity, teamName }) => {
+  await axios
+    .get(SERVER_URL + "/api/v1/notification/" + teamName + "/list/recent", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      setRecentActivity(res.data.data);
+    })
+    .catch((err) => {
+      if (err.response) {
+      }
+    });
+};
+
+export const PostCreateTodo = async ({
+  teamName,
+  item,
+  setUpdateTodo,
+  setUpdateView,
+}) => {
   await axios
     .post(SERVER_URL + "/api/v1/dashboard/" + teamName + "/todo/add", item, {
       headers: {
@@ -11,18 +67,43 @@ export const PostCreateTodo = async ({ teamName, item, setUpdateTodo }) => {
       },
     })
     .then((res) => {
-      console.log(item);
-      console.log(res);
       setUpdateTodo(true);
+      setUpdateView(true);
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
 
-export const GetDevelopProgressResult = async ({ teamName }) => {
+export const PostFinishTodo = async ({
+  teamName,
+  item,
+  setUpdateTodo,
+  setUpdateView,
+}) => {
+  await axios
+    .post(SERVER_URL + "/api/v1/dashboard/" + teamName + "/todo/modify", item, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: getCookie("token"),
+      },
+    })
+    .then((res) => {
+      setUpdateTodo(true);
+      setUpdateView(true);
+    })
+    .catch((err) => {
+      if (err.response) {
+      }
+    });
+};
+
+export const GetDevelopProgressResult = async ({
+  teamName,
+  setDevelopProgress,
+  handlerWee,
+}) => {
   await axios
     .get(SERVER_URL + "/api/v1/dashboard/" + teamName + "/progress", {
       headers: {
@@ -31,11 +112,10 @@ export const GetDevelopProgressResult = async ({ teamName }) => {
       },
     })
     .then((res) => {
-      console.log(res.data);
+      setDevelopProgress(res.data.data[0]);
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
@@ -54,14 +134,11 @@ export const GetTodoList = async ({ setTodoList, teamName, setUpdateTodo }) => {
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
 
 export const PostCreateTeam = async ({ data, props }) => {
-  console.log(data);
-
   await axios
     .post(SERVER_URL + "/api/v1/teams/add", data, {
       headers: {
@@ -70,7 +147,6 @@ export const PostCreateTeam = async ({ data, props }) => {
       },
     })
     .then((res) => {
-      console.log(res);
       props.setShowCreateTeamForm(false);
       window.location.href = "http://localhost:3000/team";
       // 성공
@@ -78,7 +154,6 @@ export const PostCreateTeam = async ({ data, props }) => {
     .catch((err) => {
       // 실패
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
@@ -92,13 +167,10 @@ export const GetTeamNotice = async ({ setNotice, teamName }) => {
       },
     })
     .then((res) => {
-      console.log(res);
       setNotice(res.data.data[0].notice);
-      console.log(res.data.data[0].notice);
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };

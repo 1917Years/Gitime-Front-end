@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookie } from "./cookie";
+import { getCookie, deleteCookie, setCookie } from "./cookie";
 import { SERVER_URL } from "./SRC";
 
 export const getMemberInfo = async ({ setMemberName, setMemberImg }) => {
@@ -16,7 +16,6 @@ export const getMemberInfo = async ({ setMemberName, setMemberImg }) => {
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };
@@ -38,7 +37,6 @@ export const getMemberInfoOauth = async ({ props }) => {
     })
     .catch((err) => {
       if (err.response) {
-        console.log(err.response.data); // => the response payload 오 굿굿
       }
     });
 };

@@ -58,6 +58,16 @@
   src: url("./font/QuicheSans.ttf");
 }
 
+@font-face {
+  font-family: "consoleFont";
+  src: url("./font/neodgm.ttf");
+}
+
+@font-face {
+  font-family: "consoleFont2";
+  src: url("./font/PFStardust.ttf");
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
